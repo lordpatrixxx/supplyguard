@@ -4,6 +4,7 @@ import { processScan } from '../services/scanPipeline.js';
 import { generateCycloneDxSbom } from '../services/sbom.js';
 import { loadScanFromSupabase, loadScanHistoryFromSupabase } from '../services/supabasePersistence.js';
 import { requireAuth } from '../middleware/auth.js';
+import { analyzeScriptContent, MAX_SCRIPT_INPUT_BYTES } from '../services/behavioralAnalysis.js';
 
 const router = Router();
 
@@ -177,6 +178,29 @@ router.get('/', async (req, res) => {
 
   scans.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   res.json(scans);
+});
+
+// POST /api/scans/analyze-script — Interactive Static Script Inspector
+router.post('/analyze-script', async (req, res) => {
+  const { script, stage = 'postinstall' } = req.body;
+
+  if (!script || typeof script !== 'string') {
+    res.status(400).json({ error: 'script string is required' });
+    return;
+  }
+
+  // Enforce 50 KB max limit
+  if (Buffer.byteLength(script, 'utf8') > MAX_SCRIPT_INPUT_BYTES) {
+    res.status(413).json({ error: 'Payload Too Large: Script exceeds 50 KB limit' });
+    return;
+  }
+
+  const validStage = ['preinstall', 'install', 'postinstall'].includes(stage)
+    ? (stage as 'preinstall' | 'install' | 'postinstall')
+    : 'postinstall';
+
+  const result = analyzeScriptContent(validStage, script);
+  res.json(result);
 });
 
 export { router as scansRouter };

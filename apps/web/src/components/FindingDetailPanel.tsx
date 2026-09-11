@@ -3,7 +3,7 @@ import type { PackageNode } from '../types'
 import {
   X, GitFork, Network, AlertTriangle, BarChart3, Shield,
   CheckCircle, Copy, ClipboardCheck, ExternalLink, Sparkles,
-  Wrench, Package
+  Wrench, Package, Zap
 } from 'lucide-react'
 
 interface FindingDetailPanelProps {
@@ -132,6 +132,61 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
               <span>Potential Dependency Confusion Vector</span>
             </div>
             <p className="font-body-md text-xs text-on-surface leading-normal">{pkg.confusionFlag.reason}</p>
+          </div>
+        )}
+
+        {/* Behavioral Threat Signal Alert */}
+        {(pkg.behavioralFlag || (pkg.behavioralFlags && pkg.behavioralFlags.length > 0)) && (
+          <div className={`flex flex-col gap-2.5 p-4 rounded-lg border ${
+            pkg.behavioralFlag?.confidence === 'high'
+              ? 'bg-critical/10 border-critical/40'
+              : 'bg-warning/10 border-warning/40'
+          }`}>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Zap className={`w-4 h-4 ${pkg.behavioralFlag?.confidence === 'high' ? 'text-critical' : 'text-warning'}`} />
+                <span className={`font-headline-sm text-xs font-bold uppercase tracking-wider ${
+                  pkg.behavioralFlag?.confidence === 'high' ? 'text-critical' : 'text-warning'
+                }`}>
+                  Behavioral Threat Signal
+                </span>
+              </div>
+              <span className={`px-2 py-0.5 rounded text-[10px] font-code-sm font-bold uppercase tracking-wider ${
+                pkg.behavioralFlag?.confidence === 'high'
+                  ? 'bg-critical text-white'
+                  : 'bg-warning text-black'
+              }`}>
+                {pkg.behavioralFlag?.confidence} Confidence
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-1.5 font-code-sm text-xs">
+              <div className="flex items-center gap-2">
+                <span className="text-outline">Lifecycle Stage:</span>
+                <span className="px-1.5 py-0.5 rounded bg-surface-container font-semibold text-on-surface">
+                  {pkg.behavioralFlag?.scriptStage}
+                </span>
+              </div>
+              <div>
+                <span className="text-outline">Matched Signals:</span>
+                <ul className="list-disc list-inside mt-1 space-y-0.5 text-on-surface">
+                  {pkg.behavioralFlag?.matchedSignals.map((sig, idx) => (
+                    <li key={idx} className="font-medium">{sig}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {pkg.behavioralFlag?.excerpt && (
+              <div className="flex flex-col gap-1 mt-1">
+                <span className="font-code-sm text-[10px] uppercase tracking-wider text-outline">Script Excerpt (Static String Analysis)</span>
+                <div className="p-2.5 bg-surface-container-lowest rounded border border-outline-variant/30 overflow-x-auto">
+                  <code className="font-code-sm text-xs text-on-surface break-all select-all">
+                    {pkg.behavioralFlag.excerpt}
+                  </code>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -278,14 +333,25 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
                 </div>
               </div>
             )}
-            {(rb ? rb.typosquatConfusion > 0 : (!!pkg.typosquatFlag || !!pkg.confusionFlag)) && (
+            {(rb?.typosquatConfusion ?? 0) > 0 && (
               <div>
                 <div className="flex items-center justify-between font-code-sm text-xs mb-1">
-                  <span className="text-on-surface">Typosquat / confusion anomaly</span>
-                  <span className="text-critical font-semibold">+{rb?.typosquatConfusion ?? 15}</span>
+                  <span className="text-on-surface">Typosquatting or confusion</span>
+                  <span className="text-critical font-semibold">+{rb!.typosquatConfusion}</span>
                 </div>
                 <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
-                  <div className="bg-critical h-full w-3/4"></div>
+                  <div className="bg-critical h-full w-1/2"></div>
+                </div>
+              </div>
+            )}
+            {(rb?.behavioralSignal ?? 0) > 0 && (
+              <div>
+                <div className="flex items-center justify-between font-code-sm text-xs mb-1">
+                  <span className="text-on-surface">Behavioral Threat Signal ({pkg.behavioralFlag?.confidence || 'detected'})</span>
+                  <span className="text-critical font-semibold">+{rb?.behavioralSignal ?? 0}</span>
+                </div>
+                <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
+                  <div className="bg-critical h-full" style={{ width: `${Math.min(100, ((rb?.behavioralSignal ?? 0) / 25) * 100)}%` }}></div>
                 </div>
               </div>
             )}

@@ -7,7 +7,7 @@ import { getScanHistory } from '../lib/api';
 import type { ScanResult } from '../types';
 import {
   LayoutGrid, Share2, Shield, Clock, Search, Plus, Sun, Moon,
-  LogOut, FolderOpen, X, Settings, ShieldCheck
+  LogOut, FolderOpen, X, Settings, ShieldCheck, Zap
 } from 'lucide-react';
 
 interface AppLayoutProps {
@@ -46,7 +46,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   const navItems = [
     {
-      label: 'Overview',
+      label: 'Repository Intake',
       icon: <LayoutGrid className="w-5 h-5" />,
       path: '/app',
       active: location.pathname === '/app',
@@ -62,6 +62,12 @@ export function AppLayout({ children }: AppLayoutProps) {
       icon: <Shield className="w-5 h-5" />,
       path: currentScanId ? `/app/scans/${currentScanId}/report` : '/app',
       active: location.pathname.includes('/report'),
+    },
+    {
+      label: 'Behavioral Signals',
+      icon: <Zap className="w-5 h-5" />,
+      path: currentScanId ? `/app/scans/${currentScanId}/behavioral` : '/app/behavioral',
+      active: location.pathname.includes('/behavioral'),
     },
     {
       label: 'Scan History',

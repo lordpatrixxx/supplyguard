@@ -39,6 +39,27 @@ export interface ProvenanceSignals {
   buildAttestation: 'Not available'; // Honest: No fake SLSA claims
 }
 
+export interface BehavioralFlag {
+  indicator: string; // "Suspicious install-script behavior"
+  matchedSignals: string[];
+  indicators?: string[];
+  scriptStage: 'preinstall' | 'install' | 'postinstall';
+  confidence: 'high' | 'medium' | 'low';
+  excerpt: string; // safely truncated to <= 120 characters, plain text
+  rawScript?: string;
+  explanation?: string;
+}
+
+export interface BehavioralMetrics {
+  totalDependencies: number;
+  behavioralTargets: number;
+  lifecycleScriptsInspected: number;
+  highConfidenceSignals: number;
+  mediumConfidenceSignals: number;
+  lowConfidenceSignals: number;
+  allowListedTooling: number;
+}
+
 export interface RiskBreakdown {
   knownVulnerability: number;   // e.g. +40
   severityContribution: number; // e.g. +20 (scaled from max CVSS)
@@ -46,6 +67,7 @@ export interface RiskBreakdown {
   transitiveExposure: number;   // e.g. +8
   downstreamImpact: number;     // e.g. +8 (based on actual graph fan-out)
   typosquatConfusion: number;   // e.g. +15
+  behavioralSignal?: number;    // e.g. +25 (high), +15 (medium), +5 (low)
   totalScore: number;           // Capped at 100
 }
 
@@ -73,6 +95,8 @@ export interface PackageNode {
   provenance: ProvenanceSignals;
   typosquatFlag?: TyposquatFlag;
   confusionFlag?: DependencyConfusionFlag;
+  behavioralFlags?: BehavioralFlag[];
+  behavioralFlag?: BehavioralFlag;
   remediation?: Remediation;
   projectedRiskScore?: number;
   ptsReduced?: number;
@@ -100,6 +124,7 @@ export interface ScanResult {
   limitations?: string[];
   packages: PackageNode[];
   edges: GraphEdge[];
+  behavioralMetrics?: BehavioralMetrics;
   createdAt: string;
   completedAt?: string;
 }

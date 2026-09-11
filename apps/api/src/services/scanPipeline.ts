@@ -9,6 +9,7 @@ import { scorePackage, computeOverallScore } from './scoring.js';
 import { generateRemediation } from './ai.js';
 import { persistScanToSupabase, persistScanProgress } from './supabasePersistence.js';
 import { simulateRemediation } from './simulation.js';
+import { analyzeBehavioralThreats } from './behavioralAnalysis.js';
 
 /**
  * Runs the full SupplyGuard scan pipeline asynchronously.
@@ -96,11 +97,16 @@ export async function processScan(
       }
     }
 
+    // Stage 4.5: Behavioral Threat Signals (static install script analysis)
+    updateProgress('Analyzing install scripts for behavioral risk signals...');
+    const { metrics: behavioralMetrics } = await analyzeBehavioralThreats(packages);
+    scan.behavioralMetrics = behavioralMetrics;
+
     // Stage 5: Package reputation signals
     updateProgress('Auditing package reputation and release recency...');
 
     const flaggedOrDirect = packages.filter(
-      (p) => p.isDirect || p.vulnerabilities.length > 0 || p.typosquatFlag || p.confusionFlag
+      (p) => p.isDirect || p.vulnerabilities.length > 0 || p.typosquatFlag || p.confusionFlag || p.behavioralFlag
     );
     const uniqueRepNames = Array.from(new Set(flaggedOrDirect.map((p) => p.name)));
 

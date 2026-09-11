@@ -91,3 +91,30 @@ export async function downloadSbom(scanId: string, repoName?: string): Promise<v
   document.body.removeChild(anchor);
   window.URL.revokeObjectURL(downloadUrl);
 }
+
+export async function analyzeScriptSnippet(params: {
+  script: string;
+  stage?: 'preinstall' | 'install' | 'postinstall';
+}): Promise<{
+  isSuspicious: boolean;
+  flag?: any;
+  matchedSignals: string[];
+  confidence?: 'high' | 'medium' | 'low';
+  excerpt: string;
+  explanation: string;
+  isAllowListed?: boolean;
+}> {
+  const headers = await getAuthHeaders();
+  const res = await fetch('/api/scans/analyze-script', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(params),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || `Script analysis failed (status ${res.status})`);
+  }
+
+  return res.json();
+}

@@ -81,13 +81,27 @@ export function scorePackage(
     typosquatConfusion = 15;
   }
 
+  // 7. Behavioral Threat Signals (+25 for high, +15 for medium, +5 for low)
+  let behavioralSignal = 0;
+  const primaryBehavioral = pkg.behavioralFlag || (pkg.behavioralFlags && pkg.behavioralFlags.length > 0 ? pkg.behavioralFlags[0] : undefined);
+  if (primaryBehavioral) {
+    if (primaryBehavioral.confidence === 'high') {
+      behavioralSignal = 25;
+    } else if (primaryBehavioral.confidence === 'medium') {
+      behavioralSignal = 15;
+    } else if (primaryBehavioral.confidence === 'low') {
+      behavioralSignal = 5;
+    }
+  }
+
   const rawTotal =
     knownVulnerability +
     severityContribution +
     outdatedVersion +
     transitiveExposure +
     downstreamImpact +
-    typosquatConfusion;
+    typosquatConfusion +
+    behavioralSignal;
 
   const score = Math.min(rawTotal, 100);
 
@@ -108,6 +122,7 @@ export function scorePackage(
     transitiveExposure,
     downstreamImpact,
     typosquatConfusion,
+    behavioralSignal,
     totalScore: score,
   };
 

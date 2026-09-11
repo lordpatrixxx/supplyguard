@@ -101,6 +101,7 @@ Downstream dependents count: ${pkg.dependentCount}
 Dependency path: ${depPath}
 ${pkg.typosquatFlag ? `Typosquat note: Similar to "${pkg.typosquatFlag.similarTo}" (${pkg.typosquatFlag.similarity}% similarity, edit distance: ${pkg.typosquatFlag.distance})` : ''}
 ${pkg.confusionFlag ? `Dependency confusion note: ${pkg.confusionFlag.reason}` : ''}
+${pkg.behavioralFlag ? `Behavioral Threat Signal note: ${pkg.behavioralFlag.indicator} (Confidence: ${pkg.behavioralFlag.confidence.toUpperCase()}, Stage: ${pkg.behavioralFlag.scriptStage}, Signals: ${pkg.behavioralFlag.matchedSignals.join(', ')}, Excerpt: "${pkg.behavioralFlag.excerpt}")` : ''}
 
 Known vulnerabilities:
 ${vulnSummaries || 'None reported'}
@@ -110,8 +111,9 @@ Rules:
 2. For direct dependencies with fixed versions, recommend "npm install ${pkg.name}@<fixedVersion>".
 3. For transitive dependencies, recommend updating the root parent dependency or using "npm update ${pkg.name} --depth 999" and npm package.json "overrides". NEVER recommend "npm install" into root for transitive packages.
 4. For heuristic typosquats, recommend inspecting package provenance using "npm view" rather than an automatic uninstall command.
-5. NEVER recommend "npm audit fix --force".
-6. Return a JSON object with:
+5. If behavioral signals are present, describe the suspicious install-time behavior objectively and recommend inspecting the lifecycle script. Never claim "This package is definitely malware" and never recommend "npm audit fix --force".
+6. NEVER recommend "npm audit fix --force".
+7. Return a JSON object with:
    - "why_risky": 1-2 sentence plain-language factual explanation.
    - "fix": 1-2 sentence actionable developer guidance.
    - "fix_command": The exact, non-destructive CLI command.`;
@@ -127,7 +129,11 @@ function generateTemplateFallback(pkg: PackageNode): Remediation {
   let fix: string;
   let fix_command: string;
 
-  if (pkg.typosquatFlag) {
+  if (pkg.behavioralFlag) {
+    why_risky = `This package exhibits suspicious install-time behavior in its ${pkg.behavioralFlag.scriptStage} script (${pkg.behavioralFlag.matchedSignals.join(', ')}). Excerpt: ${pkg.behavioralFlag.excerpt}`;
+    fix = `Inspect the package's lifecycle scripts to verify whether the behavior is expected and legitimate before executing or trusting the dependency.`;
+    fix_command = `npm view ${pkg.name} scripts`;
+  } else if (pkg.typosquatFlag) {
     why_risky = `Package "${pkg.name}" matches a heuristic typosquatting indicator (${pkg.typosquatFlag.similarity}% similar to "${pkg.typosquatFlag.similarTo}", edit distance: ${pkg.typosquatFlag.distance}).`;
     fix = `Inspect your codebase imports to verify whether "${pkg.name}" is the intended dependency or if "${pkg.typosquatFlag.similarTo}" was intended.`;
     fix_command = `npm view ${pkg.name} && npm view ${pkg.typosquatFlag.similarTo}`;

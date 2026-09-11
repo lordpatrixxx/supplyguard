@@ -19,6 +19,7 @@ import { DashboardPage } from './pages/DashboardPage'
 import { ReportPage } from './pages/ReportPage'
 import { HistoryPage } from './pages/HistoryPage'
 import { ProfilePage } from './pages/ProfilePage'
+import { BehavioralThreatsPage } from './pages/BehavioralThreatsPage'
 
 export default function App() {
   return (
@@ -86,6 +87,28 @@ export default function App() {
         />
 
         <Route
+          path="/app/scans/:id/behavioral"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <BehavioralThreatsPage />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/app/behavioral"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <BehavioralThreatsPage />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/app/profile"
           element={
             <ProtectedRoute>
@@ -100,6 +123,8 @@ export default function App() {
         <Route path="/scans/:id" element={<Navigate to="/app/scans/:id" replace />} />
         <Route path="/scans/:id/dashboard" element={<Navigate to="/app/scans/:id/dashboard" replace />} />
         <Route path="/scans/:id/report" element={<Navigate to="/app/scans/:id/report" replace />} />
+        <Route path="/scans/:id/behavioral" element={<Navigate to="/app/scans/:id/behavioral" replace />} />
+        <Route path="/behavioral" element={<Navigate to="/app/behavioral" replace />} />
         <Route path="/history" element={<Navigate to="/app/history" replace />} />
 
         {/* Catch-all */}
