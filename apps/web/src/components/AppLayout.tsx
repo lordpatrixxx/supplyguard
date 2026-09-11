@@ -1,253 +1,311 @@
-import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { useAuth } from '../context/AuthContext'
-import type { ScanResult } from '../types'
+import { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { getScanHistory } from '../lib/api';
+import type { ScanResult } from '../types';
 
 interface AppLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const { user, signOut } = useAuth()
-  const [showPolicyModal, setShowPolicyModal] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const [showPolicyModal, setShowPolicyModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch recent scans to get active repo context
+  // Fetch recent scans for authenticated user
   const { data: scans } = useQuery<ScanResult[]>({
     queryKey: ['scans', user?.id],
     queryFn: async () => {
-      const url = user?.id ? `/api/scans?userId=${encodeURIComponent(user.id)}` : '/api/scans'
-      const res = await fetch(url)
-      if (!res.ok) return []
-      return res.json()
+      try {
+        return await getScanHistory();
+      } catch (err) {
+        console.warn('[AppLayout] Could not load scans:', err);
+        return [];
+      }
     },
-  })
+  });
 
   // Extract scan ID from path if present (e.g. /app/scans/:id/...)
-  const scanMatch = location.pathname.match(/\/scans\/([a-zA-Z0-9_-]+)/)
-  const currentScanId = scanMatch ? scanMatch[1] : (scans && scans.length > 0 ? scans[0].scanId : null)
-  const currentScan = scans?.find(s => s.scanId === currentScanId) || scans?.[0]
+  const scanMatch = location.pathname.match(/\/scans\/([a-zA-Z0-9_-]+)/);
+  const currentScanId = scanMatch ? scanMatch[1] : scans && scans.length > 0 ? scans[0].scanId : null;
+  const currentScan = scans?.find((s) => s.scanId === currentScanId) || scans?.[0];
 
   const activeRepoName = currentScan
     ? currentScan.repoUrl.replace(/^https?:\/\/github\.com\//, '')
-    : 'SupplyGuard Engine'
+    : 'SupplyGuard Engine';
 
   const navItems = [
     {
-      label: 'Intake & Scans',
-      icon: 'dashboard',
+      label: 'Overview & Scans',
+      icon: (
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+        </svg>
+      ),
       path: '/app',
       active: location.pathname === '/app',
     },
     {
       label: 'Dependency Graph',
-      icon: 'hub',
+      icon: (
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+        </svg>
+      ),
       path: currentScanId ? `/app/scans/${currentScanId}/dashboard` : '/app',
       active: location.pathname.includes('/dashboard'),
     },
     {
       label: 'Findings & Remediation',
-      icon: 'shield_with_heart',
+      icon: (
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+      ),
       path: currentScanId ? `/app/scans/${currentScanId}/report` : '/app',
       active: location.pathname.includes('/report'),
     },
     {
       label: 'Scan History',
-      icon: 'history',
+      icon: (
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+      ),
       path: '/app/history',
       active: location.pathname === '/app/history',
     },
-  ]
+  ];
 
   const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!searchQuery.trim()) return
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
     if (currentScanId) {
-      navigate(`/app/scans/${currentScanId}/dashboard?q=${encodeURIComponent(searchQuery.trim())}`)
+      navigate(`/app/scans/${currentScanId}/dashboard?q=${encodeURIComponent(searchQuery.trim())}`);
     } else {
-      navigate(`/app/history?q=${encodeURIComponent(searchQuery.trim())}`)
+      navigate(`/app/history?q=${encodeURIComponent(searchQuery.trim())}`);
     }
-  }
+  };
 
   const handleSignOut = async () => {
-    await signOut()
-    navigate('/signin')
-  }
+    await signOut();
+    navigate('/signin');
+  };
 
-  const userInitial = user?.email ? user.email.charAt(0).toUpperCase() : 'U'
+  const userInitial = user?.email ? user.email.charAt(0).toUpperCase() : 'U';
 
   return (
     <div className="min-h-screen bg-background text-on-surface antialiased">
-      {/* ── Fixed Universal Top Header (Stitch Specification) ── */}
-      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-surface-container-lowest border-b border-surface-variant flex items-center justify-between px-margin-lg">
+      {/* ── Fixed Universal Top Header ── */}
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-surface-container-lowest border-b border-outline-variant/30 flex items-center justify-between px-6">
         {/* Left: Brand + Active Repo + Security Intel */}
-        <div className="flex items-center gap-space-lg">
-          <Link to="/app" className="flex items-center gap-space-sm no-underline">
-            <div
-              className="flex items-center justify-center rounded-lg shadow-sm"
-              style={{
-                width: 32,
-                height: 32,
-                background: 'linear-gradient(135deg, var(--color-primary-container), var(--color-primary))',
-              }}
-            >
-              <span className="material-symbols-outlined text-[20px] text-surface">
-                shield
-              </span>
+        <div className="flex items-center gap-4">
+          <Link to="/app" className="flex items-center gap-2.5 no-underline">
+            <div className="w-8 h-8 rounded bg-primary/10 border border-primary/40 flex items-center justify-center text-primary shadow-sm">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5zm0 4.5c2.48 0 4.5 2.02 4.5 4.5s-2.02 4.5-4.5 4.5-4.5-2.02-4.5-4.5 2.02-4.5 4.5-4.5z" />
+              </svg>
             </div>
-            <span className="font-headline-sm text-headline-sm text-on-surface tracking-tight">
-              Supply<span className="text-primary-container">Guard</span>
+            <span className="font-headline-sm text-lg text-on-surface tracking-tight">
+              Supply<span className="text-primary font-bold">Guard</span>
             </span>
           </Link>
 
-          <div className="h-5 w-[1px] bg-surface-variant"></div>
+          <div className="h-5 w-[1px] bg-outline-variant/30"></div>
 
           {/* Active Context Repo Chip */}
-          <div className="flex items-center gap-space-xs px-space-sm py-1 bg-surface-container border border-surface-variant rounded-lg">
-            <span className="material-symbols-outlined text-on-surface-variant text-[16px]">
-              inventory_2
-            </span>
-            <span className="font-code-sm text-code-sm text-on-surface font-medium max-w-[180px] truncate" title={activeRepoName}>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-surface-container border border-outline-variant/40 rounded-lg">
+            <svg className="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+            </svg>
+            <span className="font-code-sm text-xs text-on-surface font-medium max-w-[180px] truncate" title={activeRepoName}>
               {activeRepoName}
             </span>
-            <span className="font-code-sm text-code-sm text-on-surface-variant">
+            <span className="font-code-sm text-[11px] text-on-surface-variant">
               (main)
             </span>
           </div>
 
           {/* Security Intelligence Status Badge */}
-          <div className="hidden xl:flex items-center gap-space-xs px-space-sm py-1 bg-surface-container border border-primary-container/30 rounded-lg">
-            <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
-            <span className="font-label-caps text-label-caps uppercase text-primary-container">
+          <div className="hidden xl:flex items-center gap-2 px-2.5 py-1 bg-surface-container border border-primary/30 rounded-lg">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            <span className="font-code-sm text-[11px] uppercase text-primary font-semibold tracking-wider">
               Security Intelligence: Active
             </span>
           </div>
         </div>
 
         {/* Middle: Universal Search Bar */}
-        <div className="hidden lg:flex items-center flex-1 max-w-md mx-space-xl">
+        <div className="hidden lg:flex items-center flex-1 max-w-md mx-6">
           <form onSubmit={handleSearchSubmit} className="relative w-full">
-            <span className="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">
-              search
-            </span>
+            <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search packages, CVEs, or dependencies..."
-              className="w-full h-9 bg-surface-dim border border-surface-variant rounded-lg pl-9 pr-3 text-on-surface placeholder:text-outline font-code-sm text-code-sm focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all"
+              className="w-full h-9 bg-surface-container-lowest border border-outline-variant/40 rounded-lg pl-9 pr-3 text-on-surface placeholder:text-outline font-code-sm text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
             />
           </form>
         </div>
 
-        {/* Right: Actions + User Profile */}
-        <div className="flex items-center gap-space-md">
+        {/* Right: Actions + Theme + User Profile */}
+        <div className="flex items-center gap-3">
           <Link
             to="/app"
-            className="flex items-center gap-space-xs px-space-md py-1.5 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-[13px] rounded-lg transition-colors shadow-sm font-semibold no-underline"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary hover:bg-primary-container text-on-primary font-headline-sm text-xs rounded-lg transition-colors shadow-sm font-semibold no-underline"
           >
-            <span className="material-symbols-outlined text-[18px]">radar</span>
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
             <span>New Scan</span>
           </Link>
 
-          <div className="h-5 w-[1px] bg-surface-variant"></div>
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors cursor-pointer border-none bg-transparent"
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+            aria-label="Toggle Theme"
+          >
+            {theme === 'dark' ? (
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
+          </button>
 
           <button
             onClick={() => setShowPolicyModal(true)}
             className="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors cursor-pointer border-none bg-transparent"
-            title="Scoring Policy & Rules"
+            title="Scoring Policy & Rubric"
           >
-            <span className="material-symbols-outlined text-[20px]">notifications</span>
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
           </button>
 
+          <div className="h-5 w-[1px] bg-outline-variant/30"></div>
+
           {/* User Account Pill */}
-          <div className="flex items-center gap-space-xs px-2 py-1 bg-surface-container rounded-lg border border-surface-variant" title={user?.email || 'SecOps Engineer'}>
-            <div className="w-5 h-5 rounded-full bg-primary-container/20 border border-primary-container/40 flex items-center justify-center font-code-sm text-[11px] text-primary-container font-bold">
+          <div className="flex items-center gap-2 px-2.5 py-1 bg-surface-container rounded-lg border border-outline-variant/40" title={user?.email || 'Engineer'}>
+            <div className="w-5 h-5 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center font-code-sm text-[11px] text-primary font-bold">
               {userInitial}
             </div>
-            <span className="font-code-sm text-code-sm text-on-surface font-medium max-w-[120px] truncate">
-              {user?.email ? user.email.split('@')[0] : 'SecOps'}
+            <span className="font-code-sm text-xs text-on-surface font-medium max-w-[120px] truncate">
+              {user?.email ? user.email.split('@')[0] : 'Engineer'}
             </span>
           </div>
 
           {/* Sign Out Button */}
           <button
             onClick={handleSignOut}
-            className="p-1.5 text-outline hover:text-error hover:bg-surface-container rounded-lg transition-colors cursor-pointer border-none bg-transparent"
+            className="p-1.5 text-outline hover:text-critical hover:bg-surface-container rounded-lg transition-colors cursor-pointer border-none bg-transparent"
             title="Sign Out"
           >
-            <span className="material-symbols-outlined text-[20px]">logout</span>
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
           </button>
         </div>
       </header>
 
-      {/* ── Fixed Left Sidebar (Stitch Specification) ── */}
-      <aside className="fixed left-0 top-16 bottom-0 w-64 bg-surface-dim border-r border-surface-variant z-40 flex flex-col justify-between overflow-y-auto">
-        <div className="p-space-md">
-          <div className="px-space-sm pb-space-sm text-outline font-label-caps text-label-caps uppercase">
+      {/* ── Fixed Left Sidebar ── */}
+      <aside className="fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low border-r border-outline-variant/30 z-40 flex flex-col justify-between overflow-y-auto">
+        <div className="p-4">
+          <div className="px-2 pb-2 text-outline font-code-sm text-[10px] uppercase tracking-wider">
             Telemetry &amp; Audit
           </div>
 
-          <nav className="flex flex-col gap-space-xs">
+          <nav className="flex flex-col gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.label}
                 to={item.path}
-                className={`flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg transition-colors no-underline font-body-md text-body-md ${
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors no-underline font-body-md text-sm ${
                   item.active
-                    ? 'bg-surface-container-high text-primary-container border-l-2 border-primary-container font-medium'
+                    ? 'bg-surface-container-high text-primary border-l-2 border-primary font-semibold'
                     : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
                 }`}
               >
-                <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+                {item.icon}
                 <span>{item.label}</span>
               </Link>
             ))}
 
             <button
               onClick={() => setShowPolicyModal(true)}
-              className="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors w-full text-left bg-transparent border-none cursor-pointer"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-sm transition-colors w-full text-left bg-transparent border-none cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[20px]">verified_user</span>
-              <span>Policy &amp; Rules</span>
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <span>Policy &amp; Rubric</span>
             </button>
           </nav>
 
           {/* Manifest Integrity Box */}
-          <div className="mt-space-xl px-space-sm pb-space-sm text-outline font-label-caps text-label-caps uppercase">
+          <div className="mt-8 px-2 pb-2 text-outline font-code-sm text-[10px] uppercase tracking-wider">
             Manifest Integrity
           </div>
-          <div className="flex flex-col gap-space-xs">
-            <div className="p-space-sm bg-surface-container-low border border-surface-variant rounded-lg">
-              <div className="flex items-center justify-between text-outline font-code-sm text-code-sm mb-1">
-                <span>SBOM Sync</span>
-                <span className="text-primary-container font-code-sm text-code-sm">CycloneDX 1.5</span>
+          <div className="flex flex-col gap-1">
+            <div className="p-3 bg-surface-container-lowest border border-outline-variant/40 rounded-lg">
+              <div className="flex items-center justify-between text-outline font-code-sm text-xs mb-1.5">
+                <span>SBOM Standard</span>
+                <span className="text-primary font-code-sm font-semibold">CycloneDX 1.5</span>
               </div>
-              <div className="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
-                <div className="bg-primary-container h-full w-full"></div>
+              <div className="w-full bg-surface-container-high h-1 rounded-full overflow-hidden">
+                <div className="bg-primary h-full w-full"></div>
               </div>
-              <div className="mt-2 font-code-sm text-code-sm text-on-surface-variant truncate">
-                sha256:7f4c...982b
+              <div className="mt-2 font-code-sm text-[11px] text-on-surface-variant truncate">
+                SHA-512 Hash Verified
               </div>
             </div>
           </div>
         </div>
 
         {/* Engine Version Footer */}
-        <div className="p-space-md border-t border-surface-variant bg-surface-container-lowest">
-          <div className="flex items-center justify-between text-outline font-code-sm text-code-sm">
+        <div className="p-4 border-t border-outline-variant/30 bg-surface-container-lowest">
+          <div className="flex items-center justify-between text-outline font-code-sm text-xs">
             <span>Engine: v4.12-sec</span>
-            <span className="material-symbols-outlined text-[16px] text-primary-container" title="Zero-Trust Analyzer">
-              security
-            </span>
+            <span className="text-primary font-mono text-[11px]">ACTIVE</span>
           </div>
         </div>
       </aside>
 
-      {/* ── Main Content Offset (Pl-64 and Pt-16) ── */}
+      {/* ── Main Content Offset ── */}
       <div className="pl-64">
         <main className="w-full pt-16 min-h-screen bg-background text-on-surface">
           {children}
@@ -257,73 +315,76 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* ── Policy & Rules Modal ── */}
       {showPolicyModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-surface-container border border-surface-variant rounded-xl max-w-lg w-full p-space-xl shadow-2xl animate-fade-in">
-            <div className="flex items-center justify-between pb-space-md mb-space-md border-b border-surface-variant">
-              <div className="flex items-center gap-space-xs">
-                <span className="material-symbols-outlined text-primary-container text-[22px]">
-                  verified_user
-                </span>
-                <h2 className="font-headline-sm text-headline-sm text-on-surface">
-                  Supply-Chain Policy &amp; Scoring Rubric
+          <div className="bg-surface-container border border-outline-variant rounded-xl max-w-lg w-full p-6 shadow-2xl animate-fade-in">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-outline-variant/30">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <h2 className="font-headline-sm text-lg font-bold text-on-surface">
+                  Supply-Chain Scoring Rubric
                 </h2>
               </div>
               <button
                 onClick={() => setShowPolicyModal(false)}
                 className="text-outline hover:text-on-surface bg-transparent border-none cursor-pointer"
               >
-                <span className="material-symbols-outlined">close</span>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
 
-            <div className="flex flex-col gap-space-md text-body-sm text-on-surface-variant">
+            <div className="flex flex-col gap-4 text-sm text-on-surface-variant">
               <p>
-                SupplyGuard calculates an itemized 0–100 contextual risk score combining advisory vulnerabilities and topological supply-chain exposure:
+                SupplyGuard calculates an itemized 0–100 contextual risk score combining advisory severity and topological supply-chain exposure:
               </p>
 
-              <div className="bg-surface-container-low p-space-md rounded-lg border border-surface-variant flex flex-col gap-2 font-code-sm text-code-sm">
+              <div className="bg-surface-container-low p-4 rounded-lg border border-outline-variant/30 flex flex-col gap-2 font-code-sm text-xs">
                 <div className="flex justify-between text-on-surface">
-                  <span>Known vulnerability match (OSV.dev):</span>
+                  <span>Known vulnerability match:</span>
                   <span className="text-secondary font-bold">+40 pts</span>
                 </div>
                 <div className="flex justify-between text-on-surface">
-                  <span>Severity scaled from CVSS (CRITICAL/HIGH):</span>
-                  <span className="text-secondary font-bold">up to +20 pts</span>
+                  <span>Advisory CVSS weight (scaled):</span>
+                  <span className="text-secondary font-bold">up to +15 pts</span>
                 </div>
                 <div className="flex justify-between text-on-surface">
                   <span>Outdated package (&gt;2 yrs stale):</span>
                   <span className="text-tertiary font-bold">+10 pts</span>
                 </div>
                 <div className="flex justify-between text-on-surface">
-                  <span>Downstream fan-out (&ge;3 dependents in graph):</span>
+                  <span>Downstream blast radius (&ge;3 dependents):</span>
                   <span className="text-tertiary font-bold">+8 pts</span>
                 </div>
                 <div className="flex justify-between text-on-surface">
-                  <span>Typosquat edit distance (&le;2 of top pkg):</span>
+                  <span>Typosquatting indicator (edit dist &le;2):</span>
                   <span className="text-secondary font-bold">+15 pts</span>
                 </div>
                 <div className="flex justify-between text-on-surface">
-                  <span>Dependency confusion namespace collision:</span>
+                  <span>Dependency confusion namespace heuristic:</span>
                   <span className="text-secondary font-bold">+15 pts</span>
                 </div>
               </div>
 
-              <div className="p-space-sm bg-surface-container-high rounded-lg flex items-center justify-between text-code-sm">
-                <span className="text-outline">Score Bounds</span>
-                <span className="text-primary-container">Normalized 0 (Safe) to 100 (Critical)</span>
+              <div className="p-3 bg-surface-container-high rounded-lg flex items-center justify-between text-xs font-code-sm">
+                <span className="text-outline">Score Range</span>
+                <span className="text-primary font-semibold">0 (Clean) to 100 (Critical Blast Radius)</span>
               </div>
             </div>
 
-            <div className="mt-space-lg flex justify-end">
+            <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setShowPolicyModal(false)}
-                className="btn-primary"
+                className="px-4 py-2 rounded bg-primary text-on-primary font-headline-sm text-xs font-semibold hover:bg-primary-container transition-colors cursor-pointer"
               >
-                Dismiss
+                Close Rubric
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }

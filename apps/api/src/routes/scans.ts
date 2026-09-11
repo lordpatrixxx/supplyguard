@@ -3,15 +3,25 @@ import type { ScanResult } from '../types/index.js';
 import { processScan } from '../services/scanPipeline.js';
 import { generateCycloneDxSbom } from '../services/sbom.js';
 import { loadScanFromSupabase, loadScanHistoryFromSupabase } from '../services/supabasePersistence.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
 
 // In-memory scan store (with Supabase persistence fallback)
-const scanStore = new Map<string, ScanResult>();
+export const scanStore = new Map<string, ScanResult>();
+
+// Enforce server-side authentication across all scan endpoints
+router.use(requireAuth);
 
 // POST /api/scans — Start a new scan
 router.post('/', async (req, res) => {
-  const { repoUrl, branch, subpath, userId } = req.body;
+  const { repoUrl, branch, subpath } = req.body;
+  const authenticatedUserId = req.user?.id;
+
+  if (!authenticatedUserId) {
+    res.status(401).json({ error: 'Unauthorized: Missing authenticated user identity' });
+    return;
+  }
 
   if (!repoUrl || typeof repoUrl !== 'string') {
     res.status(400).json({ error: 'repoUrl is required and must be a valid string' });
@@ -33,7 +43,7 @@ router.post('/', async (req, res) => {
   const scanId = crypto.randomUUID();
   const scan: ScanResult = {
     scanId,
-    userId: typeof userId === 'string' ? userId : undefined,
+    userId: authenticatedUserId, // Strictly derived server-side from validated JWT
     repoUrl: normalizedUrl,
     branch: branch && typeof branch === 'string' && branch.trim().length > 0 ? branch.trim() : undefined,
     subpath: subpath && typeof subpath === 'string' && subpath.trim().length > 0 ? subpath.trim() : undefined,
@@ -60,8 +70,9 @@ router.post('/', async (req, res) => {
   res.status(201).json({ scanId });
 });
 
-// GET /api/scans/:id — Get scan status and full results
+// GET /api/scans/:id — Get scan status and full results with tenant isolation
 router.get('/:id', async (req, res) => {
+  const currentUserId = req.user?.id;
   let scan = scanStore.get(req.params.id);
 
   // If not in local memory, check Supabase
@@ -76,11 +87,19 @@ router.get('/:id', async (req, res) => {
     res.status(404).json({ error: 'Scan not found' });
     return;
   }
+
+  // Tenant isolation: enforce that the caller owns this scan
+  if (scan.userId && scan.userId !== currentUserId) {
+    res.status(403).json({ error: 'Access denied: You do not have permission to view this scan' });
+    return;
+  }
+
   res.json(scan);
 });
 
-// GET /api/scans/:id/sbom — Export genuine CycloneDX v1.5 JSON SBOM
+// GET /api/scans/:id/sbom — Export genuine CycloneDX v1.5 JSON SBOM with tenant isolation
 router.get('/:id/sbom', async (req, res) => {
+  const currentUserId = req.user?.id;
   let scan = scanStore.get(req.params.id);
 
   if (!scan) {
@@ -89,6 +108,12 @@ router.get('/:id/sbom', async (req, res) => {
 
   if (!scan) {
     res.status(404).json({ error: 'Scan not found' });
+    return;
+  }
+
+  // Tenant isolation: enforce that the caller owns this scan
+  if (scan.userId && scan.userId !== currentUserId) {
+    res.status(403).json({ error: 'Access denied: You do not have permission to export this scan SBOM' });
     return;
   }
 
@@ -106,21 +131,23 @@ router.get('/:id/sbom', async (req, res) => {
   res.json(sbom);
 });
 
-// GET /api/scans — List scan history (with user filtering and Supabase fallback)
+// GET /api/scans — List scan history strictly isolated to the authenticated user
 router.get('/', async (req, res) => {
-  const userId = typeof req.query.userId === 'string' ? req.query.userId : undefined;
+  const authenticatedUserId = req.user?.id;
 
-  let scans = Array.from(scanStore.values());
-  if (userId) {
-    scans = scans.filter((s) => s.userId === userId || !s.userId);
+  if (!authenticatedUserId) {
+    res.status(401).json({ error: 'Unauthorized: Missing authenticated user identity' });
+    return;
   }
 
-  // Supplement from Supabase if local store is small
-  if (scans.length < 5) {
-    const dbScans = await loadScanHistoryFromSupabase(userId);
+  let scans = Array.from(scanStore.values()).filter((s) => s.userId === authenticatedUserId);
+
+  // Supplement from Supabase if local memory has few entries
+  if (scans.length < 10) {
+    const dbScans = await loadScanHistoryFromSupabase(authenticatedUserId);
     const seen = new Set(scans.map((s) => s.scanId));
     for (const s of dbScans) {
-      if (!seen.has(s.scanId)) {
+      if (s.userId === authenticatedUserId && !seen.has(s.scanId)) {
         scans.push(s);
         seen.add(s.scanId);
       }

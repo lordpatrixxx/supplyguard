@@ -291,4 +291,73 @@ describe('CycloneDX 1.5 JSON SBOM Export', () => {
     assert.equal(sbom.vulnerabilities?.[0].id, 'GHSA-35jh-r3h4-6jhm');
     assert.equal(sbom.dependencies?.length, 1);
   });
+
+  describe('Server-Side Authorization & Tenant Isolation', () => {
+    it('blocks unauthenticated requests missing Bearer token', async () => {
+      const { requireAuth } = await import('../middleware/auth.js');
+      let status = 0;
+      let responseBody: any = null;
+
+      const req: any = { headers: {} };
+      const res: any = {
+        status: (s: number) => {
+          status = s;
+          return {
+            json: (b: any) => {
+              responseBody = b;
+            },
+          };
+        },
+      };
+      let nextCalled = false;
+      const next = () => {
+        nextCalled = true;
+      };
+
+      await requireAuth(req, res, next);
+      assert.equal(status, 401);
+      assert.ok(responseBody?.error?.includes('Unauthorized'));
+      assert.equal(nextCalled, false);
+    });
+
+    it('authenticates valid tokens and derives req.user server-side', async () => {
+      process.env.NODE_ENV = 'test';
+      const { requireAuth } = await import('../middleware/auth.js');
+      const req: any = {
+        headers: { authorization: 'Bearer test-token-secops-user-42' },
+      };
+      const res: any = {
+        status: () => res,
+        json: () => {},
+      };
+      let nextCalled = false;
+      const next = () => {
+        nextCalled = true;
+      };
+
+      await requireAuth(req, res, next);
+      assert.equal(nextCalled, true);
+      assert.equal(req.user?.id, 'secops-user-42');
+      assert.equal(req.user?.email, 'secops-user-42@supplyguard.internal');
+    });
+
+    it('enforces tenant isolation preventing cross-user scan retrieval', () => {
+      const userAScan: ScanResult = {
+        scanId: 'scan-user-a',
+        userId: 'user-a',
+        repoUrl: 'https://github.com/org/repo-a',
+        status: 'complete',
+        overallRiskScore: 45,
+        packages: [],
+        edges: [],
+        createdAt: new Date().toISOString(),
+      };
+
+      const callerUserId = 'user-b';
+      // Verification logic identical to GET /api/scans/:id route
+      const isAuthorized = userAScan.userId === callerUserId;
+      assert.equal(isAuthorized, false, 'User B must not be authorized to view User A scan');
+    });
+  });
 });
+

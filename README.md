@@ -1,4 +1,4 @@
-# SupplyGuard (PS14)
+# SupplyGuard
 
 > **Software Supply-Chain Security Analyzer**  
 > Proactively detect known vulnerabilities, typosquatting attacks, and supply-chain exposure across public GitHub repositories — featuring automated AI-guided remediation.
@@ -21,11 +21,11 @@
 - **AI-Powered Remediation (Gemini API)**: Server-side calls to Google Gemini generate concise plain-language risk explanations, actionable fixes, and exact copyable `npm install` fix commands (with reliable rule-based fallback).
 - **Standardized CycloneDX v1.5 JSON SBOM Export**: Real-time export endpoint (`/api/scans/:id/sbom`) adhering strictly to the CycloneDX v1.5 specification, complete with purls, component hashes, licenses, dependencies, and OSV vulnerability ratings.
 - **Dependency Confusion & Internal Scope Detection**: Proactively flags packages using enterprise namespace conventions (`@internal-*`, `@corp-*`, `@private-*`) that are not verified on the public registry.
-- **Supabase Auth & Audit Persistence**: Seamless user authentication with Supabase, protected workspace routing, and Hackathon Judge Fast-Pass (`judge@supplyguard.sec`), persisting scans and findings in PostgreSQL.
+- **Server-Side Authentication & Tenant Isolation**: Secure user authentication with Supabase JWT validation on Express API routes, enforcing strict tenant isolation across scans, SBOMs, and audit histories.
 - **Monorepo & Custom Branch Support**: Analyze custom git branches and subdirectories within monorepos (e.g. `packages/backend`).
 - **Interactive Force-Directed Graph**: Live interactive 2D dependency graph powered by `react-force-graph-2d` with topological fan-out filters, cluster hulls, zoom-to-fit, and slide-in finding detail inspector.
-- **Mission Control Dark UI**: Faithfully implements the Google Stitch design system with Space Grotesk, Inter, and JetBrains Mono typography, custom severity glow badges, live pipeline execution progress log, and fleet scan history.
-- **Automated Test Suite**: 10/10 automated tests covering dependency tree parsing, typosquatting Levenshtein distance, dependency confusion, contextual scoring rubric, and CycloneDX validation (`npm run test -w apps/api`).
+- **Mission Control Dark & Crisp Light Themes**: Enterprise-grade UI design system with dynamic theme switching, 3D Canvas dependency constellation, Space Grotesk, Inter, and JetBrains Mono typography, custom severity glow badges, live pipeline execution progress log, and fleet scan history.
+- **Automated Test Suite**: 13/13 automated tests covering dependency tree parsing, typosquatting Levenshtein distance, dependency confusion, contextual scoring rubric, CycloneDX validation, and server-side authorization with tenant isolation (`npm run test -w apps/api`).
 
 ---
 
@@ -100,19 +100,20 @@ Open your browser to `http://localhost:5173`.
 
 ---
 
-## Quick Demo Walkthrough
+## Platform Walkthrough
 
-1. Navigate to `http://localhost:5173`.
-2. Enter any public GitHub repository URL that contains a `package.json` and `package-lock.json`.
+1. Navigate to `http://localhost:5173` and click **Get Started** to sign in or create an account.
+2. In the intake workspace, provide a public GitHub repository (e.g., `tastejs/todomvc` or `expressjs/express`) or select a preloaded enterprise target.
 3. Click **Analyze Repository**.
 4. Watch the **Pipeline Execution Log** progress through manifest fetching, tree parsing, OSV querying, typosquat detection, reputation scoring, and AI remediation.
 5. On the **Dashboard**:
-   - Inspect the overall risk score and stat cards.
+   - Inspect the overall risk score and triage metrics.
    - Explore the interactive 2D dependency graph with severity color filters (`critical`, `medium`, `safe`).
    - Click any flagged node in the graph or package list to view the **Finding Detail Panel** with:
      - Exact point score breakdown
      - Ingestion route breadcrumb (`root → express → body-parser → lodash`)
      - Known vulnerability CVEs / GHSAs with CVSS scores
      - AI-generated remediation summary and copyable npm upgrade command
-6. Click **Report** in the top bar to inspect the prioritized remediation plan ranked by risk score.
-7. Click **History** in the navigation bar to see audit history across scanned repositories.
+6. Click **CycloneDX SBOM** to export spec-compliant CycloneDX v1.5 JSON.
+7. Click **Report** in the top bar to inspect the prioritized remediation plan ranked by risk score.
+8. Click **History** in the navigation bar to see audit history across scanned repositories.

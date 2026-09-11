@@ -97,5 +97,4 @@ export interface ScanResult {
   edges: GraphEdge[];
   createdAt: string;
   completedAt?: string;
-  isDemo?: boolean;
 }

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import type { ScanResult } from '../types'
+import { getScan, downloadSbom } from '../lib/api'
 
 export function ReportPage() {
   const { id } = useParams<{ id: string }>()
@@ -10,11 +11,8 @@ export function ReportPage() {
 
   const { data: scan, isLoading, error } = useQuery<ScanResult>({
     queryKey: ['scan', id],
-    queryFn: async () => {
-      const res = await fetch(`/api/scans/${id}`)
-      if (!res.ok) throw new Error('Scan not found')
-      return res.json()
-    },
+    queryFn: () => getScan(id!),
+    enabled: !!id,
   })
 
   const repoName = useMemo(() => {
@@ -39,8 +37,13 @@ export function ReportPage() {
     setTimeout(() => setCopiedIndex(null), 2000)
   }
 
-  const handleDownloadSbom = () => {
-    window.open(`/api/scans/${id}/sbom`, '_blank')
+  const handleDownloadSbom = async () => {
+    if (!id) return
+    try {
+      await downloadSbom(id, scan?.repoUrl)
+    } catch (err) {
+      console.error('Failed to download SBOM:', err)
+    }
   }
 
   const handleCopyAllFixes = () => {

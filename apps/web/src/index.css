@@ -1,62 +1,174 @@
 @import "tailwindcss";
 
 /* ======================================================================
-   SupplyGuard Design System — Extracted directly from Google Stitch
-   Theme: Dark "Mission Control", Space Grotesk / Inter / JetBrains Mono
+   SupplyGuard Design System — Google Stitch Aligned
+   Theme: Mission Control (Dark & Light Enterprise Modes)
+   Typography: Space Grotesk / Inter / JetBrains Mono
    ====================================================================== */
 
-@theme {
-  /* ── Stitch Named Colors ── */
-  --color-surface: #0d1321;
-  --color-surface-dim: #0d1321;
-  --color-surface-bright: #333949;
-  --color-surface-container-lowest: #080e1c;
-  --color-surface-container-low: #151b2a;
-  --color-surface-container: #191f2e;
-  --color-surface-container-high: #242a39;
-  --color-surface-container-highest: #2f3544;
-  --color-surface-variant: #2f3544;
+:root,
+[data-theme="dark"],
+.dark {
+  color-scheme: dark;
+  --surface: #0d1321;
+  --surface-dim: #0d1321;
+  --surface-bright: #333949;
+  --surface-container-lowest: #080e1c;
+  --surface-container-low: #151b2a;
+  --surface-container: #191f2e;
+  --surface-container-high: #242a39;
+  --surface-container-highest: #2f3544;
+  --surface-variant: #2f3544;
 
-  --color-background: #0d1321;
-  --color-on-background: #dde2f6;
-  --color-on-surface: #dde2f6;
-  --color-on-surface-variant: #bccac3;
+  --background: #0d1321;
+  --on-background: #dde2f6;
+  --on-surface: #dde2f6;
+  --on-surface-variant: #bccac3;
 
-  --color-outline: #86948e;
-  --color-outline-variant: #3d4a44;
+  --outline: #86948e;
+  --outline-variant: #3d4a44;
 
-  --color-primary: #6feec9;
-  --color-primary-container: #4fd1ae;
-  --color-primary-fixed: #7af8d3;
-  --color-primary-fixed-dim: #5bdcb8;
-  --color-on-primary: #00382b;
-  --color-on-primary-container: #005644;
-  --color-inverse-primary: #006b55;
+  --primary: #6feec9;
+  --primary-container: #4fd1ae;
+  --primary-fixed: #7af8d3;
+  --primary-fixed-dim: #5bdcb8;
+  --on-primary: #00382b;
+  --on-primary-container: #005644;
+  --inverse-primary: #006b55;
 
-  --color-secondary: #ffb4a3;
-  --color-secondary-container: #8f1b01;
-  --color-secondary-fixed: #ffdad2;
-  --color-secondary-fixed-dim: #ffb4a3;
-  --color-on-secondary: #630f00;
-  --color-on-secondary-container: #ffa08a;
+  --secondary: #ffb4a3;
+  --secondary-container: #8f1b01;
+  --secondary-fixed: #ffdad2;
+  --secondary-fixed-dim: #ffb4a3;
+  --on-secondary: #630f00;
+  --on-secondary-container: #ffa08a;
 
-  --color-tertiary: #ffd184;
-  --color-tertiary-container: #ecb346;
-  --color-tertiary-fixed: #ffdeaa;
-  --color-tertiary-fixed-dim: #f7bd4f;
-  --color-on-tertiary: #422c00;
-  --color-on-tertiary-container: #654600;
+  --tertiary: #ffd184;
+  --tertiary-container: #ecb346;
+  --tertiary-fixed: #ffdeaa;
+  --tertiary-fixed-dim: #f7bd4f;
+  --on-tertiary: #422c00;
+  --on-tertiary-container: #654600;
 
-  --color-error: #ffb4ab;
-  --color-error-container: #93000a;
-  --color-on-error: #690005;
-  --color-on-error-container: #ffdad6;
+  --error: #ffb4ab;
+  --error-container: #93000a;
+  --on-error: #690005;
+  --on-error-container: #ffdad6;
 
   /* Aliases */
-  --color-critical: #ff6b4a;
-  --color-warning: #f2b84b;
-  --color-safe: #4fd1ae;
-  --color-info: #8892ab;
+  --critical: #ff6b4a;
+  --warning: #f2b84b;
+  --safe: #4fd1ae;
+  --info: #8892ab;
+}
+
+[data-theme="light"],
+.light {
+  color-scheme: light;
+  --surface: #ffffff;
+  --surface-dim: #f8fafc;
+  --surface-bright: #ffffff;
+  --surface-container-lowest: #f1f5f9;
+  --surface-container-low: #f8fafc;
+  --surface-container: #ffffff;
+  --surface-container-high: #f1f5f9;
+  --surface-container-highest: #e2e8f0;
+  --surface-variant: #e2e8f0;
+
+  --background: #f8fafc;
+  --on-background: #0f172a;
+  --on-surface: #0f172a;
+  --on-surface-variant: #475569;
+
+  --outline: #94a3b8;
+  --outline-variant: #cbd5e1;
+
+  --primary: #0d9488;
+  --primary-container: #0f766e;
+  --primary-fixed: #14b8a6;
+  --primary-fixed-dim: #0d9488;
+  --on-primary: #ffffff;
+  --on-primary-container: #ffffff;
+  --inverse-primary: #14b8a6;
+
+  --secondary: #e11d48;
+  --secondary-container: #ffe4e6;
+  --secondary-fixed: #fecdd3;
+  --secondary-fixed-dim: #fda4af;
+  --on-secondary: #ffffff;
+  --on-secondary-container: #9f1239;
+
+  --tertiary: #d97706;
+  --tertiary-container: #fef3c7;
+  --tertiary-fixed: #fde68a;
+  --tertiary-fixed-dim: #fcd34d;
+  --on-tertiary: #ffffff;
+  --on-tertiary-container: #92400e;
+
+  --error: #e11d48;
+  --error-container: #fee2e2;
+  --on-error: #ffffff;
+  --on-error-container: #991b1b;
+
+  /* Aliases */
+  --critical: #e11d48;
+  --warning: #d97706;
+  --safe: #0d9488;
+  --info: #64748b;
+}
+
+@theme {
+  /* ── Stitch Named Colors via CSS Custom Properties ── */
+  --color-surface: var(--surface);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-surface-variant: var(--surface-variant);
+
+  --color-background: var(--background);
+  --color-on-background: var(--on-background);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+
+  --color-primary: var(--primary);
+  --color-primary-container: var(--primary-container);
+  --color-primary-fixed: var(--primary-fixed);
+  --color-primary-fixed-dim: var(--primary-fixed-dim);
+  --color-on-primary: var(--on-primary);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-inverse-primary: var(--inverse-primary);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-secondary-fixed: var(--secondary-fixed);
+  --color-secondary-fixed-dim: var(--secondary-fixed-dim);
+  --color-on-secondary: var(--on-secondary);
+  --color-on-secondary-container: var(--on-secondary-container);
+
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-tertiary-fixed: var(--tertiary-fixed);
+  --color-tertiary-fixed-dim: var(--tertiary-fixed-dim);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+
+  --color-error: var(--error);
+  --color-error-container: var(--error-container);
+  --color-on-error: var(--on-error);
+  --color-on-error-container: var(--on-error-container);
+
+  /* Aliases */
+  --color-critical: var(--critical);
+  --color-warning: var(--warning);
+  --color-safe: var(--safe);
+  --color-info: var(--info);
 
   /* ── Spacing Tokens from Stitch ── */
   --spacing-space-xs: 0.25rem;
@@ -72,12 +184,12 @@
   --spacing-margin-lg: 2rem;
 
   /* ── Border Radius ── */
-  --radius-DEFAULT: 0.125rem;
+  --radius-DEFAULT: 0.25rem;
   --radius-sm: 0.125rem;
-  --radius-md: 0.25rem;
-  --radius-lg: 0.25rem;
-  --radius-xl: 0.5rem;
-  --radius-2xl: 0.75rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
   --radius-full: 9999px;
 
   /* ── Typography Stacks ── */
@@ -98,177 +210,72 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   background-color: var(--color-background);
-  color: var(--color-on-surface);
+  color: var(--color-on-background);
   font-family: var(--font-body-md);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-x: hidden;
 }
 
-/* Tabular figures for all telemetry numbers */
+/* ── Form Inputs ── */
+input,
+select,
+textarea {
+  background-color: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-outline-variant);
+  color: var(--color-on-surface);
+  font-family: var(--font-body-md);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+/* ── Stitch Monospace Table Elements ── */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
-/* ── Typography Utility Classes ── */
-.text-display-lg {
-  font-family: var(--font-display-lg);
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 40px;
-  letter-spacing: -0.02em;
-}
-
-.text-headline-md {
-  font-family: var(--font-headline-md);
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 32px;
-  letter-spacing: -0.01em;
-}
-
-.text-headline-sm {
-  font-family: var(--font-headline-sm);
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 26px;
-}
-
-.text-body-lg {
-  font-family: var(--font-body-lg);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-.text-body-md {
-  font-family: var(--font-body-md);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-}
-
-.text-body-sm {
-  font-family: var(--font-body-sm);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 16px;
-}
-
-.text-code-lg {
-  font-family: var(--font-code-lg);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 20px;
-}
-
-.text-code-md {
-  font-family: var(--font-code-md);
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 18px;
-}
-
-.text-code-sm {
-  font-family: var(--font-code-sm);
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 14px;
-  letter-spacing: 0.02em;
-}
-
-.text-label-caps {
-  font-family: var(--font-label-caps);
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-/* ── Stitch Component Primitives ── */
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background-color: var(--color-primary-container);
-  color: var(--color-on-primary);
-  font-family: var(--font-headline-sm);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.1s ease;
-}
-
-.btn-primary:hover {
-  background-color: var(--color-primary);
-}
-
-.btn-primary:active {
-  transform: scale(0.99);
-}
-
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background-color: transparent;
-  color: var(--color-on-surface);
-  font-family: var(--font-headline-sm);
-  font-size: 13px;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  border: 1px solid var(--color-surface-variant);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.btn-secondary:hover {
-  background-color: var(--color-surface-container);
-  border-color: var(--color-primary-container);
-  color: var(--color-primary-container);
-}
-
 /* ── Severity Badges ── */
 .badge-critical {
-  background-color: rgba(255, 107, 74, 0.10);
-  border: 1px solid #ff6b4a;
-  color: #ff6b4a;
+  background-color: rgba(255, 107, 74, 0.12);
+  border: 1px solid var(--color-critical);
+  color: var(--color-critical);
   font-family: var(--font-label-caps);
   font-size: 10px;
   letter-spacing: 0.08em;
 }
 
 .badge-warning {
-  background-color: rgba(242, 184, 75, 0.10);
-  border: 1px solid #f2b84b;
-  color: #f2b84b;
+  background-color: rgba(242, 184, 75, 0.12);
+  border: 1px solid var(--color-warning);
+  color: var(--color-warning);
   font-family: var(--font-label-caps);
   font-size: 10px;
   letter-spacing: 0.08em;
 }
 
 .badge-safe {
-  background-color: rgba(79, 209, 174, 0.10);
-  border: 1px solid #4fd1ae;
-  color: #4fd1ae;
+  background-color: rgba(79, 209, 174, 0.12);
+  border: 1px solid var(--color-safe);
+  color: var(--color-safe);
   font-family: var(--font-label-caps);
   font-size: 10px;
   letter-spacing: 0.08em;
 }
 
 .badge-info {
-  background-color: rgba(42, 53, 80, 0.30);
-  border: 1px solid var(--color-surface-variant);
+  background-color: rgba(42, 53, 80, 0.20);
+  border: 1px solid var(--color-outline-variant);
   color: var(--color-outline);
   font-family: var(--font-label-caps);
   font-size: 10px;
@@ -277,15 +284,15 @@ html, body {
 
 /* ── Emissive Glows from Stitch DESIGN.md ── */
 .glow-critical {
-  box-shadow: inset 2px 0 0 0 #ff6b4a, 0 0 12px rgba(255, 107, 74, 0.15);
+  box-shadow: inset 2px 0 0 0 var(--color-critical), 0 0 12px rgba(255, 107, 74, 0.15);
 }
 
 .glow-safe {
-  box-shadow: inset 2px 0 0 0 #4fd1ae, 0 0 12px rgba(79, 209, 174, 0.15);
+  box-shadow: inset 2px 0 0 0 var(--color-safe), 0 0 12px rgba(79, 209, 174, 0.15);
 }
 
 .glow-warning {
-  box-shadow: inset 2px 0 0 0 #f2b84b, 0 0 12px rgba(242, 184, 75, 0.15);
+  box-shadow: inset 2px 0 0 0 var(--color-warning), 0 0 12px rgba(242, 184, 75, 0.15);
 }
 
 /* ── Animations ── */

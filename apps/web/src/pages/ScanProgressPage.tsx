@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import type { ScanResult } from '../types'
+import { getScan } from '../lib/api'
 
 export function ScanProgressPage() {
   const { id } = useParams<{ id: string }>()
@@ -23,11 +24,8 @@ export function ScanProgressPage() {
 
   const { data: scan, error } = useQuery<ScanResult>({
     queryKey: ['scan', id],
-    queryFn: async () => {
-      const res = await fetch(`/api/scans/${id}`)
-      if (!res.ok) throw new Error('Scan not found')
-      return res.json()
-    },
+    queryFn: () => getScan(id!),
+    enabled: !!id,
     refetchInterval: (query) => {
       const status = query.state.data?.status
       if (status === 'complete' || status === 'failed') return false
@@ -216,7 +214,7 @@ export function ScanProgressPage() {
                     <div className="bg-surface-container-lowest rounded-xl p-space-md text-on-surface font-code-sm text-code-sm flex flex-col gap-1.5 shadow-inner">
                       <div className="text-secondary">ERROR: Remote git authentication failed [401 Unauthorized]</div>
                       <div className="text-on-surface-variant">REMOTE: {scan?.repoUrl}</div>
-                      <div className="text-tertiary-container pt-1">HINT: Public repositories only are supported for direct demonstration scans.</div>
+                      <div className="text-tertiary-container pt-1">HINT: Ensure the repository is publicly accessible or has valid access permissions configured.</div>
                     </div>
                   </div>
                 )}

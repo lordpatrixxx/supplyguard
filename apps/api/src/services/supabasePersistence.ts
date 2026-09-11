@@ -33,7 +33,6 @@ export async function persistScanToSupabase(scan: ScanResult): Promise<void> {
       low_count: lowCount,
       safe_count: safeCount,
       raw_result: scan,
-      is_demo: !scan.userId,
       completed_at: scan.completedAt || null,
     };
 
@@ -88,10 +87,11 @@ export async function loadScanFromSupabase(scanId: string): Promise<ScanResult |
  */
 export async function loadScanHistoryFromSupabase(userId?: string): Promise<ScanResult[]> {
   try {
-    let url = `${SUPABASE_URL}/rest/v1/scans?select=raw_result&order=created_at.desc&limit=50`;
-    if (userId) {
-      url += `&or=(user_id.eq.${encodeURIComponent(userId)},is_demo.eq.true)`;
+    if (!userId) {
+      return [];
     }
+
+    const url = `${SUPABASE_URL}/rest/v1/scans?user_id=eq.${encodeURIComponent(userId)}&select=raw_result&order=created_at.desc&limit=50`;
 
     const res = await fetch(url, {
       headers: {

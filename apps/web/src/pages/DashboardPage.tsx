@@ -5,6 +5,8 @@ import type { ScanResult, PackageNode } from '../types'
 import { GraphView } from '../components/GraphView'
 import { FindingDetailPanel } from '../components/FindingDetailPanel'
 
+import { getScan, downloadSbom } from '../lib/api'
+
 export function DashboardPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -15,11 +17,8 @@ export function DashboardPage() {
 
   const { data: scan, isLoading, error } = useQuery<ScanResult>({
     queryKey: ['scan', id],
-    queryFn: async () => {
-      const res = await fetch(`/api/scans/${id}`)
-      if (!res.ok) throw new Error('Scan not found')
-      return res.json()
-    },
+    queryFn: () => getScan(id!),
+    enabled: !!id,
   })
 
   // Redirect if scan isn't complete
@@ -104,8 +103,13 @@ export function DashboardPage() {
       }
     }, [scan?.packages])
 
-  const handleDownloadSbom = () => {
-    window.open(`/api/scans/${id}/sbom`, '_blank')
+  const handleDownloadSbom = async () => {
+    if (!id) return
+    try {
+      await downloadSbom(id, scan?.repoUrl)
+    } catch (err) {
+      console.error('Failed to download SBOM:', err)
+    }
   }
 
   if (isLoading) {
@@ -161,13 +165,13 @@ export function DashboardPage() {
                 <div className="flex items-center gap-space-xs font-label-caps text-label-caps uppercase text-on-surface-variant">
                   <span>Scan Run #{id?.slice(0, 8)}</span>
                   <span>/</span>
-                  <span className="text-primary-container font-medium">Policy Profile: National Cyber Challenge</span>
+                  <span className="text-primary-container font-medium">Policy Profile: Enterprise Standard Baseline</span>
                 </div>
                 <div className="flex items-center gap-space-sm mt-0.5">
                   <h1 className="font-headline-sm text-headline-sm text-on-surface tracking-tight">Audit Ledger: {repoName}</h1>
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-container/10 text-primary-container font-label-caps text-label-caps uppercase font-bold">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
-                    Verified Clean
+                    Zero High-Risk Findings
                   </span>
                 </div>
               </div>

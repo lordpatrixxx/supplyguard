@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '../context/AuthContext'
 import type { ScanResult } from '../types'
+import { getScanHistory, downloadSbom } from '../lib/api'
 
 export function HistoryPage() {
   const navigate = useNavigate()
@@ -21,12 +22,7 @@ export function HistoryPage() {
 
   const { data: scans, isLoading } = useQuery<ScanResult[]>({
     queryKey: ['scans', user?.id],
-    queryFn: async () => {
-      const url = user?.id ? `/api/scans?userId=${encodeURIComponent(user.id)}` : '/api/scans'
-      const res = await fetch(url)
-      if (!res.ok) throw new Error('Failed to load history')
-      return res.json()
-    },
+    queryFn: () => getScanHistory(),
   })
 
   const filteredScans = useMemo(() => {
@@ -440,7 +436,7 @@ export function HistoryPage() {
                       <span className="material-symbols-outlined text-[18px]">description</span>
                     </button>
                     <button
-                      onClick={() => window.open(`/api/scans/${scan.scanId}/sbom`, '_blank')}
+                      onClick={() => downloadSbom(scan.scanId, scan.repoUrl)}
                       className="p-2 bg-surface-container-high hover:bg-surface-bright text-outline hover:text-primary-container rounded-lg transition-colors cursor-pointer border-none"
                       title="Download CycloneDX SBOM"
                     >

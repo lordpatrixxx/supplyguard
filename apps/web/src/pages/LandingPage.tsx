@@ -1,163 +1,145 @@
-import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
-import { useAuth } from '../context/AuthContext'
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
+import { useAuth } from '../context/AuthContext';
+import { createScan } from '../lib/api';
 
 export function LandingPage() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { user } = useAuth()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuth();
 
-  const prefill = (location.state as { prefillRepo?: string })?.prefillRepo || ''
-  const [repoUrl, setRepoUrl] = useState(prefill || 'https://github.com/tastejs/todomvc')
-  const [branch, setBranch] = useState('')
-  const [subpath, setSubpath] = useState('')
-  const [showAdvanced, setShowAdvanced] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const prefill = (location.state as { prefillRepo?: string })?.prefillRepo || '';
+  const [repoUrl, setRepoUrl] = useState(prefill || 'https://github.com/tastejs/todomvc');
+  const [branch, setBranch] = useState('');
+  const [subpath, setSubpath] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     if (prefill) {
-      setRepoUrl(prefill)
+      setRepoUrl(prefill);
     }
-  }, [prefill])
+  }, [prefill]);
 
   const scanMutation = useMutation({
-    mutationFn: async (payload: { repoUrl: string; branch?: string; subpath?: string; userId?: string }) => {
-      const res = await fetch('/api/scans', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.error || 'Scan initiation failed')
-      }
-      return res.json() as Promise<{ scanId: string }>
+    mutationFn: async (payload: { repoUrl: string; branch?: string; subpath?: string }) => {
+      return await createScan(payload);
     },
     onSuccess: (data) => {
-      navigate(`/app/scans/${data.scanId}`)
+      navigate(`/app/scans/${data.scanId}`);
     },
-    onError: (err) => {
-      setErrorMessage(err.message)
+    onError: (err: any) => {
+      setErrorMessage(err.message || 'Scan initiation failed');
     },
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrorMessage('')
-    const trimmed = repoUrl.trim()
+    e.preventDefault();
+    setErrorMessage('');
+    const trimmed = repoUrl.trim();
     if (!trimmed) {
-      setErrorMessage('Please enter a GitHub repository URL')
-      return
+      setErrorMessage('Please enter a GitHub repository URL');
+      return;
     }
-    let formatted = trimmed
+    let formatted = trimmed;
     if (!/^https?:\/\//i.test(formatted)) {
-      formatted = `https://${formatted}`
+      formatted = `https://${formatted}`;
     }
 
     scanMutation.mutate({
       repoUrl: formatted,
       branch: branch.trim() || undefined,
       subpath: subpath.trim() || undefined,
-      userId: user?.id,
-    })
-  }
+    });
+  };
 
   return (
     <div className="flex flex-col w-full">
-      {/* Dynamic Atmospheric Glows */}
-      <div className="relative w-full overflow-hidden px-margin-md lg:px-margin-lg py-space-xl">
-        <div className="absolute -top-32 -left-20 w-96 h-96 rounded-full bg-primary/5 blur-3xl pointer-events-none"></div>
-        <div className="absolute top-1/4 right-0 w-[30rem] h-[30rem] rounded-full bg-secondary-container/10 blur-[100px] pointer-events-none"></div>
-
-        {/* Hero Asymmetric Split Grid (Stitch Specification) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter-lg items-start relative z-10">
-          {/* Left Column: Mission Narrative & Directive Input */}
-          <div className="lg:col-span-5 flex flex-col gap-space-lg">
-            {/* Challenge Badge */}
-            <div className="inline-flex items-center gap-space-xs self-start px-space-sm py-1 bg-surface-container-high rounded-full shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
-              <span className="font-label-caps text-label-caps uppercase text-primary-container tracking-wider">
-                PS14 Supply Chain Defense • National Cyber Challenge
-              </span>
+      <div className="relative w-full overflow-hidden px-6 py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative z-10">
+          {/* Left Column: Directive Input Console */}
+          <div className="lg:col-span-6 flex flex-col gap-6">
+            {/* Status Chip */}
+            <div className="inline-flex items-center gap-2 self-start px-3 py-1 bg-surface-container rounded-full border border-outline-variant/40 text-xs font-code-sm text-primary">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+              <span>Enterprise Software Supply Chain Auditor</span>
             </div>
 
             {/* Master Headline */}
-            <h1 className="font-display-lg text-display-lg text-on-surface tracking-tight leading-tight">
-              See what is hidden in your dependency chain, understand why it matters, and fix{' '}
-              <span className="text-secondary underline decoration-secondary/30 decoration-2 underline-offset-4">
-                high-risk issues first
-              </span>
-              .
-            </h1>
+            <div className="space-y-2">
+              <h1 className="font-headline-md text-3xl sm:text-4xl font-bold text-on-surface tracking-tight leading-tight">
+                New Supply Chain Security Audit
+              </h1>
+              <p className="text-on-surface-variant text-sm sm:text-base leading-relaxed">
+                Scan public GitHub repositories or microservice subpaths to audit nested dependencies,
+                correlate vulnerability intelligence, and evaluate topological blast radius.
+              </p>
+            </div>
 
-            {/* Subheadline */}
-            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
-              Automated deep dependency tree analysis, real-time vulnerability cross-referencing, typosquatting &amp; dependency confusion detection, and explainable AI-backed remediation.
-            </p>
-
-            {/* Quick Scan Directive Input Box */}
-            <form onSubmit={handleSubmit} className="flex flex-col gap-space-xs p-space-sm bg-surface-container-low rounded-xl shadow-md border border-surface-variant">
-              <div className="flex flex-col sm:flex-row gap-space-xs items-stretch sm:items-center">
-                <div className="relative flex-1 flex items-center bg-surface-dim rounded-lg px-space-sm py-2">
-                  <span className="material-symbols-outlined text-outline text-[20px] mr-2 shrink-0">
-                    account_tree
-                  </span>
+            {/* Intake Form Box */}
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5 bg-surface-container-low rounded-xl shadow-md border border-outline-variant/40">
+              <div className="flex flex-col gap-1.5">
+                <label className="font-code-sm text-xs text-outline uppercase tracking-wider">
+                  Target Repository URL
+                </label>
+                <div className="relative flex items-center bg-surface-container-lowest rounded-lg border border-outline-variant/50 px-3 py-2.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+                  <svg className="w-5 h-5 text-outline mr-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="4" />
+                    <line x1="1.05" y1="12" x2="7" y2="12" />
+                    <line x1="17.01" y1="12" x2="22.96" y2="12" />
+                  </svg>
                   <input
                     type="text"
                     value={repoUrl}
                     onChange={(e) => {
-                      setRepoUrl(e.target.value)
-                      setErrorMessage('')
+                      setRepoUrl(e.target.value);
+                      setErrorMessage('');
                     }}
                     placeholder="https://github.com/owner/repository"
-                    className="w-full bg-transparent font-code-md text-code-md text-on-surface focus:outline-none placeholder:text-outline"
+                    className="w-full bg-transparent font-code-md text-sm text-on-surface focus:outline-none placeholder:text-outline/50"
                     disabled={scanMutation.isPending}
                   />
-                  <button
-                    type="button"
-                    onClick={() => setRepoUrl('https://github.com/remy/nodemon')}
-                    className="font-code-sm text-code-sm text-outline hover:text-primary-container transition-colors ml-1 px-1.5 py-0.5 bg-surface-container-highest rounded cursor-pointer border-none"
-                    title="Load nodemon demo repository"
-                  >
-                    DEMO
-                  </button>
                 </div>
+              </div>
 
+              {/* Sample Target Shortcuts */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-outline font-code-sm">Sample Targets:</span>
                 <button
-                  type="submit"
-                  disabled={scanMutation.isPending}
-                  className="flex items-center justify-center gap-space-xs px-space-xl py-3 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-headline-sm rounded-lg shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] font-bold shrink-0 cursor-pointer border-none"
+                  type="button"
+                  onClick={() => setRepoUrl('https://github.com/tastejs/todomvc')}
+                  className="px-2 py-0.5 rounded bg-surface-container text-xs font-code-sm text-on-surface-variant hover:text-primary hover:border-primary/40 border border-outline-variant transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[20px]">
-                    {scanMutation.isPending ? 'hourglass_top' : 'troubleshoot'}
-                  </span>
-                  <span>{scanMutation.isPending ? 'Analyzing...' : 'Analyze Repository'}</span>
+                  tastejs/todomvc
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRepoUrl('https://github.com/expressjs/express')}
+                  className="px-2 py-0.5 rounded bg-surface-container text-xs font-code-sm text-on-surface-variant hover:text-primary hover:border-primary/40 border border-outline-variant transition-colors"
+                >
+                  expressjs/express
                 </button>
               </div>
 
               {/* Advanced Monorepo / Branch Toggle */}
-              <div className="px-space-xs pt-1 flex items-center justify-between">
+              <div className="pt-1">
                 <button
                   type="button"
                   onClick={() => setShowAdvanced(!showAdvanced)}
-                  className="flex items-center gap-1 font-code-sm text-code-sm text-outline hover:text-on-surface bg-transparent border-none cursor-pointer p-0"
+                  className="flex items-center gap-1.5 font-code-sm text-xs text-outline hover:text-on-surface transition-colors cursor-pointer bg-transparent border-none p-0"
                 >
-                  <span className="material-symbols-outlined text-[14px]">
-                    {showAdvanced ? 'expand_less' : 'tune'}
-                  </span>
-                  <span>{showAdvanced ? 'Hide Advanced Ingestion' : 'Advanced: Monorepo / Custom Branch'}</span>
+                  <svg className={`w-3.5 h-3.5 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                  <span>{showAdvanced ? 'Hide Advanced Options' : 'Advanced: Monorepo Subpath / Custom Branch'}</span>
                 </button>
-
-                <span className="font-code-sm text-code-sm text-primary-container hidden sm:inline">
-                  Zero-token raw git manifest
-                </span>
               </div>
 
               {showAdvanced && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-xs p-space-sm bg-surface-dim rounded-lg border border-surface-variant mt-1 animate-fade-in">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-surface-container-lowest rounded-lg border border-outline-variant/40 animate-fade-in">
                   <div>
-                    <label className="block font-label-caps text-label-caps uppercase text-outline mb-1">
+                    <label className="block font-code-sm text-[11px] uppercase text-outline mb-1">
                       Git Branch (optional)
                     </label>
                     <input
@@ -165,248 +147,129 @@ export function LandingPage() {
                       value={branch}
                       onChange={(e) => setBranch(e.target.value)}
                       placeholder="main / master / staging"
-                      className="w-full bg-surface-container border border-surface-variant rounded px-2.5 py-1.5 font-code-sm text-code-sm text-on-surface focus:outline-none focus:border-primary-container"
+                      className="w-full bg-surface-container border border-outline-variant/40 rounded px-2.5 py-1.5 font-code-sm text-xs text-on-surface focus:outline-none focus:border-primary"
                     />
                   </div>
                   <div>
-                    <label className="block font-label-caps text-label-caps uppercase text-outline mb-1">
+                    <label className="block font-code-sm text-[11px] uppercase text-outline mb-1">
                       Monorepo Subpath (optional)
                     </label>
                     <input
                       type="text"
                       value={subpath}
                       onChange={(e) => setSubpath(e.target.value)}
-                      placeholder="packages/backend or apps/web"
-                      className="w-full bg-surface-container border border-surface-variant rounded px-2.5 py-1.5 font-code-sm text-code-sm text-on-surface focus:outline-none focus:border-primary-container"
+                      placeholder="packages/backend or apps/api"
+                      className="w-full bg-surface-container border border-outline-variant/40 rounded px-2.5 py-1.5 font-code-sm text-xs text-on-surface focus:outline-none focus:border-primary"
                     />
                   </div>
                 </div>
               )}
 
-              {/* Manifest Subtext & Quick Signals */}
-              <div className="flex items-center justify-between px-space-xs pt-1 text-on-surface-variant">
-                <span className="font-code-sm text-code-sm flex items-center gap-1 text-outline">
-                  <span className="material-symbols-outlined text-[14px]">lock_reset</span>
-                  Audits package.json &amp; npm lockfile
-                </span>
-                <span className="font-code-sm text-code-sm text-on-surface-variant">
-                  {user ? `Scoped to ${user.email}` : 'Demo Workspace'}
-                </span>
-              </div>
-
               {errorMessage && (
-                <div className="px-space-xs pt-2 text-error font-body-sm text-body-sm flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[16px]">error</span>
+                <div className="p-3 rounded-lg bg-critical/10 border border-critical/40 text-critical text-xs flex items-center gap-2">
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
                   <span>{errorMessage}</span>
                 </div>
               )}
+
+              <div className="flex items-center justify-between pt-2 border-t border-outline-variant/30">
+                <span className="font-code-sm text-xs text-outline flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  <span>Audits package.json &amp; npm lockfile</span>
+                </span>
+
+                <button
+                  type="submit"
+                  disabled={scanMutation.isPending}
+                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-container text-on-primary font-headline-sm text-sm rounded-lg shadow-sm transition-all font-semibold cursor-pointer border-none disabled:opacity-60"
+                >
+                  {scanMutation.isPending ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-on-primary border-t-transparent rounded-full animate-spin"></span>
+                      <span>Initiating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Start Audit</span>
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
+                    </>
+                  )}
+                </button>
+              </div>
             </form>
 
-            {/* Value Proposition Badges */}
-            <div className="flex flex-wrap gap-space-xs pt-space-xs">
-              <div className="flex items-center gap-1.5 px-space-sm py-1.5 bg-surface-container rounded-md text-on-surface">
-                <span className="material-symbols-outlined text-[16px] text-primary-container">device_hub</span>
-                <span className="font-code-sm text-code-sm">Transitive Depth Traversal</span>
-              </div>
-              <div className="flex items-center gap-1.5 px-space-sm py-1.5 bg-surface-container rounded-md text-on-surface">
-                <span className="material-symbols-outlined text-[16px] text-secondary">spellcheck</span>
-                <span className="font-code-sm text-code-sm">Typosquatting &amp; Confusion</span>
-              </div>
-              <div className="flex items-center gap-1.5 px-space-sm py-1.5 bg-surface-container rounded-md text-on-surface">
-                <span className="material-symbols-outlined text-[16px] text-tertiary">verified</span>
-                <span className="font-code-sm text-code-sm">Explainable AI Remediation</span>
-              </div>
-            </div>
-
-            {/* Trust & Intelligence Strip */}
-            <div className="flex flex-col gap-space-xs pt-space-sm">
-              <span className="font-label-caps text-label-caps uppercase text-outline">
-                Correlated Threat Feeds &amp; Attestation Standards
-              </span>
-              <div className="flex items-center gap-space-sm flex-wrap text-on-surface-variant font-code-sm text-code-sm">
-                <span className="flex items-center gap-1 px-2 py-1 bg-surface-container-high rounded text-on-surface">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary-container"></span>OSV.dev
-                </span>
-                <span className="flex items-center gap-1 px-2 py-1 bg-surface-container-high rounded text-on-surface">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary-container"></span>GitHub Advisory (GHSA)
-                </span>
-                <span className="flex items-center gap-1 px-2 py-1 bg-surface-container-high rounded text-on-surface">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary-container"></span>NIST NVD
-                </span>
-                <span className="flex items-center gap-1 px-2 py-1 bg-surface-container-high rounded text-on-surface">
-                  <span className="w-1.5 h-1.5 rounded-full bg-tertiary"></span>npm Registry
-                </span>
-                <span className="flex items-center gap-1 px-2 py-1 bg-surface-container-high rounded text-on-surface">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary-container"></span>Gemini AI
-                </span>
-              </div>
+            {/* User Attribution Footer */}
+            <div className="flex items-center justify-between text-xs font-code-sm text-outline px-1">
+              <span>Tenant Security Isolation: Active</span>
+              <span>{user ? `Scoped to ${user.email}` : 'Authenticated Session'}</span>
             </div>
           </div>
 
-          {/* Right Column: Risk Constellation Visual Showcase (Stitch Design) */}
-          <div className="lg:col-span-7 flex flex-col gap-space-sm">
-            <div className="relative w-full h-[580px] bg-surface-container-low rounded-xl overflow-hidden shadow-xl p-space-md flex flex-col justify-between border border-surface-variant">
-              {/* Background radial gradients */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-surface-dim via-surface-container-low to-surface-container opacity-90"></div>
-              <div className="absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-secondary-container/20 blur-3xl pointer-events-none"></div>
-              <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-primary/10 blur-2xl pointer-events-none"></div>
+          {/* Right Column: Active Telemetry & Capability Overview */}
+          <div className="lg:col-span-6 flex flex-col gap-6">
+            <div className="p-6 bg-surface-container-low rounded-xl border border-outline-variant/40 space-y-4">
+              <h2 className="font-headline-sm font-semibold text-lg text-on-surface">
+                Autonomous Supply Chain Pipeline
+              </h2>
+              <p className="text-on-surface-variant text-sm leading-relaxed">
+                SupplyGuard executes multi-stage graph analysis directly against manifest trees,
+                preventing local code execution vulnerabilities while extracting true dependency topologies.
+              </p>
 
-              {/* Interactive Constellation SVG Display */}
-              <div className="absolute inset-0 w-full h-full pointer-events-none">
-                <svg className="w-full h-full" fill="none" viewBox="0 0 700 560" xmlns="http://www.w3.org/2000/svg">
-                  {/* Radial rings */}
-                  <circle className="text-surface-variant/40" cx="350" cy="270" r="90" stroke="currentColor" strokeDasharray="3 3" strokeWidth="1" />
-                  <circle className="text-surface-variant/30" cx="350" cy="270" r="180" stroke="currentColor" strokeDasharray="4 4" strokeWidth="1" />
-                  <circle className="text-surface-variant/20" cx="350" cy="270" r="260" stroke="currentColor" strokeDasharray="6 6" strokeWidth="1" />
-
-                  {/* Edges */}
-                  <line className="text-primary-container/40" stroke="currentColor" strokeWidth="2" x1="350" y1="270" x2="230" y2="180" />
-                  <line className="text-primary-container/40" stroke="currentColor" strokeWidth="2" x1="350" y1="270" x2="480" y2="160" />
-                  <line className="text-tertiary/40" stroke="currentColor" strokeWidth="2" x1="350" y1="270" x2="290" y2="400" />
-                  <line className="text-secondary/40" stroke="currentColor" strokeWidth="2" x1="350" y1="270" x2="490" y2="380" />
-
-                  {/* Transitive critical path */}
-                  <line className="text-secondary/70" stroke="currentColor" strokeDasharray="4 2" strokeWidth="2.5" x1="230" y1="180" x2="130" y2="110" />
-                  <line className="text-secondary/80" stroke="currentColor" strokeWidth="2" x1="480" y1="160" x2="610" y2="100" />
-
-                  {/* Root Node */}
-                  <g>
-                    <circle className="text-surface-dim" cx="350" cy="270" fill="currentColor" r="18" />
-                    <circle className="text-primary-container" cx="350" cy="270" fill="currentColor" r="14" />
-                    <circle className="text-primary-container/30" cx="350" cy="270" r="24" stroke="currentColor" strokeWidth="2" />
-                    <text className="font-code-sm text-code-sm fill-on-surface font-semibold" textAnchor="middle" x="350" y="308">
-                      store-api (root)
-                    </text>
-                  </g>
-
-                  {/* Express clean direct */}
-                  <g>
-                    <circle className="text-primary-container" cx="230" cy="180" fill="currentColor" r="10" />
-                    <text className="font-code-sm text-code-sm fill-on-surface font-medium" textAnchor="middle" x="210" y="160">
-                      express@4.18.2
-                    </text>
-                  </g>
-
-                  {/* Axios clean direct */}
-                  <g>
-                    <circle className="text-primary-container" cx="480" cy="160" fill="currentColor" r="9" />
-                    <text className="font-code-sm text-code-sm fill-on-surface" textAnchor="start" x="500" y="145">
-                      axios@1.6.0
-                    </text>
-                  </g>
-
-                  {/* Lodash critical node */}
-                  <g className="animate-pulse">
-                    <circle className="text-secondary" cx="130" cy="110" fill="currentColor" r="14" />
-                    <circle className="text-secondary/60" cx="130" cy="110" r="22" stroke="currentColor" strokeWidth="2" />
-                    <text className="font-code-sm text-code-sm fill-secondary font-bold" textAnchor="middle" x="130" y="80">
-                      lodash@4.17.20 (86/100)
-                    </text>
-                  </g>
-
-                  {/* Reqeusts typosquat node */}
-                  <g>
-                    <circle className="text-secondary" cx="610" cy="100" fill="currentColor" r="12" />
-                    <circle className="text-secondary/60" cx="610" cy="100" r="18" stroke="currentColor" strokeDasharray="2 2" strokeWidth="1.5" />
-                    <text className="font-code-sm text-code-sm fill-secondary" textAnchor="middle" x="610" y="70">
-                      reqeusts@2.31.0 (Typosquat)
-                    </text>
-                  </g>
-                </svg>
-              </div>
-
-              {/* Top Card Controls */}
-              <div className="relative z-10 flex items-center justify-between">
-                <div className="flex items-center gap-space-xs px-2.5 py-1 bg-surface-container-high/80 backdrop-blur rounded border border-surface-variant">
-                  <span className="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
-                  <span className="font-label-caps text-label-caps uppercase text-secondary font-semibold">
-                    Simulated Supply Chain Exposure
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-code-sm text-code-sm text-outline">Engine: 2D Force Vector</span>
-                </div>
-              </div>
-
-              {/* Floating Focal Inspection Card (Stitch Exact Component) */}
-              <div className="relative z-10 self-end max-w-sm w-full bg-surface-container/95 backdrop-blur border border-surface-variant rounded-xl p-space-md shadow-2xl glow-critical">
-                <div className="flex items-start justify-between gap-space-sm pb-space-xs border-b border-surface-variant mb-space-xs">
-                  <div className="flex flex-col">
-                    <span className="font-code-sm text-code-sm text-secondary uppercase font-semibold">
-                      Critical Transitive Finding
-                    </span>
-                    <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                      lodash@4.17.20
-                    </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div className="p-3.5 bg-surface-container-lowest rounded-lg border border-outline-variant/30 space-y-1.5">
+                  <div className="font-code-sm text-xs font-semibold text-primary flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    Vulnerability Engine
                   </div>
-                  <div className="flex flex-col items-end">
-                    <span className="font-display-lg text-[22px] font-bold text-secondary">86</span>
-                    <span className="font-label-caps text-label-caps text-outline">/100 RISK</span>
+                  <div className="text-xs text-on-surface-variant">
+                    Correlates upstream OSV and GitHub Security Advisories with CVSS vectors.
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1 text-code-sm text-code-sm mb-space-sm">
-                  <div className="flex justify-between">
-                    <span className="text-outline">Advisory ID:</span>
-                    <span className="text-secondary font-mono">CVE-2021-23337</span>
+                <div className="p-3.5 bg-surface-container-lowest rounded-lg border border-outline-variant/30 space-y-1.5">
+                  <div className="font-code-sm text-xs font-semibold text-tertiary flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-tertiary" />
+                    Topological Fan-Out
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-outline">Type:</span>
-                    <span className="text-on-surface">Command Injection (CVSS 8.5)</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-outline">Remediation:</span>
-                    <span className="text-primary-container font-mono">npm install lodash@4.17.21</span>
+                  <div className="text-xs text-on-surface-variant">
+                    Measures true downstream dependent reachability across all graph depths.
                   </div>
                 </div>
 
-                <div className="p-2 bg-surface-dim rounded font-code-sm text-code-sm text-on-surface-variant truncate">
-                  Route: express &rarr; body-parser &rarr; lodash
+                <div className="p-3.5 bg-surface-container-lowest rounded-lg border border-outline-variant/30 space-y-1.5">
+                  <div className="font-code-sm text-xs font-semibold text-secondary flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
+                    Heuristic Protection
+                  </div>
+                  <div className="text-xs text-on-surface-variant">
+                    Detects lookalike typosquatting and internal namespace collisions.
+                  </div>
+                </div>
+
+                <div className="p-3.5 bg-surface-container-lowest rounded-lg border border-outline-variant/30 space-y-1.5">
+                  <div className="font-code-sm text-xs font-semibold text-primary flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    CycloneDX v1.5 JSON
+                  </div>
+                  <div className="text-xs text-on-surface-variant">
+                    Generates standardized, cryptographically hashed bills of materials.
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Bottom Section: Architectural Capabilities */}
-        <div className="mt-space-2xl grid grid-cols-1 md:grid-cols-3 gap-gutter-lg relative z-10">
-          <div className="bg-surface-container-low p-space-lg rounded-xl border border-surface-variant flex flex-col gap-space-sm">
-            <div className="w-10 h-10 rounded-lg bg-primary-container/10 border border-primary-container/20 flex items-center justify-center text-primary-container">
-              <span className="material-symbols-outlined">account_tree</span>
-            </div>
-            <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold">
-              01 • Ingestion &amp; Manifest Parsing
-            </h3>
-            <p className="font-body-md text-body-md text-on-surface-variant">
-              Fetches package.json and npm v7+ lockfiles via the GitHub REST raw content API. Traverses multi-level nested dependency chains without server-side clone overhead.
-            </p>
-          </div>
-
-          <div className="bg-surface-container-low p-space-lg rounded-xl border border-surface-variant flex flex-col gap-space-sm">
-            <div className="w-10 h-10 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary">
-              <span className="material-symbols-outlined">bug_report</span>
-            </div>
-            <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold">
-              02 • Vulnerability &amp; Typosquat Analysis
-            </h3>
-            <p className="font-body-md text-body-md text-on-surface-variant">
-              Batch-queries OSV.dev aggregating GHSA and NVD advisories with CVSS scores. Computes Levenshtein distance against the top 500 npm packages to catch dependency confusion attacks.
-            </p>
-          </div>
-
-          <div className="bg-surface-container-low p-space-lg rounded-xl border border-surface-variant flex flex-col gap-space-sm">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-              <span className="material-symbols-outlined">auto_awesome</span>
-            </div>
-            <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold">
-              03 • Explainable AI Remediation
-            </h3>
-            <p className="font-body-md text-body-md text-on-surface-variant">
-              Calls Gemini 2.0 Flash with strict JSON schemas to generate developer-friendly risk summaries and copyable npm upgrade commands tailored to each dependency path.
-            </p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
