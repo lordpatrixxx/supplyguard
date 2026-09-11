@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -6,7 +6,7 @@ import { useTheme } from '../context/ThemeContext';
 export const SignInPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn } = useAuth();
+  const { user, signIn, resendVerificationEmail } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   const [email, setEmail] = useState('');
@@ -14,8 +14,20 @@ export const SignInPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [infoMsg, setInfoMsg] = useState<string | null>(
+    (location.state as { message?: string })?.message || null
+  );
+  const [isUnconfirmed, setIsUnconfirmed] = useState(false);
+  const [resendStatus, setResendStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
 
   const returnTo = (location.state as { returnTo?: string })?.returnTo || '/app';
+
+  // If already authenticated (e.g. redirected from email verification token exchange), navigate straight to destination
+  useEffect(() => {
+    if (user) {
+      navigate(returnTo, { replace: true });
+    }
+  }, [user, navigate, returnTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,14 +38,34 @@ export const SignInPage: React.FC = () => {
 
     setLoading(true);
     setErrorMsg(null);
+    setInfoMsg(null);
+    setIsUnconfirmed(false);
 
     const { error } = await signIn(email, password);
     setLoading(false);
 
     if (error) {
-      setErrorMsg(error.message || 'Invalid credentials or expired authentication session.');
+      const msg = error.message || '';
+      if (/email.*not.*confirmed|not.*verified/i.test(msg)) {
+        setIsUnconfirmed(true);
+        setErrorMsg('Email verification pending: Please check your inbox and click the verification link before signing in.');
+      } else if (/invalid.*login.*credentials|invalid.*grant/i.test(msg)) {
+        setErrorMsg('Invalid credentials. Please verify your work email and password.');
+      } else {
+        setErrorMsg(msg || 'Authentication failed. Please check your network connection and try again.');
+      }
     } else {
       navigate(returnTo);
+    }
+  };
+
+  const handleResend = async () => {
+    if (!email) return;
+    setResendStatus('sending');
+    const { error } = await resendVerificationEmail(email);
+    setResendStatus('sent');
+    if (error) {
+      setErrorMsg(error.message || 'Unable to resend verification email.');
     }
   };
 
@@ -153,14 +185,36 @@ export const SignInPage: React.FC = () => {
               Enter your account credentials to access your private repository scans and findings.
             </p>
 
-            {errorMsg && (
-              <div className="mb-6 p-3 bg-critical/10 border border-critical/40 rounded-lg text-critical text-xs flex items-center gap-2.5">
+            {infoMsg && !errorMsg && (
+              <div className="mb-6 p-3 bg-primary/10 border border-primary/40 rounded-lg text-primary text-xs flex items-center gap-2.5">
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
-                <span>{errorMsg}</span>
+                <span>{infoMsg}</span>
+              </div>
+            )}
+
+            {errorMsg && (
+              <div className="mb-6 p-3 bg-critical/10 border border-critical/40 rounded-lg text-critical text-xs flex flex-col gap-2">
+                <div className="flex items-center gap-2.5">
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  <span>{errorMsg}</span>
+                </div>
+                {isUnconfirmed && (
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={resendStatus === 'sending' || resendStatus === 'sent'}
+                    className="self-start text-[11px] font-semibold text-primary hover:underline pl-6 cursor-pointer"
+                  >
+                    {resendStatus === 'sending' ? 'Sending link...' : resendStatus === 'sent' ? '✓ New link sent! Check your inbox' : 'Click here to resend verification email'}
+                  </button>
+                )}
               </div>
             )}
 

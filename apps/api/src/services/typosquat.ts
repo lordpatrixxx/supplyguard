@@ -110,7 +110,7 @@ export function detectTyposquats(
         similarTo: bestMatch.name,
         distance: bestMatch.distance,
         similarity: bestMatch.similarity,
-        indicator: 'Possible typosquatting',
+        indicator: 'Possible typosquatting indicator',
         reason: `Package "${depName}" is ${bestMatch.similarity}% similar to popular package "${bestMatch.name}" (Levenshtein distance: ${bestMatch.distance}). Verify this is the intended upstream package.`,
       });
     }

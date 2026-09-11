@@ -5,7 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 
 export const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signUp } = useAuth();
+  const { signUp, resendVerificationEmail } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   const [fullName, setFullName] = useState('');
@@ -15,7 +15,10 @@ export const SignUpPage: React.FC = () => {
   const [agreedTerms, setAgreedTerms] = useState(true);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [isRateLimited, setIsRateLimited] = useState(false);
+  const [verificationPending, setVerificationPending] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendStatus, setResendStatus] = useState<string | null>(null);
 
   // Compute password strength (0-100)
   const computePasswordStrength = (pass: string) => {
@@ -31,10 +34,39 @@ export const SignUpPage: React.FC = () => {
   const strength = computePasswordStrength(password);
   const passwordsMatch = password && confirmPassword && password === confirmPassword;
 
+  const handleResend = async () => {
+    if (!email) return;
+    setResending(true);
+    setResendStatus(null);
+    const { error } = await resendVerificationEmail(email);
+    setResending(false);
+    if (error) {
+      if (error.message.toLowerCase().includes('rate limit') || (error as any).code === 'over_email_send_rate_limit') {
+        setResendStatus('Delivery quota limit reached. Please wait before requesting another email.');
+      } else {
+        setResendStatus(error.message);
+      }
+    } else {
+      setResendStatus('Verification email re-dispatched! Please check your inbox.');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName || !email || !password || !confirmPassword) {
+    setErrorMsg(null);
+    setIsRateLimited(false);
+
+    const cleanEmail = email.trim();
+    const cleanName = fullName.trim();
+
+    if (!cleanName || !cleanEmail || !password || !confirmPassword) {
       setErrorMsg('All fields are required.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      setErrorMsg('Please enter a valid work email address.');
       return;
     }
 
@@ -54,18 +86,37 @@ export const SignUpPage: React.FC = () => {
     }
 
     setLoading(true);
-    setErrorMsg(null);
 
-    const { error } = await signUp(email, password, fullName);
+    const res = await signUp(cleanEmail, password, cleanName);
     setLoading(false);
 
-    if (error) {
-      setErrorMsg(error.message || 'Registration failed. Please verify your email and credentials.');
+    if (res.error) {
+      const msg = res.error.message || '';
+      const isLimit =
+        msg.toLowerCase().includes('rate limit') ||
+        (res.error as any).code === 'over_email_send_rate_limit' ||
+        (res.error as any).status === 429;
+
+      if (isLimit) {
+        setIsRateLimited(true);
+        setErrorMsg('Email delivery rate limit exceeded.');
+      } else if (msg.toLowerCase().includes('already registered')) {
+        setErrorMsg('An account with this email address already exists. Please Sign In.');
+      } else {
+        setErrorMsg(msg || 'Registration failed. Please verify your credentials and try again.');
+      }
+      return;
+    }
+
+    // Branch based on actual Supabase auth response
+    if (res.needsEmailConfirmation) {
+      // Email confirmation enabled: show dedicated verification screen
+      setVerificationPending(true);
+    } else if (res.session) {
+      // Email confirmation disabled: session established, forward to dashboard
+      navigate('/app');
     } else {
-      setSuccessMsg('Account created successfully! Check your email if verification is required, or proceeding to workspace...');
-      setTimeout(() => {
-        navigate('/app');
-      }, 1200);
+      setVerificationPending(true);
     }
   };
 
@@ -190,177 +241,265 @@ export const SignUpPage: React.FC = () => {
               <span className="font-code-sm text-[11px] text-primary font-mono">SEC-REG-01</span>
             </div>
 
-            <h1 className="font-headline-md text-2xl sm:text-3xl font-bold text-on-surface mb-2">
-              Create Your Account
-            </h1>
-            <p className="text-on-surface-variant text-sm mb-6">
-              Enroll your credentials to begin scanning repositories with SupplyGuard.
-            </p>
-
-            {errorMsg && (
-              <div className="mb-6 p-3 bg-critical/10 border border-critical/40 rounded-lg text-critical text-xs flex items-center gap-2.5">
-                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
-                <span>{errorMsg}</span>
-              </div>
-            )}
-
-            {successMsg && (
-              <div className="mb-6 p-3 bg-primary/10 border border-primary/40 rounded-lg text-primary text-xs flex items-center gap-2.5">
-                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                  <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-                <span>{successMsg}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="font-code-sm text-xs text-outline uppercase">Full Name / Engineer Handle</label>
-                <div className="relative flex items-center bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
-                  <svg className="w-4 h-4 text-outline mr-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                  <input
-                    type="text"
-                    required
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Alex Chen"
-                    className="w-full bg-transparent font-code-md text-sm text-on-surface focus:outline-none placeholder:text-outline/50"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="font-code-sm text-xs text-outline uppercase">Work Email</label>
-                <div className="relative flex items-center bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
-                  <svg className="w-4 h-4 text-outline mr-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {verificationPending ? (
+              <div className="flex flex-col gap-5 py-4 animate-fade-in">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/40 flex items-center justify-center text-primary shadow-lg">
+                  <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                     <polyline points="22,6 12,13 2,6" />
                   </svg>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="engineer@acme.corp"
-                    className="w-full bg-transparent font-code-md text-sm text-on-surface focus:outline-none placeholder:text-outline/50"
-                  />
                 </div>
-              </div>
 
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="font-code-sm text-xs text-outline uppercase">Password</label>
-                  {password && (
-                    <span className={`text-[11px] font-code-sm ${strength >= 70 ? 'text-primary' : 'text-warning'}`}>
-                      Strength: {strength >= 70 ? 'Strong' : 'Moderate'} ({strength}%)
-                    </span>
-                  )}
+                <div className="space-y-1">
+                  <h1 className="font-headline-md text-2xl sm:text-3xl font-bold text-on-surface">
+                    Verify Your Work Email
+                  </h1>
+                  <p className="text-on-surface-variant text-sm leading-relaxed">
+                    A confirmation link has been dispatched to:
+                  </p>
+                  <div className="p-3 bg-surface-container-lowest border border-primary/30 rounded-lg text-primary font-mono text-sm font-semibold break-all">
+                    {email}
+                  </div>
                 </div>
-                <div className="relative flex items-center bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
-                  <svg className="w-4 h-4 text-outline mr-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                  </svg>
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Minimum 8 characters"
-                    className="w-full bg-transparent font-code-md text-sm text-on-surface focus:outline-none placeholder:text-outline/50"
-                  />
+
+                <div className="p-4 bg-surface-container-lowest border border-outline-variant/30 rounded-xl text-xs text-on-surface-variant space-y-2 leading-relaxed">
+                  <div className="flex items-center gap-2 font-semibold text-on-surface">
+                    <svg className="w-4 h-4 text-primary shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" />
+                    </svg>
+                    <span>Security Verification Required</span>
+                  </div>
+                  <p>
+                    Please click the verification link in your email to activate your account. Once verified, return to sign in to access your security enclave.
+                  </p>
+                  <p className="text-[11px] text-outline">
+                    Did not receive it? Check your spam/junk folder or request a new link below.
+                  </p>
                 </div>
-                {/* Strength Meter Bar */}
-                {password && (
-                  <div className="w-full h-1 bg-surface-variant rounded-full overflow-hidden mt-1">
-                    <div
-                      className={`h-full transition-all duration-300 ${strength >= 70 ? 'bg-primary' : 'bg-warning'}`}
-                      style={{ width: `${strength}%` }}
-                    ></div>
+
+                {resendStatus && (
+                  <div className={`p-3 rounded-lg text-xs flex items-center gap-2 ${
+                    resendStatus.includes('re-dispatched')
+                      ? 'bg-primary/10 border border-primary/40 text-primary'
+                      : 'bg-warning/10 border border-warning/40 text-warning'
+                  }`}>
+                    <span>{resendStatus}</span>
                   </div>
                 )}
-              </div>
 
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="font-code-sm text-xs text-outline uppercase">Confirm Password</label>
-                  {confirmPassword && (
-                    <span className={`text-[11px] font-code-sm ${passwordsMatch ? 'text-primary' : 'text-critical'}`}>
-                      {passwordsMatch ? 'Passwords match ✓' : 'Passwords do not match ✗'}
-                    </span>
-                  )}
-                </div>
-                <div className="relative flex items-center bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
-                  <svg className="w-4 h-4 text-outline mr-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  <input
-                    type="password"
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm access password"
-                    className="w-full bg-transparent font-code-md text-sm text-on-surface focus:outline-none placeholder:text-outline/50"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 mt-1">
-                <input
-                  type="checkbox"
-                  id="agree"
-                  checked={agreedTerms}
-                  onChange={(e) => setAgreedTerms(e.target.checked)}
-                  className="rounded bg-surface-container-lowest border-outline-variant text-primary focus:ring-0 cursor-pointer"
-                />
-                <label htmlFor="agree" className="text-xs text-outline cursor-pointer">
-                  I agree to the SupplyGuard Service Terms & Security Auditing Policies.
-                </label>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="mt-2 w-full py-3 bg-primary hover:bg-primary-container text-on-primary font-headline-sm font-semibold text-sm rounded-lg shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
-              >
-                {loading ? (
-                  <>
-                    <span className="w-4 h-4 border-2 border-on-primary border-t-transparent rounded-full animate-spin"></span>
-                    <span>Creating Account...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Create Account</span>
+                <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                  <Link
+                    to="/signin"
+                    className="w-full sm:flex-1 py-3 bg-primary hover:bg-primary-container text-on-primary font-headline-sm font-semibold text-sm rounded-lg shadow-md transition-all flex items-center justify-center gap-2 text-center no-underline"
+                  >
+                    <span>Proceed to Sign In</span>
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M5 12h14M12 5l7 7-7 7" />
                     </svg>
-                  </>
-                )}
-              </button>
-            </form>
+                  </Link>
 
-            <div className="mt-8 pt-4 border-t border-outline-variant/30 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-outline">
-              <div>
-                Already registered?{' '}
-                <Link to="/signin" className="text-primary font-semibold hover:underline">
-                  Sign In →
-                </Link>
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={resending}
+                    className="w-full sm:w-auto px-5 py-3 bg-surface-container hover:bg-surface-container-high border border-outline-variant text-on-surface font-headline-sm font-medium text-sm rounded-lg transition-colors cursor-pointer disabled:opacity-60"
+                  >
+                    {resending ? 'Sending...' : 'Resend Email'}
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-1 text-[11px] text-primary">
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" />
-                </svg>
-                <span>Enterprise Cryptographic Security</span>
-              </div>
-            </div>
+            ) : (
+              <>
+                <h1 className="font-headline-md text-2xl sm:text-3xl font-bold text-on-surface mb-2">
+                  Create Your Account
+                </h1>
+                <p className="text-on-surface-variant text-sm mb-6">
+                  Enroll your credentials to begin scanning repositories with SupplyGuard.
+                </p>
+
+                {isRateLimited && (
+                  <div className="mb-6 p-4 bg-warning/10 border border-warning/40 rounded-xl text-xs space-y-2">
+                    <div className="flex items-center gap-2 font-semibold text-warning">
+                      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                      </svg>
+                      <span>Email Delivery Limit Reached (Supabase Quota)</span>
+                    </div>
+                    <p className="text-on-surface-variant leading-relaxed">
+                      The shared email delivery service for this instance has hit its hourly rate limit.
+                    </p>
+                    <div className="pt-2 flex items-center gap-3">
+                      <Link
+                        to="/signin"
+                        className="px-3 py-1.5 bg-primary text-on-primary rounded font-semibold text-xs inline-flex items-center gap-1 no-underline"
+                      >
+                        <span>Sign In with Existing Account</span>
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {errorMsg && !isRateLimited && (
+                  <div className="mb-6 p-3 bg-critical/10 border border-critical/40 rounded-lg text-critical text-xs flex items-center gap-2.5">
+                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="8" x2="12" y2="12" />
+                      <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    <span>{errorMsg}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-code-sm text-xs text-outline uppercase">Full Name / Engineer Handle</label>
+                    <div className="relative flex items-center bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+                      <svg className="w-4 h-4 text-outline mr-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+                      <input
+                        type="text"
+                        required
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="Alex Chen"
+                        className="w-full bg-transparent font-code-md text-sm text-on-surface focus:outline-none placeholder:text-outline/50"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-code-sm text-xs text-outline uppercase">Work Email</label>
+                    <div className="relative flex items-center bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+                      <svg className="w-4 h-4 text-outline mr-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                        <polyline points="22,6 12,13 2,6" />
+                      </svg>
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="engineer@acme.corp"
+                        className="w-full bg-transparent font-code-md text-sm text-on-surface focus:outline-none placeholder:text-outline/50"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="font-code-sm text-xs text-outline uppercase">Password</label>
+                      {password && (
+                        <span className={`text-[11px] font-code-sm ${strength >= 70 ? 'text-primary' : 'text-warning'}`}>
+                          Strength: {strength >= 70 ? 'Strong' : 'Moderate'} ({strength}%)
+                        </span>
+                      )}
+                    </div>
+                    <div className="relative flex items-center bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+                      <svg className="w-4 h-4 text-outline mr-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                      </svg>
+                      <input
+                        type="password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Minimum 8 characters"
+                        className="w-full bg-transparent font-code-md text-sm text-on-surface focus:outline-none placeholder:text-outline/50"
+                      />
+                    </div>
+                    {/* Strength Meter Bar */}
+                    {password && (
+                      <div className="w-full h-1 bg-surface-variant rounded-full overflow-hidden mt-1">
+                        <div
+                          className={`h-full transition-all duration-300 ${strength >= 70 ? 'bg-primary' : 'bg-warning'}`}
+                          style={{ width: `${strength}%` }}
+                        ></div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="font-code-sm text-xs text-outline uppercase">Confirm Password</label>
+                      {confirmPassword && (
+                        <span className={`text-[11px] font-code-sm ${passwordsMatch ? 'text-primary' : 'text-critical'}`}>
+                          {passwordsMatch ? 'Passwords match ✓' : 'Passwords do not match ✗'}
+                        </span>
+                      )}
+                    </div>
+                    <div className="relative flex items-center bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-3 py-2.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+                      <svg className="w-4 h-4 text-outline mr-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      <input
+                        type="password"
+                        required
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm access password"
+                        className="w-full bg-transparent font-code-md text-sm text-on-surface focus:outline-none placeholder:text-outline/50"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-1">
+                    <input
+                      type="checkbox"
+                      id="agree"
+                      checked={agreedTerms}
+                      onChange={(e) => setAgreedTerms(e.target.checked)}
+                      className="rounded bg-surface-container-lowest border-outline-variant text-primary focus:ring-0 cursor-pointer"
+                    />
+                    <label htmlFor="agree" className="text-xs text-outline cursor-pointer">
+                      I agree to the SupplyGuard Service Terms & Security Auditing Policies.
+                    </label>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="mt-2 w-full py-3 bg-primary hover:bg-primary-container text-on-primary font-headline-sm font-semibold text-sm rounded-lg shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                  >
+                    {loading ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-on-primary border-t-transparent rounded-full animate-spin"></span>
+                        <span>Creating Account...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Create Account</span>
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                <div className="mt-8 pt-4 border-t border-outline-variant/30 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-outline">
+                  <div>
+                    Already registered?{' '}
+                    <Link to="/signin" className="text-primary font-semibold hover:underline">
+                      Sign In →
+                    </Link>
+                  </div>
+                  <div className="flex items-center gap-1 text-[11px] text-primary">
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" />
+                    </svg>
+                    <span>Enterprise Cryptographic Security</span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

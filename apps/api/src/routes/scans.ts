@@ -84,11 +84,16 @@ router.post('/', async (req, res) => {
 // GET /api/scans/:id — Get scan status and full results with tenant isolation
 router.get('/:id', async (req, res) => {
   const currentUserId = req.user?.id;
+  if (!currentUserId) {
+    res.status(401).json({ error: 'Unauthorized: Missing authenticated user identity' });
+    return;
+  }
+
   let scan = scanStore.get(req.params.id);
 
-  // If not in local memory, check Supabase
+  // If not in local memory, check Supabase strictly for this user
   if (!scan) {
-    scan = (await loadScanFromSupabase(req.params.id)) || undefined;
+    scan = (await loadScanFromSupabase(req.params.id, currentUserId)) || undefined;
     if (scan) {
       scanStore.set(req.params.id, scan);
     }
@@ -100,7 +105,7 @@ router.get('/:id', async (req, res) => {
   }
 
   // Tenant isolation: enforce that the caller owns this scan
-  if (scan.userId && scan.userId !== currentUserId) {
+  if (!scan.userId || scan.userId !== currentUserId) {
     res.status(403).json({ error: 'Access denied: You do not have permission to view this scan' });
     return;
   }
@@ -111,10 +116,15 @@ router.get('/:id', async (req, res) => {
 // GET /api/scans/:id/sbom — Export genuine CycloneDX v1.5 JSON SBOM with tenant isolation
 router.get('/:id/sbom', async (req, res) => {
   const currentUserId = req.user?.id;
+  if (!currentUserId) {
+    res.status(401).json({ error: 'Unauthorized: Missing authenticated user identity' });
+    return;
+  }
+
   let scan = scanStore.get(req.params.id);
 
   if (!scan) {
-    scan = (await loadScanFromSupabase(req.params.id)) || undefined;
+    scan = (await loadScanFromSupabase(req.params.id, currentUserId)) || undefined;
   }
 
   if (!scan) {
@@ -123,7 +133,7 @@ router.get('/:id/sbom', async (req, res) => {
   }
 
   // Tenant isolation: enforce that the caller owns this scan
-  if (scan.userId && scan.userId !== currentUserId) {
+  if (!scan.userId || scan.userId !== currentUserId) {
     res.status(403).json({ error: 'Access denied: You do not have permission to export this scan SBOM' });
     return;
   }

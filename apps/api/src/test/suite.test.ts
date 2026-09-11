@@ -72,7 +72,7 @@ describe('Typosquatting Detection', () => {
     assert.ok(flag, 'Should flag reqeust');
     assert.equal(flag?.similarTo, 'request');
     assert.ok(flag?.similarity && flag.similarity >= 70);
-    assert.equal(flag?.indicator, 'Possible typosquatting');
+    assert.equal(flag?.indicator, 'Possible typosquatting indicator');
 
     const flagAxios = checkTyposquat('axois');
     assert.ok(flagAxios, 'Should flag axois');
@@ -203,7 +203,7 @@ describe('Contextual Risk Scoring Rubric', () => {
         similarTo: 'popular-pkg',
         distance: 1,
         similarity: 90,
-        indicator: 'Possible typosquatting',
+        indicator: 'Possible typosquatting indicator',
         reason: 'Typosquat',
       },
       confusionFlag: {

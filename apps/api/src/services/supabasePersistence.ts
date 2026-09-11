@@ -9,6 +9,11 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIs
  */
 export async function persistScanToSupabase(scan: ScanResult): Promise<void> {
   try {
+    if (!scan.userId) {
+      console.warn('[SupabasePersistence] Skipping scan persistence: missing user_id');
+      return;
+    }
+
     const criticalCount = scan.packages.filter((p) => p.riskTier === 'critical').length;
     const highCount = scan.packages.filter((p) => p.riskScore >= 60 && p.riskScore < 70).length;
     const mediumCount = scan.packages.filter((p) => p.riskTier === 'medium' && p.riskScore < 60).length;
@@ -17,7 +22,7 @@ export async function persistScanToSupabase(scan: ScanResult): Promise<void> {
 
     const payload = {
       scan_id: scan.scanId,
-      user_id: scan.userId || null,
+      user_id: scan.userId,
       repository_url: scan.repoUrl,
       owner: scan.owner || null,
       repository: scan.repo || null,
@@ -36,44 +41,52 @@ export async function persistScanToSupabase(scan: ScanResult): Promise<void> {
       completed_at: scan.completedAt || null,
     };
 
-    // Upsert into scans table via PostgREST
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/scans?on_conflict=scan_id`, {
+    // Invoke save_scan_record RPC in Supabase
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/save_scan_record`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         apikey: SUPABASE_ANON_KEY,
         Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        Prefer: 'resolution=merge-duplicates',
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ payload }),
     });
 
     if (!res.ok) {
       const errText = await res.text();
-      console.warn('[SupabasePersistence] Upsert scan warning:', res.status, errText);
+      console.warn('[SupabasePersistence] save_scan_record RPC response:', res.status, errText);
     }
   } catch (err) {
-    // Non-fatal, local memory store ensures resilience
     console.warn('[SupabasePersistence] Error persisting scan:', err);
   }
 }
 
 /**
- * Loads a scan from Supabase by scanId if not in memory.
+ * Loads a scan from Supabase by scanId and userId enforcing tenant isolation.
  */
-export async function loadScanFromSupabase(scanId: string): Promise<ScanResult | null> {
+export async function loadScanFromSupabase(scanId: string, userId?: string): Promise<ScanResult | null> {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/scans?scan_id=eq.${encodeURIComponent(scanId)}&select=raw_result`, {
+    if (!userId) {
+      return null;
+    }
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_scan_by_id`, {
+      method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         apikey: SUPABASE_ANON_KEY,
         Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
       },
+      body: JSON.stringify({
+        p_scan_id: scanId,
+        p_user_id: userId,
+      }),
     });
 
     if (res.ok) {
-      const data = (await res.json()) as Array<{ raw_result?: ScanResult }>;
-      if (data.length > 0 && data[0].raw_result) {
-        return data[0].raw_result;
+      const scanData = (await res.json()) as ScanResult | null;
+      if (scanData && scanData.scanId) {
+        return scanData;
       }
     }
   } catch (err) {
@@ -83,7 +96,7 @@ export async function loadScanFromSupabase(scanId: string): Promise<ScanResult |
 }
 
 /**
- * Loads scan history from Supabase for a given user.
+ * Loads scan history from Supabase strictly for the specified authenticated user.
  */
 export async function loadScanHistoryFromSupabase(userId?: string): Promise<ScanResult[]> {
   try {
@@ -91,18 +104,23 @@ export async function loadScanHistoryFromSupabase(userId?: string): Promise<Scan
       return [];
     }
 
-    const url = `${SUPABASE_URL}/rest/v1/scans?user_id=eq.${encodeURIComponent(userId)}&select=raw_result&order=created_at.desc&limit=50`;
-
-    const res = await fetch(url, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_user_scans`, {
+      method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         apikey: SUPABASE_ANON_KEY,
         Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
       },
+      body: JSON.stringify({
+        p_user_id: userId,
+      }),
     });
 
     if (res.ok) {
-      const data = (await res.json()) as Array<{ raw_result?: ScanResult }>;
-      return data.filter((d) => Boolean(d.raw_result)).map((d) => d.raw_result!);
+      const data = (await res.json()) as ScanResult[];
+      if (Array.isArray(data)) {
+        return data.filter((s) => Boolean(s && s.scanId && s.userId === userId));
+      }
     }
   } catch (err) {
     console.warn('[SupabasePersistence] Error loading history:', err);

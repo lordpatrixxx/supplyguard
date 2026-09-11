@@ -35,6 +35,6 @@ export function evaluateProvenance(
     sourceRepoUrl: registryData?.repositoryUrl,
     registryMetadata,
     lockfileIntegrity,
-    buildAttestation: 'Not available', // Transparent MVP statement: do not claim SLSA 3
+    buildAttestation: 'Not available', // Build provenance verification based on repository signals and lockfile integrity
   };
 }

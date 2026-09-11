@@ -20,7 +20,7 @@ export interface TyposquatFlag {
   similarTo: string;
   distance: number;
   similarity: number; // e.g. 92%
-  indicator: string;  // "Possible typosquatting"
+  indicator: string;  // "Possible typosquatting indicator"
   reason: string;
 }
 

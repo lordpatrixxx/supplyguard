@@ -2,12 +2,20 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
+export interface SignUpResult {
+  user: User | null;
+  session: Session | null;
+  needsEmailConfirmation: boolean;
+  error: Error | null;
+}
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, fullName: string) => Promise<SignUpResult>;
+  resendVerificationEmail: (email: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
 }
@@ -43,7 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     if (!error && data.session) {
       setSession(data.session);
       setUser(data.user);
@@ -52,20 +60,57 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error: error as Error | null };
   };
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string): Promise<SignUpResult> => {
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: email.trim(),
       password,
       options: {
-        data: { full_name: fullName },
+        data: { full_name: fullName.trim() },
+        emailRedirectTo: `${window.location.origin}/signin`,
       },
     });
-    if (!error && data.session) {
+
+    if (error) {
+      setLoading(false);
+      return {
+        user: null,
+        session: null,
+        needsEmailConfirmation: false,
+        error: error as Error,
+      };
+    }
+
+    if (data.session) {
       setSession(data.session);
       setUser(data.user);
+      setLoading(false);
+      return {
+        user: data.user,
+        session: data.session,
+        needsEmailConfirmation: false,
+        error: null,
+      };
     }
+
+    // User created successfully, but email verification is required before login
     setLoading(false);
+    return {
+      user: data.user,
+      session: null,
+      needsEmailConfirmation: true,
+      error: null,
+    };
+  };
+
+  const resendVerificationEmail = async (email: string): Promise<{ error: Error | null }> => {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email.trim(),
+      options: {
+        emailRedirectTo: `${window.location.origin}/signin`,
+      },
+    });
     return { error: error as Error | null };
   };
 
@@ -78,7 +123,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: `${window.location.origin}/signin`,
     });
     return { error: error as Error | null };
@@ -92,6 +137,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loading,
         signIn,
         signUp,
+        resendVerificationEmail,
         signOut,
         resetPassword,
       }}
