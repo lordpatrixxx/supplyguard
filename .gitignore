@@ -37,3 +37,5 @@ Thumbs.db
 # Temp files
 .tempmediaStorage/
 *.png
+
+.vercel

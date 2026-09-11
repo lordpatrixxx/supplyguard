@@ -1,11 +1,8 @@
 {
-  "version": 2,
-  "name": "supplyguard",
   "buildCommand": "npm run build -w apps/web",
   "outputDirectory": "apps/web/dist",
-  "framework": "vite",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
