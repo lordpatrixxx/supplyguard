@@ -1,6 +1,10 @@
 import { useRef, useCallback, useState, useMemo, useEffect } from 'react'
 import ForceGraph2D from 'react-force-graph-2d'
 import type { PackageNode, GraphEdge } from '../types'
+import {
+  Search, X, AlertTriangle, GitFork, Layers, Maximize,
+  ZoomIn, ZoomOut, RotateCcw
+} from 'lucide-react'
 
 interface GraphViewProps {
   packages: PackageNode[]
@@ -36,6 +40,8 @@ export function GraphView({ packages, edges, onNodeClick, selectedPkg, initialSe
 
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery)
   const [criticalOnly, setCriticalOnly] = useState(false)
+  const [highOnly, setHighOnly] = useState(false)
+  const [mediumOnly, setMediumOnly] = useState(false)
   const [highFanOutOnly, setHighFanOutOnly] = useState(false)
   const [transitiveOnly, setTransitiveOnly] = useState(false)
   const [layoutMode, setLayoutMode] = useState<'force' | 'cluster'>('force')
@@ -73,15 +79,11 @@ export function GraphView({ packages, edges, onNodeClick, selectedPkg, initialSe
         const matchesCve = p.vulnerabilities.some(v => v.id.toLowerCase().includes(q) || v.summary.toLowerCase().includes(q))
         if (!matchesName && !matchesCve) return false
       }
-      if (criticalOnly && p.riskTier !== 'critical') {
-        return false
-      }
-      if (highFanOutOnly && (p.dependentCount ?? 0) < 3) {
-        return false
-      }
-      if (transitiveOnly && p.isDirect) {
-        return false
-      }
+      if (criticalOnly && p.riskTier !== 'critical') return false
+      if (highOnly && p.advisorySeverity !== 'HIGH') return false
+      if (mediumOnly && p.riskTier !== 'medium') return false
+      if (highFanOutOnly && (p.dependentCount ?? 0) < 3) return false
+      if (transitiveOnly && p.isDirect) return false
       return true
     })
 
@@ -97,14 +99,12 @@ export function GraphView({ packages, edges, onNodeClick, selectedPkg, initialSe
     }
 
     const nodeIds = new Set(nodes.map((n) => n.id))
-
-    // Edges might refer to unique pkg.id or legacy pkg.name; handle both gracefully
     const links: GraphLink[] = edges
       .filter((e) => nodeIds.has(e.from) && nodeIds.has(e.to))
       .map((e) => ({ source: e.from, target: e.to }))
 
     return { nodes, links }
-  }, [packages, edges, searchQuery, criticalOnly, highFanOutOnly, transitiveOnly])
+  }, [packages, edges, searchQuery, criticalOnly, highOnly, mediumOnly, highFanOutOnly, transitiveOnly])
 
   const handleNodeClick = useCallback(
     (node: GraphNode) => {
@@ -135,149 +135,151 @@ export function GraphView({ packages, edges, onNodeClick, selectedPkg, initialSe
     }
   }
 
+  const handleReset = () => {
+    setSearchQuery('')
+    setCriticalOnly(false)
+    setHighOnly(false)
+    setMediumOnly(false)
+    setHighFanOutOnly(false)
+    setTransitiveOnly(false)
+    setTimeout(() => handleFit(), 100)
+  }
+
+  const FilterButton = ({ active, onClick, children, color = 'primary' }: { active: boolean; onClick: () => void; children: React.ReactNode; color?: string }) => (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md font-code-sm text-[11px] uppercase tracking-wider transition-all cursor-pointer border-none font-semibold ${
+        active
+          ? color === 'critical' ? 'bg-critical/15 text-critical ring-1 ring-critical/40' :
+            color === 'warning' ? 'bg-warning/15 text-warning ring-1 ring-warning/40' :
+            color === 'tertiary' ? 'bg-tertiary/15 text-tertiary ring-1 ring-tertiary/40' :
+            'bg-primary/15 text-primary ring-1 ring-primary/40'
+          : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+      }`}
+    >
+      {children}
+    </button>
+  )
+
   return (
-    <div className="flex flex-col gap-space-md w-full">
-      {/* ── Controls & Scope Toolbar (Stitch Refined Dashboard Specification) ── */}
-      <div className="bg-surface-container-low p-space-sm rounded-lg shadow-sm flex flex-wrap items-center justify-between gap-space-sm border border-surface-variant">
-        {/* Filter Inputs */}
-        <div className="flex items-center gap-space-sm flex-wrap">
-          <div className="relative">
-            <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[16px] text-primary">
-              filter_alt
-            </span>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Filter packages/CVEs..."
-              className="h-8 bg-surface-container-highest pl-8 pr-7 rounded font-code-sm text-code-sm text-on-surface focus:outline-none ring-1 ring-primary/40 focus:ring-primary w-40 sm:w-52 border-none"
-            />
-            {searchQuery && (
+    <div className="flex flex-col gap-3 w-full">
+      {/* ── Grouped Controls Toolbar ── */}
+      <div className="bg-surface-container-low rounded-xl border border-outline-variant/30 shadow-sm overflow-hidden">
+        <div className="flex flex-wrap items-center gap-4 p-3">
+          {/* SEARCH Group */}
+          <div className="flex items-center gap-2">
+            <span className="font-code-sm text-[10px] text-outline uppercase tracking-wider shrink-0 hidden sm:block">Search</span>
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Packages / CVEs..."
+                className="h-8 bg-surface-container-lowest pl-8 pr-8 rounded-lg font-code-sm text-xs text-on-surface focus:outline-none border border-outline-variant/40 focus:border-primary focus:ring-1 focus:ring-primary w-44 transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface cursor-pointer bg-transparent border-none p-0"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="h-6 w-px bg-outline-variant/30 hidden sm:block" />
+
+          {/* FILTERS Group */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-code-sm text-[10px] text-outline uppercase tracking-wider shrink-0 hidden sm:block mr-1">Filters</span>
+            <FilterButton active={criticalOnly} onClick={() => setCriticalOnly(!criticalOnly)} color="critical">
+              <AlertTriangle className="w-3 h-3" />
+              Critical
+            </FilterButton>
+            <FilterButton active={highOnly} onClick={() => setHighOnly(!highOnly)} color="warning">
+              High
+            </FilterButton>
+            <FilterButton active={mediumOnly} onClick={() => setMediumOnly(!mediumOnly)} color="tertiary">
+              Medium
+            </FilterButton>
+            <FilterButton active={highFanOutOnly} onClick={() => setHighFanOutOnly(!highFanOutOnly)}>
+              <GitFork className="w-3 h-3" />
+              Fan-Out
+            </FilterButton>
+            <FilterButton active={transitiveOnly} onClick={() => setTransitiveOnly(!transitiveOnly)}>
+              <Layers className="w-3 h-3" />
+              Transitive
+            </FilterButton>
+          </div>
+
+          <div className="h-6 w-px bg-outline-variant/30 hidden sm:block" />
+
+          {/* VIEW Group */}
+          <div className="flex items-center gap-1.5 ml-auto">
+            <span className="font-code-sm text-[10px] text-outline uppercase tracking-wider shrink-0 hidden sm:block mr-1">View</span>
+            <div className="flex items-center bg-surface-container rounded-lg p-0.5">
               <button
-                onClick={() => setSearchQuery('')}
-                className="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-[14px] text-outline hover:text-on-surface cursor-pointer bg-transparent border-none"
+                onClick={() => setLayoutMode('force')}
+                className={`px-2.5 py-1 rounded-md font-code-sm text-[11px] transition-all cursor-pointer border-none ${
+                  layoutMode === 'force' ? 'text-on-surface bg-surface-container-highest font-semibold' : 'text-outline bg-transparent hover:text-on-surface'
+                }`}
               >
-                close
+                Force
               </button>
-            )}
-          </div>
+              <button
+                onClick={() => setLayoutMode('cluster')}
+                className={`px-2.5 py-1 rounded-md font-code-sm text-[11px] transition-all cursor-pointer border-none ${
+                  layoutMode === 'cluster' ? 'text-on-surface bg-surface-container-highest font-semibold' : 'text-outline bg-transparent hover:text-on-surface'
+                }`}
+              >
+                Cluster
+              </button>
+            </div>
 
-          <button
-            onClick={() => setCriticalOnly(!criticalOnly)}
-            className={`flex items-center gap-space-xs px-2.5 py-1 rounded font-label-caps text-label-caps uppercase transition-all cursor-pointer border-none ${
-              criticalOnly
-                ? 'bg-error-container text-on-error-container ring-1 ring-error'
-                : 'bg-surface-container text-on-surface-variant hover:text-on-surface'
-            }`}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>
-            Critical Only
-          </button>
-
-          <button
-            onClick={() => setHighFanOutOnly(!highFanOutOnly)}
-            className={`flex items-center gap-space-xs px-2.5 py-1 rounded font-label-caps text-label-caps uppercase transition-colors cursor-pointer border-none ${
-              highFanOutOnly
-                ? 'bg-primary-container text-on-primary'
-                : 'bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface'
-            }`}
-            title="Show nodes with >= 3 downstream dependents"
-          >
-            Fan-Out (&ge;3)
-          </button>
-
-          <button
-            onClick={() => setTransitiveOnly(!transitiveOnly)}
-            className={`flex items-center gap-space-xs px-2.5 py-1 rounded font-label-caps text-label-caps uppercase transition-colors cursor-pointer border-none ${
-              transitiveOnly
-                ? 'bg-tertiary-container text-on-tertiary'
-                : 'bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface'
-            }`}
-          >
-            Transitive Only
-          </button>
-
-          <div className="px-2 py-1 rounded bg-surface-dim font-code-sm text-code-sm text-outline flex items-center gap-1">
-            <span>ecosystem:</span>
-            <span className="text-on-surface font-medium">npm</span>
-          </div>
-        </div>
-
-        {/* View Manipulation & Canvas Options */}
-        <div className="flex items-center gap-space-xs">
-          <div className="flex items-center bg-surface-container rounded p-0.5">
-            <button
-              onClick={() => setLayoutMode('force')}
-              className={`px-2 py-1 rounded font-code-sm text-code-sm transition-all cursor-pointer border-none ${
-                layoutMode === 'force' ? 'text-on-surface bg-surface-container-highest font-medium' : 'text-outline bg-transparent'
-              }`}
-            >
-              Force Map
+            <button onClick={handleFit} className="w-7 h-7 flex items-center justify-center bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface rounded-lg transition-colors cursor-pointer border-none" title="Fit to Screen">
+              <Maximize className="w-3.5 h-3.5" />
             </button>
-            <button
-              onClick={() => setLayoutMode('cluster')}
-              className={`px-2 py-1 rounded font-code-sm text-code-sm transition-all cursor-pointer border-none ${
-                layoutMode === 'cluster' ? 'text-on-surface bg-surface-container-highest font-medium' : 'text-outline bg-transparent'
-              }`}
-            >
-              Clustered
+            <button onClick={handleReset} className="w-7 h-7 flex items-center justify-center bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface rounded-lg transition-colors cursor-pointer border-none" title="Reset All Filters">
+              <RotateCcw className="w-3.5 h-3.5" />
             </button>
-          </div>
-
-          <button
-            onClick={handleFit}
-            className="w-7 h-7 flex items-center justify-center bg-surface-container hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface rounded transition-colors cursor-pointer border-none"
-            title="Reset Zoom"
-          >
-            <span className="material-symbols-outlined text-[16px]">fit_screen</span>
-          </button>
-
-          <div className="h-4 w-px bg-surface-variant mx-1"></div>
-          <div className="flex items-center gap-1.5 font-label-caps text-label-caps text-outline">
-            <span>Visual:</span>
-            <span className="text-primary-container font-code-sm text-code-sm">2D Force</span>
+            <button onClick={handleZoomIn} className="w-7 h-7 flex items-center justify-center bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface rounded-lg transition-colors cursor-pointer border-none" title="Zoom In">
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            <button onClick={handleZoomOut} className="w-7 h-7 flex items-center justify-center bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface rounded-lg transition-colors cursor-pointer border-none" title="Zoom Out">
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
       </div>
 
       {/* ── Main Risk Constellation Canvas ── */}
-      <div className="relative w-full h-[620px] bg-surface-container-lowest rounded-xl overflow-hidden shadow-2xl flex flex-col justify-between p-space-md select-none border border-surface-variant">
+      <div className="relative w-full h-[620px] bg-surface-container-lowest rounded-xl overflow-hidden shadow-2xl flex flex-col justify-between p-3 select-none border border-outline-variant/30">
         {/* Subtle Grid Matrix Background */}
         <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#2f3544_1px,transparent_1px)] [background-size:24px_24px]"></div>
 
         {/* Topology Status HUD Header */}
         <div className="relative z-10 flex items-center justify-between">
-          <div className="flex items-center gap-space-sm bg-surface-container/90 backdrop-blur px-space-sm py-1 rounded-md border border-surface-variant">
+          <div className="flex items-center gap-2 bg-surface-container/90 backdrop-blur px-3 py-1.5 rounded-lg border border-outline-variant/30">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            <span className="font-code-sm text-code-sm text-on-surface font-semibold tracking-tight">
+            <span className="font-code-sm text-xs text-on-surface font-semibold tracking-tight">
               DEPENDENCY TOPOLOGY
             </span>
-            <span className="text-outline font-label-caps text-label-caps uppercase bg-surface-dim px-1.5 py-0.5 rounded">
-              {Math.max(0, graphData.nodes.length - 1)} Nodes Visible
+            <span className="text-outline font-code-sm text-[10px] uppercase bg-surface-dim px-1.5 py-0.5 rounded">
+              {Math.max(0, graphData.nodes.length - 1)} Nodes
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleZoomIn}
-              className="w-8 h-8 rounded bg-surface-container/90 hover:bg-surface-container-highest text-on-surface flex items-center justify-center text-[16px] cursor-pointer border-none shadow-sm transition-colors"
-              title="Zoom In"
-            >
-              <span className="material-symbols-outlined text-[16px]">zoom_in</span>
+          <div className="flex items-center gap-1.5">
+            <button onClick={handleZoomIn} className="w-8 h-8 rounded-lg bg-surface-container/90 hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center cursor-pointer border-none shadow-sm transition-colors" title="Zoom In">
+              <ZoomIn className="w-4 h-4" />
             </button>
-            <button
-              onClick={handleZoomOut}
-              className="w-8 h-8 rounded bg-surface-container/90 hover:bg-surface-container-highest text-on-surface flex items-center justify-center text-[16px] cursor-pointer border-none shadow-sm transition-colors"
-              title="Zoom Out"
-            >
-              <span className="material-symbols-outlined text-[16px]">zoom_out</span>
+            <button onClick={handleZoomOut} className="w-8 h-8 rounded-lg bg-surface-container/90 hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center cursor-pointer border-none shadow-sm transition-colors" title="Zoom Out">
+              <ZoomOut className="w-4 h-4" />
             </button>
-            <button
-              onClick={handleFit}
-              className="w-8 h-8 rounded bg-surface-container/90 hover:bg-surface-container-highest text-on-surface flex items-center justify-center text-[16px] cursor-pointer border-none shadow-sm transition-colors"
-              title="Fit Screen"
-            >
-              <span className="material-symbols-outlined text-[16px]">fullscreen</span>
+            <button onClick={handleFit} className="w-8 h-8 rounded-lg bg-surface-container/90 hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center cursor-pointer border-none shadow-sm transition-colors" title="Fit to Screen">
+              <Maximize className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -335,33 +337,26 @@ export function GraphView({ packages, edges, onNodeClick, selectedPkg, initialSe
         </div>
 
         {/* Bottom HUD Bar & Legend */}
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-space-md pt-space-sm bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/80 to-transparent pointer-events-auto">
-          {/* Strict Visual Legend */}
-          <div className="flex items-center gap-space-lg bg-surface-container/90 backdrop-blur px-space-md py-space-xs rounded-lg border border-surface-variant shadow-sm flex-wrap">
-            <div className="flex items-center gap-space-xs">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pt-2 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/80 to-transparent pointer-events-auto">
+          <div className="flex items-center gap-4 bg-surface-container/90 backdrop-blur px-3 py-1.5 rounded-lg border border-outline-variant/30 shadow-sm flex-wrap">
+            <div className="flex items-center gap-1.5">
               <span className="w-3 h-3 rounded-full bg-primary ring-2 ring-primary/20"></span>
-              <span className="font-label-caps text-label-caps text-on-surface uppercase">Safe (0-39)</span>
+              <span className="font-code-sm text-[10px] text-on-surface uppercase">Safe (0–39)</span>
             </div>
-            <div className="flex items-center gap-space-xs">
+            <div className="flex items-center gap-1.5">
               <span className="w-3 h-3 rounded-full bg-tertiary-container ring-2 ring-tertiary/20"></span>
-              <span className="font-label-caps text-label-caps text-on-surface uppercase">Medium (40-69)</span>
+              <span className="font-code-sm text-[10px] text-on-surface uppercase">Medium (40–69)</span>
             </div>
-            <div className="flex items-center gap-space-xs">
+            <div className="flex items-center gap-1.5">
               <span className="w-3 h-3 rounded-full bg-error ring-2 ring-error/30 animate-pulse"></span>
-              <span className="font-label-caps text-label-caps text-error uppercase font-bold">Critical (70-100)</span>
-            </div>
-            <div className="h-3 w-px bg-surface-variant hidden sm:block"></div>
-            <div className="hidden sm:flex items-center gap-space-md font-code-sm text-code-sm text-outline">
-              <span className="flex items-center gap-1.5"><span className="w-4 h-0.5 bg-on-surface"></span> Direct Edge</span>
-              <span className="flex items-center gap-1.5"><span className="w-4 h-0.5 border-b border-dashed border-outline"></span> Transitive Path</span>
+              <span className="font-code-sm text-[10px] text-error uppercase font-bold">Critical (70–100)</span>
             </div>
           </div>
 
-          {/* Focus Status pill */}
-          <div className="flex items-center gap-space-xs font-code-sm text-code-sm bg-surface-dim/95 px-space-sm py-1 rounded border-l-2 border-primary-container shadow-sm">
-            <span className="text-outline">Active Focus:</span>
-            <span className={selectedPkg?.riskTier === 'critical' ? 'text-error font-semibold' : 'text-primary-container font-medium'}>
-              {selectedPkg ? `${selectedPkg.name}@${selectedPkg.version}` : 'Select a node in constellation'}
+          <div className="flex items-center gap-1.5 font-code-sm text-xs bg-surface-dim/95 px-3 py-1.5 rounded-lg border-l-2 border-primary shadow-sm">
+            <span className="text-outline">Focus:</span>
+            <span className={selectedPkg?.riskTier === 'critical' ? 'text-critical font-semibold' : 'text-primary font-medium'}>
+              {selectedPkg ? `${selectedPkg.name}@${selectedPkg.version}` : 'Select a node'}
             </span>
           </div>
         </div>

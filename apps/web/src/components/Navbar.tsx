@@ -1,11 +1,12 @@
 import { Link, useLocation } from 'react-router-dom'
+import { Shield, Radar, History } from 'lucide-react'
 
 export function Navbar() {
   const location = useLocation()
 
   const navLinks = [
-    { path: '/', label: 'Scan', icon: 'radar' },
-    { path: '/history', label: 'History', icon: 'history' },
+    { path: '/', label: 'Scan', icon: <Radar className="w-4 h-4" /> },
+    { path: '/history', label: 'History', icon: <History className="w-4 h-4" /> },
   ]
 
   return (
@@ -26,12 +27,10 @@ export function Navbar() {
             background: 'linear-gradient(135deg, var(--color-primary-container), var(--color-primary))',
           }}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--color-surface)' }}>
-            shield
-          </span>
+          <Shield className="w-5 h-5 text-surface" />
         </div>
         <span
-          className="text-headline-sm"
+          className="text-headline-sm font-bold"
           style={{ color: 'var(--color-text-primary)' }}
         >
           SupplyGuard
@@ -52,15 +51,13 @@ export function Navbar() {
                 background: isActive ? 'rgba(79, 209, 174, 0.08)' : 'transparent',
               }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-                {link.icon}
-              </span>
+              {link.icon}
               <span className="text-body-md font-medium">{link.label}</span>
             </Link>
           )
         })}
 
-        {/* Initials Avatar (no stock photo per build prompt) */}
+        {/* Initials Avatar */}
         <div
           className="ml-4 flex items-center justify-center rounded-md"
           style={{

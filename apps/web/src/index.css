@@ -341,3 +341,20 @@ textarea:focus {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-outline);
 }
+
+/* ── Theme Transition ── */
+body, header, aside, main {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* ── Accessibility: Respect prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

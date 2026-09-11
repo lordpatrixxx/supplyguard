@@ -5,6 +5,10 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { getScanHistory } from '../lib/api';
 import type { ScanResult } from '../types';
+import {
+  LayoutGrid, Share2, Shield, Clock, Search, Plus, Sun, Moon,
+  LogOut, FolderOpen, X, Settings, ShieldCheck
+} from 'lucide-react';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -42,50 +46,26 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   const navItems = [
     {
-      label: 'Overview & Scans',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <rect x="3" y="3" width="7" height="7" />
-          <rect x="14" y="3" width="7" height="7" />
-          <rect x="14" y="14" width="7" height="7" />
-          <rect x="3" y="14" width="7" height="7" />
-        </svg>
-      ),
+      label: 'Overview',
+      icon: <LayoutGrid className="w-5 h-5" />,
       path: '/app',
       active: location.pathname === '/app',
     },
     {
       label: 'Dependency Graph',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="18" cy="5" r="3" />
-          <circle cx="6" cy="12" r="3" />
-          <circle cx="18" cy="19" r="3" />
-          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-        </svg>
-      ),
+      icon: <Share2 className="w-5 h-5" />,
       path: currentScanId ? `/app/scans/${currentScanId}/dashboard` : '/app',
       active: location.pathname.includes('/dashboard'),
     },
     {
       label: 'Findings & Remediation',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        </svg>
-      ),
+      icon: <Shield className="w-5 h-5" />,
       path: currentScanId ? `/app/scans/${currentScanId}/report` : '/app',
       active: location.pathname.includes('/report'),
     },
     {
       label: 'Scan History',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="12" cy="12" r="10" />
-          <polyline points="12 6 12 12 16 14" />
-        </svg>
-      ),
+      icon: <Clock className="w-5 h-5" />,
       path: '/app/history',
       active: location.pathname === '/app/history',
     },
@@ -106,19 +86,18 @@ export function AppLayout({ children }: AppLayoutProps) {
     navigate('/signin');
   };
 
-  const userInitial = user?.email ? user.email.charAt(0).toUpperCase() : 'U';
+  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+  const userInitial = displayName.charAt(0).toUpperCase();
 
   return (
     <div className="min-h-screen bg-background text-on-surface antialiased">
       {/* ── Fixed Universal Top Header ── */}
-      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-surface-container-lowest border-b border-outline-variant/30 flex items-center justify-between px-6">
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-surface-container-lowest border-b border-outline-variant/30 flex items-center justify-between px-6 transition-colors duration-200">
         {/* Left: Brand + Active Repo + Security Intel */}
         <div className="flex items-center gap-4">
           <Link to="/app" className="flex items-center gap-2.5 no-underline">
             <div className="w-8 h-8 rounded bg-primary/10 border border-primary/40 flex items-center justify-center text-primary shadow-sm">
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5zm0 4.5c2.48 0 4.5 2.02 4.5 4.5s-2.02 4.5-4.5 4.5-4.5-2.02-4.5-4.5 2.02-4.5 4.5-4.5z" />
-              </svg>
+              <ShieldCheck className="w-5 h-5" />
             </div>
             <span className="font-headline-sm text-lg text-on-surface tracking-tight">
               Supply<span className="text-primary font-bold">Guard</span>
@@ -129,9 +108,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
           {/* Active Context Repo Chip */}
           <div className="flex items-center gap-1.5 px-2.5 py-1 bg-surface-container border border-outline-variant/40 rounded-lg">
-            <svg className="w-4 h-4 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-            </svg>
+            <FolderOpen className="w-4 h-4 text-on-surface-variant" />
             <span className="font-code-sm text-xs text-on-surface font-medium max-w-[180px] truncate" title={activeRepoName}>
               {activeRepoName}
             </span>
@@ -144,7 +121,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           <div className="hidden xl:flex items-center gap-2 px-2.5 py-1 bg-surface-container border border-primary/30 rounded-lg">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
             <span className="font-code-sm text-[11px] uppercase text-primary font-semibold tracking-wider">
-              Security Intelligence: Active
+              Analysis Engine: Active
             </span>
           </div>
         </div>
@@ -152,10 +129,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Middle: Universal Search Bar */}
         <div className="hidden lg:flex items-center flex-1 max-w-md mx-6">
           <form onSubmit={handleSearchSubmit} className="relative w-full">
-            <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
             <input
               type="text"
               value={searchQuery}
@@ -172,10 +146,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             to="/app"
             className="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary hover:bg-primary-container text-on-primary font-headline-sm text-xs rounded-lg transition-colors shadow-sm font-semibold no-underline"
           >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
+            <Plus className="w-4 h-4" />
             <span>New Scan</span>
           </Link>
 
@@ -186,46 +157,32 @@ export function AppLayout({ children }: AppLayoutProps) {
             title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
             aria-label="Toggle Theme"
           >
-            {theme === 'dark' ? (
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="5" />
-                <line x1="12" y1="1" x2="12" y2="3" />
-                <line x1="12" y1="21" x2="12" y2="23" />
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                <line x1="1" y1="12" x2="3" y2="12" />
-                <line x1="21" y1="12" x2="23" y2="12" />
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-              </svg>
-            )}
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
 
           <button
             onClick={() => setShowPolicyModal(true)}
             className="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors cursor-pointer border-none bg-transparent"
-            title="Scoring Policy & Rubric"
+            title="Risk Scoring"
           >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
+            <Shield className="w-4 h-4" />
           </button>
 
           <div className="h-5 w-[1px] bg-outline-variant/30"></div>
 
-          {/* User Account Pill */}
-          <div className="flex items-center gap-2 px-2.5 py-1 bg-surface-container rounded-lg border border-outline-variant/40" title={user?.email || 'Engineer'}>
+          {/* User Account Pill — links to Profile */}
+          <Link
+            to="/app/profile"
+            className="flex items-center gap-2 px-2.5 py-1 bg-surface-container rounded-lg border border-outline-variant/40 no-underline hover:bg-surface-container-high transition-colors"
+            title={user?.email || 'Profile'}
+          >
             <div className="w-5 h-5 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center font-code-sm text-[11px] text-primary font-bold">
               {userInitial}
             </div>
             <span className="font-code-sm text-xs text-on-surface font-medium max-w-[120px] truncate">
-              {user?.email ? user.email.split('@')[0] : 'Engineer'}
+              {displayName}
             </span>
-          </div>
+          </Link>
 
           {/* Sign Out Button */}
           <button
@@ -233,20 +190,16 @@ export function AppLayout({ children }: AppLayoutProps) {
             className="p-1.5 text-outline hover:text-critical hover:bg-surface-container rounded-lg transition-colors cursor-pointer border-none bg-transparent"
             title="Sign Out"
           >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </header>
 
       {/* ── Fixed Left Sidebar ── */}
-      <aside className="fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low border-r border-outline-variant/30 z-40 flex flex-col justify-between overflow-y-auto">
+      <aside className="fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low border-r border-outline-variant/30 z-40 flex flex-col justify-between overflow-y-auto transition-colors duration-200">
         <div className="p-4">
           <div className="px-2 pb-2 text-outline font-code-sm text-[10px] uppercase tracking-wider">
-            Telemetry &amp; Audit
+            Navigation
           </div>
 
           <nav className="flex flex-col gap-1">
@@ -254,10 +207,10 @@ export function AppLayout({ children }: AppLayoutProps) {
               <Link
                 key={item.label}
                 to={item.path}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors no-underline font-body-md text-sm ${
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all no-underline font-body-md text-sm ${
                   item.active
                     ? 'bg-surface-container-high text-primary border-l-2 border-primary font-semibold'
-                    : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+                    : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface hover:translate-x-0.5'
                 }`}
               >
                 {item.icon}
@@ -267,18 +220,30 @@ export function AppLayout({ children }: AppLayoutProps) {
 
             <button
               onClick={() => setShowPolicyModal(true)}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-sm transition-colors w-full text-left bg-transparent border-none cursor-pointer"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-sm transition-all w-full text-left bg-transparent border-none cursor-pointer hover:translate-x-0.5"
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-              <span>Policy &amp; Rubric</span>
+              <ShieldCheck className="w-5 h-5" />
+              <span>Risk Scoring</span>
             </button>
+
+            <div className="h-[1px] bg-outline-variant/20 my-2" />
+
+            <Link
+              to="/app/profile"
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all no-underline font-body-md text-sm ${
+                location.pathname === '/app/profile'
+                  ? 'bg-surface-container-high text-primary border-l-2 border-primary font-semibold'
+                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface hover:translate-x-0.5'
+              }`}
+            >
+              <Settings className="w-5 h-5" />
+              <span>Profile & Settings</span>
+            </Link>
           </nav>
 
-          {/* Manifest Integrity Box */}
+          {/* Dependency Integrity Box */}
           <div className="mt-8 px-2 pb-2 text-outline font-code-sm text-[10px] uppercase tracking-wider">
-            Manifest Integrity
+            Dependency Integrity
           </div>
           <div className="flex flex-col gap-1">
             <div className="p-3 bg-surface-container-lowest border border-outline-variant/40 rounded-lg">
@@ -299,7 +264,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Engine Version Footer */}
         <div className="p-4 border-t border-outline-variant/30 bg-surface-container-lowest">
           <div className="flex items-center justify-between text-outline font-code-sm text-xs">
-            <span>Engine: v4.12-sec</span>
+            <span>Analysis Engine</span>
             <span className="text-primary font-mono text-[11px]">ACTIVE</span>
           </div>
         </div>
@@ -307,32 +272,27 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* ── Main Content Offset ── */}
       <div className="pl-64">
-        <main className="w-full pt-16 min-h-screen bg-background text-on-surface">
+        <main className="w-full pt-16 min-h-screen bg-background text-on-surface transition-colors duration-200">
           {children}
         </main>
       </div>
 
-      {/* ── Policy & Rules Modal ── */}
+      {/* ── Risk Scoring Modal ── */}
       {showPolicyModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
           <div className="bg-surface-container border border-outline-variant rounded-xl max-w-lg w-full p-6 shadow-2xl animate-fade-in">
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-outline-variant/30">
               <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
+                <Shield className="w-5 h-5 text-primary" />
                 <h2 className="font-headline-sm text-lg font-bold text-on-surface">
-                  Supply-Chain Scoring Rubric
+                  Risk Scoring Methodology
                 </h2>
               </div>
               <button
                 onClick={() => setShowPolicyModal(false)}
-                className="text-outline hover:text-on-surface bg-transparent border-none cursor-pointer"
+                className="text-outline hover:text-on-surface bg-transparent border-none cursor-pointer p-1 rounded-lg hover:bg-surface-container transition-colors"
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+                <X className="w-4 h-4" />
               </button>
             </div>
 
@@ -379,7 +339,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 onClick={() => setShowPolicyModal(false)}
                 className="px-4 py-2 rounded bg-primary text-on-primary font-headline-sm text-xs font-semibold hover:bg-primary-container transition-colors cursor-pointer"
               >
-                Close Rubric
+                Close
               </button>
             </div>
           </div>

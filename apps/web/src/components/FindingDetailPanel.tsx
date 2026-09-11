@@ -1,9 +1,23 @@
 import { useState } from 'react'
 import type { PackageNode } from '../types'
+import {
+  X, GitFork, Network, AlertTriangle, BarChart3, Shield,
+  CheckCircle, Copy, ClipboardCheck, ExternalLink, Sparkles,
+  Wrench, Package
+} from 'lucide-react'
 
 interface FindingDetailPanelProps {
   pkg: PackageNode
   onClose?: () => void
+}
+
+function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
+  return (
+    <div className="flex items-center gap-2 mb-3">
+      {icon}
+      <h3 className="font-headline-sm text-sm text-on-surface font-semibold">{title}</h3>
+    </div>
+  )
 }
 
 export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
@@ -40,86 +54,65 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
   const isCritical = pkg.riskTier === 'critical'
   const isMedium = pkg.riskTier === 'medium'
 
-  // Severity color tokens
   const tierBadgeBg = isCritical
-    ? 'bg-error-container text-on-error-container'
+    ? 'bg-critical/15 text-critical border border-critical/30'
     : isMedium
-    ? 'bg-tertiary-container text-on-tertiary-container'
-    : 'bg-primary-container/20 text-primary-container'
+    ? 'bg-warning/15 text-warning border border-warning/30'
+    : 'bg-safe/15 text-safe border border-safe/30'
 
   const rb = pkg.riskBreakdown
 
   return (
-    <aside className="w-full bg-surface-container-low rounded-xl shadow-xl flex flex-col overflow-hidden animate-fade-in border border-surface-variant">
-      {/* ── Top Header ── */}
-      <div className="p-space-lg bg-surface-container flex flex-col gap-space-xs border-b border-surface-variant relative">
+    <aside className="w-full bg-surface-container-low rounded-xl shadow-xl flex flex-col overflow-hidden animate-slide-in border border-outline-variant/30">
+      {/* ── 1. Package Identity Header ── */}
+      <div className="p-5 bg-surface-container border-b border-outline-variant/30">
         <div className="flex items-start justify-between">
-          <div className="flex flex-col">
-            <div className="flex items-center gap-space-xs flex-wrap">
-              <span className={`px-2 py-0.5 rounded font-label-caps text-label-caps uppercase font-bold tracking-wider ${tierBadgeBg}`}>
-                {isCritical ? 'CRITICAL RISK' : isMedium ? 'MEDIUM RISK' : 'LOW RISK'} ({pkg.riskScore}/100)
+          <div className="flex flex-col gap-2 min-w-0">
+            {/* Package + Version */}
+            <div className="flex items-center gap-2">
+              <Package className="w-5 h-5 text-on-surface-variant shrink-0" />
+              <h2 className="font-headline-md text-xl font-bold text-on-surface tracking-tight truncate">
+                {pkg.name}
+              </h2>
+              <span className={`font-code-sm text-sm font-medium ${isCritical ? 'text-critical' : isMedium ? 'text-warning' : 'text-safe'}`}>
+                @{pkg.version}
+              </span>
+            </div>
+
+            {/* 3. Severity + 4. Risk Score */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={`px-2 py-0.5 rounded-md font-code-sm text-[11px] uppercase font-bold tracking-wider ${tierBadgeBg}`}>
+                {isCritical ? 'CRITICAL' : isMedium ? 'MEDIUM' : 'LOW'} · {pkg.riskScore}/100
               </span>
               {pkg.advisorySeverity && pkg.advisorySeverity !== 'NONE' && (
-                <span className="px-1.5 py-0.5 rounded bg-surface-dim font-code-sm text-[11px] text-secondary border border-surface-variant">
+                <span className="px-1.5 py-0.5 rounded bg-surface-dim font-code-sm text-[11px] text-secondary border border-outline-variant/40">
                   CVSS {pkg.advisorySeverity}
                 </span>
               )}
-              <span className="font-code-sm text-code-sm text-outline">npm package</span>
+              <span className="font-code-sm text-[11px] text-outline">npm</span>
             </div>
-            <h2 className="font-display-lg text-display-lg font-bold text-on-surface tracking-tight mt-1 flex items-baseline gap-space-xs">
-              {pkg.name}
-              <span className={`font-code-md text-code-md font-normal ${isCritical ? 'text-error' : isMedium ? 'text-tertiary' : 'text-primary-container'}`}>
-                @{pkg.version}
-              </span>
-            </h2>
           </div>
           {onClose && (
             <button
               onClick={onClose}
-              className="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded transition-colors cursor-pointer bg-transparent border-none"
-              title="Close Inspection"
+              className="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors cursor-pointer bg-transparent border-none shrink-0"
+              title="Close"
             >
-              <span className="material-symbols-outlined text-[20px]">close</span>
+              <X className="w-5 h-5" />
             </button>
           )}
         </div>
-
-        {/* Dependency Route Pill */}
-        <div className="mt-space-xs flex items-center gap-1.5 font-code-sm text-code-sm bg-surface-dim px-space-sm py-1.5 rounded text-on-surface-variant flex-wrap">
-          <span className="material-symbols-outlined text-[15px] text-tertiary">fork_right</span>
-          <span className="text-outline">Dependency Path:</span>
-          {pkg.path.length > 0 ? (
-            pkg.path.map((node, i) => (
-              <span key={i} className="flex items-center gap-1">
-                {i > 0 && <span className="text-outline">→</span>}
-                <span className={`font-medium ${i === pkg.path.length - 1 ? (isCritical ? 'text-error font-semibold' : 'text-primary font-semibold') : 'text-on-surface'}`}>
-                  {node}
-                </span>
-              </span>
-            ))
-          ) : (
-            <span className="text-on-surface font-medium">{pkg.name} (Direct)</span>
-          )}
-        </div>
-
-        {/* Downstream Fan-out Reachability Badge */}
-        {(pkg.dependentCount !== undefined && pkg.dependentCount > 0) && (
-          <div className="mt-1 flex items-center gap-1 font-code-sm text-[12px] text-outline">
-            <span className="material-symbols-outlined text-[14px] text-primary-container">account_tree</span>
-            <span>Downstream Dependents in Graph: </span>
-            <span className="text-on-surface font-semibold">{pkg.dependentCount} package(s)</span>
-          </div>
-        )}
       </div>
 
-      {/* ── Scrollable Body Sections ── */}
-      <div className="p-space-lg flex flex-col gap-space-lg overflow-y-auto max-h-[740px]">
-        {/* Why this is risky */}
-        <div className={`flex flex-col gap-space-xs bg-surface-container p-space-md rounded-lg border-l-2 ${isCritical ? 'border-error' : isMedium ? 'border-tertiary' : 'border-primary-container'}`}>
-          <span className={`font-label-caps text-label-caps uppercase font-bold ${isCritical ? 'text-error' : isMedium ? 'text-tertiary' : 'text-primary-container'}`}>
-            Why this is risky
+      {/* ── Scrollable Body ── */}
+      <div className="p-5 flex flex-col gap-5 overflow-y-auto max-h-[740px]">
+
+        {/* 5. Why This Is Risky */}
+        <div className={`flex flex-col gap-2 bg-surface-container p-4 rounded-lg border-l-2 ${isCritical ? 'border-critical' : isMedium ? 'border-warning' : 'border-safe'}`}>
+          <span className={`font-code-sm text-[11px] uppercase font-bold tracking-wider ${isCritical ? 'text-critical' : isMedium ? 'text-warning' : 'text-safe'}`}>
+            Why This Is Risky
           </span>
-          <p className="font-body-md text-body-md text-on-surface leading-relaxed">
+          <p className="font-body-md text-sm text-on-surface leading-relaxed">
             {pkg.remediation?.why_risky ||
               (pkg.vulnerabilities.length > 0
                 ? `Known vulnerability in installed version ${pkg.version}: ${topVuln?.summary || topVuln?.id}`
@@ -131,261 +124,239 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
           </p>
         </div>
 
-        {/* Dependency Confusion Alert if present */}
+        {/* Dependency Confusion Alert */}
         {pkg.confusionFlag && (
-          <div className="flex flex-col gap-1 p-space-sm bg-error-container/20 border border-error/40 rounded-lg text-error">
-            <div className="flex items-center gap-1 font-headline-sm text-[13px] font-bold">
-              <span className="material-symbols-outlined text-[16px]">warning</span>
+          <div className="flex flex-col gap-1 p-3 bg-critical/10 border border-critical/30 rounded-lg">
+            <div className="flex items-center gap-1.5 font-headline-sm text-xs font-bold text-critical">
+              <AlertTriangle className="w-4 h-4" />
               <span>Potential Dependency Confusion Vector</span>
             </div>
-            <p className="font-body-sm text-[12px] text-on-surface leading-normal">
-              {pkg.confusionFlag.reason}
-            </p>
+            <p className="font-body-md text-xs text-on-surface leading-normal">{pkg.confusionFlag.reason}</p>
           </div>
         )}
 
-        {/* Itemized Risk Score Breakdown */}
-        <div className="flex flex-col gap-space-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-space-xs">
-              <span className="material-symbols-outlined text-tertiary text-[18px]">analytics</span>
-              <span>Risk score breakdown</span>
-            </h3>
-            <span className={`font-headline-sm text-headline-sm font-bold ${isCritical ? 'text-error' : isMedium ? 'text-tertiary' : 'text-primary-container'}`}>
-              {pkg.riskScore} <span className="font-code-sm text-code-sm text-outline font-normal">/ 100</span>
-            </span>
-          </div>
-
-          <p className="font-code-sm text-[11px] text-outline italic">
-            SupplyGuard contextual score based on known CVEs, CVSS severity, transitive depth, and topological fan-out.
-          </p>
-
-          <div className="flex flex-col gap-2 bg-surface-container p-space-md rounded-lg">
-            {/* Known Vuln Match */}
-            {(rb ? rb.knownVulnerability > 0 : pkg.vulnerabilities.length > 0) && (
-              <div>
-                <div className="flex items-center justify-between font-code-sm text-code-sm mb-1">
-                  <span className="text-on-surface">Known vulnerability match (OSV.dev)</span>
-                  <span className="text-error font-semibold">+{rb?.knownVulnerability ?? 40}</span>
-                </div>
-                <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
-                  <div className="bg-error h-full w-full"></div>
-                </div>
-              </div>
-            )}
-
-            {/* CVSS Scaled Severity */}
-            {(rb ? rb.severityContribution > 0 : pkg.vulnerabilities.length > 0) && (
-              <div>
-                <div className="flex items-center justify-between font-code-sm text-code-sm mb-1">
-                  <span className="text-on-surface">Severity scaling (CVSS {topVuln?.cvss ? topVuln.cvss.toFixed(1) : '7.0+'})</span>
-                  <span className="text-error font-semibold">
-                    +{rb?.severityContribution ?? Math.round(((topVuln?.cvss || 7) / 10) * 20)}
-                  </span>
-                </div>
-                <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
-                  <div className="bg-error h-full" style={{ width: `${Math.min(100, ((topVuln?.cvss || 7) / 10) * 100)}%` }}></div>
-                </div>
-              </div>
-            )}
-
-            {/* Outdated Stale Dependency */}
-            {(rb ? rb.outdatedVersion > 0 : false) && (
-              <div>
-                <div className="flex items-center justify-between font-code-sm text-code-sm mb-1">
-                  <span className="text-on-surface">Outdated release (&gt;2 years stale)</span>
-                  <span className="text-tertiary font-semibold">+{rb.outdatedVersion}</span>
-                </div>
-                <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
-                  <div className="bg-tertiary-container h-full w-1/3"></div>
-                </div>
-              </div>
-            )}
-
-            {/* Transitive Exposure */}
-            {(rb ? rb.transitiveExposure > 0 : !pkg.isDirect) && (
-              <div>
-                <div className="flex items-center justify-between font-code-sm text-code-sm mb-1">
-                  <span className="text-on-surface">Transitive exposure</span>
-                  <span className="text-tertiary font-semibold">+{rb?.transitiveExposure ?? 8}</span>
-                </div>
-                <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
-                  <div className="bg-tertiary-container h-full w-1/4"></div>
-                </div>
-              </div>
-            )}
-
-            {/* Downstream Fan-out Reachability */}
-            {(rb ? rb.downstreamImpact > 0 : (pkg.dependentCount ?? 0) >= 3) && (
-              <div>
-                <div className="flex items-center justify-between font-code-sm text-code-sm mb-1">
-                  <span className="text-on-surface">Downstream fan-out impact (&ge;3 dependents)</span>
-                  <span className="text-tertiary font-semibold">+{rb?.downstreamImpact ?? 8}</span>
-                </div>
-                <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
-                  <div className="bg-tertiary-container h-full w-1/4"></div>
-                </div>
-              </div>
-            )}
-
-            {/* Typosquat / Confusion Similarity */}
-            {(rb ? rb.typosquatConfusion > 0 : (!!pkg.typosquatFlag || !!pkg.confusionFlag)) && (
-              <div>
-                <div className="flex items-center justify-between font-code-sm text-code-sm mb-1">
-                  <span className="text-on-surface">Typosquat / Confusion anomaly</span>
-                  <span className="text-error font-semibold">+{rb?.typosquatConfusion ?? 15}</span>
-                </div>
-                <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
-                  <div className="bg-error h-full w-3/4"></div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Evidence Ledger */}
-        <div className="flex flex-col gap-space-sm">
-          <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-space-xs">
-            <span className="material-symbols-outlined text-primary-container text-[18px]">verified</span>
-            <span>Evidence Ledger</span>
-          </h3>
-          <div className="bg-surface-container p-space-md rounded-lg flex flex-col gap-space-sm font-code-sm text-code-sm">
-            <div className="grid grid-cols-3 gap-space-xs pb-space-xs border-b border-surface-variant">
+        {/* 6. Evidence */}
+        <div>
+          <SectionHeader icon={<CheckCircle className="w-4 h-4 text-primary" />} title="Evidence" />
+          <div className="bg-surface-container p-4 rounded-lg flex flex-col gap-2 font-code-sm text-xs">
+            <div className="grid grid-cols-[100px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
               <span className="text-outline">Source</span>
-              <span className="col-span-2 text-on-surface font-medium">OSV.dev + NVD Feeds</span>
+              <span className="text-on-surface font-medium">OSV.dev + NVD Feeds</span>
             </div>
             {topVuln && (
               <>
-                <div className="grid grid-cols-3 gap-space-xs pb-space-xs border-b border-surface-variant">
+                <div className="grid grid-cols-[100px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
                   <span className="text-outline">Advisory ID</span>
-                  <span className="col-span-2 text-on-surface font-medium">{topVuln.id}</span>
+                  <span className="text-on-surface font-medium">{topVuln.id}</span>
                 </div>
-                <div className="grid grid-cols-3 gap-space-xs pb-space-xs border-b border-surface-variant">
+                <div className="grid grid-cols-[100px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
                   <span className="text-outline">Affected</span>
-                  <span className="col-span-2 text-error font-medium">&lt;= {pkg.version}</span>
+                  <span className="text-critical font-medium">&lt;= {pkg.version}</span>
                 </div>
-                <div className="grid grid-cols-3 gap-space-xs pb-space-xs border-b border-surface-variant">
-                  <span className="text-outline">Fixed Release</span>
-                  <span className="col-span-2 text-primary-container font-medium">{fixedVersion}</span>
+                <div className="grid grid-cols-[100px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
+                  <span className="text-outline">Fixed</span>
+                  <span className="text-primary font-medium">{fixedVersion}</span>
                 </div>
               </>
             )}
-            <div className="grid grid-cols-3 gap-space-xs pb-space-xs border-b border-surface-variant">
-              <span className="text-outline">Dependency path</span>
-              <span className="col-span-2 text-on-surface">{pkg.path.join(' → ') || pkg.name}</span>
-            </div>
-            {pkg.provenance && (
-              <div className="grid grid-cols-3 gap-space-xs pb-space-xs border-b border-surface-variant">
-                <span className="text-outline">Provenance</span>
-                <span className="col-span-2 text-on-surface">
-                  {pkg.provenance.lockfileIntegrity === 'Present' ? 'Lockfile SHA Integrity Verified' : 'Standard Registry Tarball'}
-                  <span className="block text-[11px] text-outline mt-0.5">Attestation: {pkg.provenance.buildAttestation}</span>
+            {pkg.reputation && (
+              <div className="grid grid-cols-[100px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
+                <span className="text-outline">Downloads</span>
+                <span className="text-on-surface-variant">
+                  {pkg.reputation.weeklyDownloads ? `${(pkg.reputation.weeklyDownloads / 1000000).toFixed(1)}M / week` : 'Normal volume'}
                 </span>
               </div>
             )}
-            {pkg.reputation && (
-              <>
-                <div className="grid grid-cols-3 gap-space-xs pb-space-xs border-b border-surface-variant">
-                  <span className="text-outline">Last published</span>
-                  <span className="col-span-2 text-on-surface-variant">{pkg.reputation.lastPublished || 'Recently updated'}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-space-xs pb-space-xs border-b border-surface-variant">
-                  <span className="text-outline">Maintainers</span>
-                  <span className="col-span-2 text-on-surface-variant">{pkg.reputation.maintainerCount} maintainer(s)</span>
-                </div>
-                <div className="grid grid-cols-3 gap-space-xs pb-space-xs border-b border-surface-variant">
-                  <span className="text-outline">Downloads</span>
-                  <span className="col-span-2 text-on-surface-variant">
-                    {pkg.reputation.weeklyDownloads ? `${(pkg.reputation.weeklyDownloads / 1000000).toFixed(1)}M / week` : 'Normal volume'}
-                  </span>
-                </div>
-              </>
-            )}
-            <div className="grid grid-cols-3 gap-space-xs">
-              <span className="text-outline">Registry Link</span>
-              <div className="col-span-2">
-                <a
-                  className="text-primary hover:underline flex items-center gap-1 no-underline"
-                  href={`https://www.npmjs.com/package/${pkg.name}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <span>npmjs.com/package/{pkg.name}</span>
-                  <span className="material-symbols-outlined text-[13px]">open_in_new</span>
-                </a>
-              </div>
+            <div className="grid grid-cols-[100px_1fr] gap-2">
+              <span className="text-outline">Registry</span>
+              <a
+                className="text-primary hover:underline flex items-center gap-1 no-underline"
+                href={`https://www.npmjs.com/package/${pkg.name}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span>npmjs.com/{pkg.name}</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
             </div>
           </div>
         </div>
 
-        {/* AI Security Summary */}
-        <div className="bg-surface-container p-space-md rounded-lg border-l-4 border-primary-container relative">
-          <div className="flex items-center justify-between mb-space-xs">
-            <div className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-primary-container text-[18px]">psychology</span>
-              <span className="font-label-caps text-label-caps text-primary uppercase font-bold tracking-wider">AI Remediation Analysis</span>
-            </div>
-            <span className="font-code-sm text-code-sm text-outline">Gemini 2.0 Flash</span>
+        {/* 7. Dependency Path */}
+        <div>
+          <SectionHeader icon={<GitFork className="w-4 h-4 text-tertiary" />} title="Dependency Path" />
+          <div className="flex items-center gap-1.5 font-code-sm text-xs bg-surface-container px-4 py-3 rounded-lg text-on-surface-variant flex-wrap">
+            {pkg.path.length > 0 ? (
+              pkg.path.map((node, i) => (
+                <span key={i} className="flex items-center gap-1">
+                  {i > 0 && <span className="text-outline">→</span>}
+                  <span className={`font-medium ${i === pkg.path.length - 1 ? (isCritical ? 'text-critical font-semibold' : 'text-primary font-semibold') : 'text-on-surface'}`}>
+                    {node}
+                  </span>
+                </span>
+              ))
+            ) : (
+              <span className="text-on-surface font-medium">{pkg.name} (Direct Dependency)</span>
+            )}
           </div>
-          <p className="font-body-md text-body-md text-on-surface leading-relaxed">
+        </div>
+
+        {/* 8. Downstream Impact */}
+        {(pkg.dependentCount !== undefined && pkg.dependentCount > 0) && (
+          <div>
+            <SectionHeader icon={<Network className="w-4 h-4 text-primary" />} title="Downstream Impact" />
+            <div className="bg-surface-container px-4 py-3 rounded-lg font-code-sm text-xs flex items-center gap-2">
+              <span className="text-outline">Dependents in graph:</span>
+              <span className="text-on-surface font-bold text-sm">{pkg.dependentCount}</span>
+              <span className="text-on-surface-variant">package(s) affected</span>
+            </div>
+          </div>
+        )}
+
+        {/* 9. Risk Breakdown */}
+        <div>
+          <SectionHeader icon={<BarChart3 className="w-4 h-4 text-tertiary" />} title="Risk Breakdown" />
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-code-sm text-[11px] text-outline">Contextual score from CVEs, CVSS, depth, and fan-out</p>
+            <span className={`font-headline-sm text-base font-bold ${isCritical ? 'text-critical' : isMedium ? 'text-warning' : 'text-safe'}`}>
+              {pkg.riskScore}<span className="text-outline font-normal text-xs"> / 100</span>
+            </span>
+          </div>
+          <div className="flex flex-col gap-2 bg-surface-container p-4 rounded-lg">
+            {(rb ? rb.knownVulnerability > 0 : pkg.vulnerabilities.length > 0) && (
+              <div>
+                <div className="flex items-center justify-between font-code-sm text-xs mb-1">
+                  <span className="text-on-surface">Known vulnerability (OSV.dev)</span>
+                  <span className="text-critical font-semibold">+{rb?.knownVulnerability ?? 40}</span>
+                </div>
+                <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
+                  <div className="bg-critical h-full w-full"></div>
+                </div>
+              </div>
+            )}
+            {(rb ? rb.severityContribution > 0 : pkg.vulnerabilities.length > 0) && (
+              <div>
+                <div className="flex items-center justify-between font-code-sm text-xs mb-1">
+                  <span className="text-on-surface">CVSS severity scaling</span>
+                  <span className="text-critical font-semibold">+{rb?.severityContribution ?? Math.round(((topVuln?.cvss || 7) / 10) * 20)}</span>
+                </div>
+                <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
+                  <div className="bg-critical h-full" style={{ width: `${Math.min(100, ((topVuln?.cvss || 7) / 10) * 100)}%` }}></div>
+                </div>
+              </div>
+            )}
+            {(rb?.outdatedVersion ?? 0) > 0 && (
+              <div>
+                <div className="flex items-center justify-between font-code-sm text-xs mb-1">
+                  <span className="text-on-surface">Outdated release (&gt;2 years)</span>
+                  <span className="text-warning font-semibold">+{rb!.outdatedVersion}</span>
+                </div>
+                <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
+                  <div className="bg-warning h-full w-1/3"></div>
+                </div>
+              </div>
+            )}
+            {(rb ? rb.transitiveExposure > 0 : !pkg.isDirect) && (
+              <div>
+                <div className="flex items-center justify-between font-code-sm text-xs mb-1">
+                  <span className="text-on-surface">Transitive exposure</span>
+                  <span className="text-warning font-semibold">+{rb?.transitiveExposure ?? 8}</span>
+                </div>
+                <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
+                  <div className="bg-warning h-full w-1/4"></div>
+                </div>
+              </div>
+            )}
+            {(rb ? rb.downstreamImpact > 0 : (pkg.dependentCount ?? 0) >= 3) && (
+              <div>
+                <div className="flex items-center justify-between font-code-sm text-xs mb-1">
+                  <span className="text-on-surface">Downstream fan-out (≥3 deps)</span>
+                  <span className="text-warning font-semibold">+{rb?.downstreamImpact ?? 8}</span>
+                </div>
+                <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
+                  <div className="bg-warning h-full w-1/4"></div>
+                </div>
+              </div>
+            )}
+            {(rb ? rb.typosquatConfusion > 0 : (!!pkg.typosquatFlag || !!pkg.confusionFlag)) && (
+              <div>
+                <div className="flex items-center justify-between font-code-sm text-xs mb-1">
+                  <span className="text-on-surface">Typosquat / confusion anomaly</span>
+                  <span className="text-critical font-semibold">+{rb?.typosquatConfusion ?? 15}</span>
+                </div>
+                <div className="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
+                  <div className="bg-critical h-full w-3/4"></div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 10. AI Explanation */}
+        <div className="bg-surface-container p-4 rounded-lg border-l-4 border-primary">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="font-code-sm text-[11px] text-primary uppercase font-bold tracking-wider">AI Analysis</span>
+            </div>
+            <span className="font-code-sm text-[11px] text-outline">Gemini 2.0 Flash</span>
+          </div>
+          <p className="font-body-md text-sm text-on-surface leading-relaxed">
             {pkg.remediation?.why_risky ||
               `${pkg.name}@${pkg.version} is referenced in the dependency tree. Review security advisories and maintainer notices before applying updates to production.`}
           </p>
         </div>
 
-        {/* Recommended Remediation */}
-        <div className="flex flex-col gap-space-sm">
-          <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-space-xs">
-            <span className="material-symbols-outlined text-primary text-[18px]">build_circle</span>
-            <span>Recommended Remediation</span>
-          </h3>
-          <div className="bg-surface-container p-space-md rounded-lg flex flex-col gap-space-sm">
+        {/* 11. Recommended Remediation */}
+        <div>
+          <SectionHeader icon={<Wrench className="w-4 h-4 text-primary" />} title="Recommended Remediation" />
+          <div className="bg-surface-container p-4 rounded-lg flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <span className="font-label-caps text-label-caps uppercase text-outline">Action</span>
-              <span className={`font-code-sm text-code-sm font-medium ${isCritical ? 'text-error' : 'text-primary-container'}`}>
+              <span className="font-code-sm text-[10px] uppercase text-outline tracking-wider">Action</span>
+              <span className={`font-code-sm text-xs font-medium ${isCritical ? 'text-critical' : 'text-safe'}`}>
                 {isCritical ? 'Priority: Immediate' : 'Priority: Scheduled'}
               </span>
             </div>
-            <p className="font-body-md text-body-md text-on-surface font-medium">
+            <p className="font-body-md text-sm text-on-surface font-medium">
               {pkg.remediation?.fix || `Upgrade ${pkg.name} from ${pkg.version} to ${fixedVersion}`}
             </p>
-            <div className="bg-surface-dim rounded p-space-sm flex items-center justify-between font-code-sm text-code-sm relative">
-              <span className="text-on-surface selection:bg-primary-container select-all font-mono break-all pr-2">
+            <div className="bg-surface-dim rounded-lg p-3 flex items-center justify-between font-code-sm text-xs">
+              <span className="text-on-surface font-mono break-all pr-2 select-all">
                 {fixCommand}
               </span>
               <button
                 onClick={handleCopy}
-                className="flex items-center gap-1 text-primary-container hover:text-primary font-code-sm text-code-sm px-2 py-1 rounded hover:bg-surface-container transition-colors cursor-pointer bg-transparent border-none shrink-0"
+                className="flex items-center gap-1 text-primary hover:text-on-surface font-code-sm text-xs px-2 py-1 rounded-md hover:bg-surface-container transition-colors cursor-pointer bg-transparent border-none shrink-0"
                 title="Copy to clipboard"
               >
-                <span className="material-symbols-outlined text-[15px]">{copied ? 'check' : 'content_copy'}</span>
+                {copied ? <ClipboardCheck className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? 'Copied' : 'Copy'}</span>
               </button>
             </div>
 
             <button
               onClick={handleCopyPlan}
-              className="mt-1 w-full py-2 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-headline-sm rounded font-semibold flex items-center justify-center gap-space-xs transition-colors shadow-sm cursor-pointer border-none"
+              className="w-full py-2.5 bg-primary hover:bg-primary-container text-on-primary font-headline-sm text-xs rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm cursor-pointer border-none"
             >
-              <span className="material-symbols-outlined text-[18px]">{copiedPlan ? 'done_all' : 'assignment'}</span>
-              <span>{copiedPlan ? 'Remediation Plan Copied' : 'Copy Step-by-Step Remediation Plan'}</span>
+              {copiedPlan ? <ClipboardCheck className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              <span>{copiedPlan ? 'Plan Copied ✓' : 'Copy Remediation Plan'}</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* ── Panel Footer ── */}
-      <div className="p-space-md bg-surface-container-highest flex items-center justify-between font-code-sm text-code-sm border-t border-surface-variant text-outline">
-        <div className="flex items-center gap-1">
-          <span className="material-symbols-outlined text-[14px]">shield</span>
-          <span>{isCritical ? 'Policy Alert: High Risk Node' : 'Policy Status: Pass / Monitored'}</span>
+      <div className="p-4 bg-surface-container-highest flex items-center justify-between font-code-sm text-xs border-t border-outline-variant/30 text-outline">
+        <div className="flex items-center gap-1.5">
+          <Shield className="w-3.5 h-3.5" />
+          <span>{isCritical ? 'Risk Level: High' : 'Risk Level: Monitored'}</span>
         </div>
         <button
           onClick={handleCopyPlan}
           className="text-on-surface hover:text-primary transition-colors flex items-center gap-1 cursor-pointer bg-transparent border-none"
         >
           <span>Copy Plan</span>
-          <span className="material-symbols-outlined text-[14px]">content_copy</span>
+          <Copy className="w-3.5 h-3.5" />
         </button>
       </div>
     </aside>

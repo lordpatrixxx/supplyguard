@@ -1,5 +1,8 @@
+import React from 'react'
+import { Activity } from 'lucide-react'
+
 interface StatCardProps {
-  icon: string
+  icon?: React.ReactNode
   label: string
   value: string | number
   sublabel?: string
@@ -8,26 +11,23 @@ interface StatCardProps {
 
 export function StatCard({ icon, label, value, sublabel, accentColor }: StatCardProps) {
   return (
-    <div className="panel p-4 flex flex-col gap-2 animate-fade-in">
+    <div className="panel p-4 flex flex-col gap-2 animate-fade-in bg-surface-container rounded-xl border border-outline-variant/30">
       <div className="flex items-center gap-2">
-        <span
-          className="material-symbols-outlined"
-          style={{ fontSize: 18, color: accentColor || 'var(--color-info)' }}
-        >
-          {icon}
+        <span className="w-5 h-5 flex items-center justify-center text-primary" style={{ color: accentColor }}>
+          {icon || <Activity className="w-4 h-4" />}
         </span>
-        <span className="text-label-caps" style={{ color: 'var(--color-info)' }}>
+        <span className="text-label-caps text-xs uppercase tracking-wider text-outline">
           {label}
         </span>
       </div>
       <div
-        className="text-display-lg tabular-nums"
-        style={{ color: accentColor || 'var(--color-text-primary)' }}
+        className="text-2xl font-bold tabular-nums text-on-surface"
+        style={{ color: accentColor }}
       >
         {value}
       </div>
       {sublabel && (
-        <span className="text-body-sm" style={{ color: 'var(--color-text-secondary)' }}>
+        <span className="text-xs text-on-surface-variant">
           {sublabel}
         </span>
       )}

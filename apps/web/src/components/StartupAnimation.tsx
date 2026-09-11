@@ -5,34 +5,39 @@ import React, { useEffect, useState } from 'react';
  * Target duration: ~1.2s. Respects prefers-reduced-motion and session state.
  */
 export const StartupAnimation: React.FC = () => {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(() => {
+    try {
+      const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const alreadyShown = typeof window !== 'undefined' && sessionStorage.getItem('supplyguard_init_shown');
+      return !prefersReducedMotion && !alreadyShown;
+    } catch {
+      return false;
+    }
+  });
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    // Check if user prefers reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const alreadyShown = sessionStorage.getItem('supplyguard_init_shown');
+    if (!visible) return;
 
-    if (prefersReducedMotion || alreadyShown) {
-      return;
+    try {
+      sessionStorage.setItem('supplyguard_init_shown', 'true');
+    } catch {
+      // ignore
     }
-
-    setVisible(true);
-    sessionStorage.setItem('supplyguard_init_shown', 'true');
 
     const fadeTimer = setTimeout(() => {
       setFadeOut(true);
-    }, 1100);
+    }, 1000);
 
     const removeTimer = setTimeout(() => {
       setVisible(false);
-    }, 1400);
+    }, 1300);
 
     return () => {
       clearTimeout(fadeTimer);
       clearTimeout(removeTimer);
     };
-  }, []);
+  }, [visible]);
 
   if (!visible) return null;
 

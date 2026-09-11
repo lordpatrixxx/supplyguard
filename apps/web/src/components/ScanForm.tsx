@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link2, Loader2, Search } from 'lucide-react'
 
 interface ScanFormProps {
   onSubmit: (repoUrl: string) => void
@@ -37,12 +38,7 @@ export function ScanForm({ onSubmit, isLoading }: ScanFormProps) {
     <form onSubmit={handleSubmit} className="w-full max-w-2xl">
       <div className="flex gap-3">
         <div className="flex-1 relative">
-          <span
-            className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2"
-            style={{ fontSize: 20, color: 'var(--color-info)' }}
-          >
-            link
-          </span>
+          <Link2 className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-primary" />
           <input
             type="text"
             value={url}
@@ -62,9 +58,11 @@ export function ScanForm({ onSubmit, isLoading }: ScanFormProps) {
           disabled={isLoading}
           style={{ opacity: isLoading ? 0.7 : 1 }}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-            {isLoading ? 'hourglass_top' : 'radar'}
-          </span>
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Search className="w-4 h-4" />
+          )}
           {isLoading ? 'Scanning...' : 'Analyze Repository'}
         </button>
       </div>

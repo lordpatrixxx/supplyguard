@@ -18,6 +18,7 @@ import { ScanProgressPage } from './pages/ScanProgressPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { ReportPage } from './pages/ReportPage'
 import { HistoryPage } from './pages/HistoryPage'
+import { ProfilePage } from './pages/ProfilePage'
 
 export default function App() {
   return (
@@ -79,6 +80,17 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <HistoryPage />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/app/profile"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <ProfilePage />
               </AppLayout>
             </ProtectedRoute>
           }
