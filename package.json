@@ -9,6 +9,10 @@
     "dev": "concurrently --names api,web --prefix-colors blue,green \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
     "build": "npm run build -w apps/web"
   },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
   "devDependencies": {
     "concurrently": "^9.1.2"
   }

@@ -57,15 +57,26 @@ router.post('/', async (req, res) => {
 
   scanStore.set(scanId, scan);
 
-  // Kick off async processing in background
-  processScan(scan, scanStore).catch((err) => {
-    console.error(`[Scan ${scanId}] Fatal scan failure:`, err);
-    const s = scanStore.get(scanId);
-    if (s) {
-      s.status = 'failed';
-      s.statusMessage = err instanceof Error ? err.message : 'Unknown scan execution failure';
+  // In serverless environments (Vercel), await scan completion so background execution is not frozen
+  if (process.env.VERCEL) {
+    try {
+      await processScan(scan, scanStore);
+    } catch (err) {
+      console.error(`[Scan ${scanId}] Fatal scan failure:`, err);
+      scan.status = 'failed';
+      scan.statusMessage = err instanceof Error ? err.message : 'Unknown scan execution failure';
     }
-  });
+  } else {
+    // In long-running dev/prod node servers, execute asynchronously in background
+    processScan(scan, scanStore).catch((err) => {
+      console.error(`[Scan ${scanId}] Fatal scan failure:`, err);
+      const s = scanStore.get(scanId);
+      if (s) {
+        s.status = 'failed';
+        s.statusMessage = err instanceof Error ? err.message : 'Unknown scan execution failure';
+      }
+    });
+  }
 
   res.status(201).json({ scanId });
 });
