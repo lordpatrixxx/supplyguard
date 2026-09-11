@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "tertiary-fixed-dim": "#f7bd4f",
+        "surface-variant": "#2f3544",
+        "primary-fixed": "#7af8d3",
+        "inverse-primary": "#006b55",
+        "error-container": "#93000a",
+        "on-error-container": "#ffdad6",
+        "surface-dim": "#0d1321",
+        "secondary-container": "#8f1b01",
+        "inverse-surface": "#dde2f6",
+        "secondary-fixed": "#ffdad2",
+        "outline-variant": "#3d4a44",
+        "surface-bright": "#333949",
+        "on-tertiary-container": "#654600",
+        "secondary": "#ffb4a3",
+        "on-secondary-fixed": "#3d0600",
+        "background": "#0d1321",
+        "secondary-fixed-dim": "#ffb4a3",
+        "on-surface": "#dde2f6",
+        "on-primary-fixed": "#002018",
+        "surface-container-high": "#242a39",
+        "primary-fixed-dim": "#5bdcb8",
+        "on-secondary-container": "#ffa08a",
+        "on-primary": "#00382b",
+        "surface-tint": "#5bdcb8",
+        "primary-container": "#4fd1ae",
+        "on-primary-fixed-variant": "#005140",
+        "tertiary-container": "#ecb346",
+        "on-secondary": "#630f00",
+        "on-tertiary": "#422c00",
+        "surface-container": "#191f2e",
+        "on-secondary-fixed-variant": "#8c1900",
+        "on-surface-variant": "#bccac3",
+        "inverse-on-surface": "#2a303f",
+        "on-primary-container": "#005644",
+        "surface": "#0d1321",
+        "on-error": "#690005",
+        "surface-container-highest": "#2f3544",
+        "surface-container-lowest": "#080e1c",
+        "on-background": "#dde2f6",
+        "outline": "#86948e",
+        "on-tertiary-fixed-variant": "#5f4100",
+        "tertiary-fixed": "#ffdeaa",
+        "surface-container-low": "#151b2a",
+        "on-tertiary-fixed": "#271900",
+        "tertiary": "#ffd184",
+        "error": "#ffb4ab",
+        "primary": "#6feec9"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+      },
+      "spacing": {
+        "margin": "1rem",
+        "space-2xl": "2rem",
+        "space-md": "0.75rem",
+        "space-lg": "1rem",
+        "space-sm": "0.5rem",
+        "space-xl": "1.5rem",
+        "gutter": "1rem",
+        "space-xs": "0.25rem",
+        "gutter-lg": "1.5rem",
+        "margin-lg": "2rem",
+        "margin-md": "1.5rem"
+      },
+      "fontFamily": {
+        "headline-md": [
+          "Space Grotesk"
+        ],
+        "headline-sm": [
+          "Space Grotesk"
+        ],
+        "display-lg": [
+          "Space Grotesk"
+        ],
+        "code-sm": [
+          "JetBrains Mono"
+        ],
+        "code-md": [
+          "JetBrains Mono"
+        ],
+        "label-caps": [
+          "JetBrains Mono"
+        ],
+        "body-md": [
+          "Inter"
+        ],
+        "body-lg": [
+          "Inter"
+        ],
+        "code-lg": [
+          "JetBrains Mono"
+        ],
+        "body-sm": [
+          "Inter"
+        ],
+        "display-lg-mobile": [
+          "Space Grotesk"
+        ]
+      },
+      "fontSize": {
+        "headline-md": [
+          "24px",
+          {
+            "lineHeight": "32px",
+            "letterSpacing": "-0.01em",
+            "fontWeight": "600"
+          }
+        ],
+        "headline-sm": [
+          "18px",
+          {
+            "lineHeight": "26px",
+            "fontWeight": "600"
+          }
+        ],
+        "display-lg": [
+          "32px",
+          {
+            "lineHeight": "40px",
+            "letterSpacing": "-0.02em",
+            "fontWeight": "700"
+          }
+        ],
+        "code-sm": [
+          "11px",
+          {
+            "lineHeight": "14px",
+            "letterSpacing": "0.02em",
+            "fontWeight": "400"
+          }
+        ],
+        "code-md": [
+          "13px",
+          {
+            "lineHeight": "18px",
+            "fontWeight": "400"
+          }
+        ],
+        "label-caps": [
+          "10px",
+          {
+            "lineHeight": "12px",
+            "letterSpacing": "0.08em",
+            "fontWeight": "600"
+          }
+        ],
+        "body-md": [
+          "14px",
+          {
+            "lineHeight": "20px",
+            "fontWeight": "400"
+          }
+        ],
+        "body-lg": [
+          "16px",
+          {
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          }
+        ],
+        "code-lg": [
+          "14px",
+          {
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          }
+        ],
+        "body-sm": [
+          "12px",
+          {
+            "lineHeight": "16px",
+            "fontWeight": "400"
+          }
+        ],
+        "display-lg-mobile": [
+          "26px",
+          {
+            "lineHeight": "34px",
+            "letterSpacing": "-0.01em",
+            "fontWeight": "700"
+          }
+        ]
+      }
+    }
+  }
+}</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 h-16 bg-surface-container-lowest border-b border-surface-variant flex items-center justify-between px-margin-lg"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><img alt="SupplyGuard Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Vr7cSr0tRWuqMopc11rEwcbNiZdHBZ8osuTR4bKLp9Hv0n1AjDghbUC7uObRT-MHn70ydEYnQVD7J72G0FgdJgeDlQmFOpWKAuAH05vuXuHuIDrun_3PVr_IeJ2SmQkOw2SiFSgoH5bitDRfeVXyY5DrdLu8kT7nZW6_k9nhNG97qhQPpve9xHWre9U0O1-I9TX6TVEH9ecHQ1o3Crd4X2bHUqq_OHNuZSpah0HLGd4We5T5bi3XCaWAEz"/><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Supply<span class="text-primary-container">Guard</span></span></div><div class="h-5 w-[1px] bg-surface-variant"></div><div class="flex items-center gap-space-xs px-space-sm py-1 bg-surface-container border border-surface-variant rounded-lg"><span class="material-symbols-outlined text-on-surface-variant text-[16px]">inventory_2</span><span class="font-code-sm text-code-sm text-on-surface font-medium">Acme Store API</span><span class="font-code-sm text-code-sm text-on-surface-variant">(main)</span></div><div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 bg-surface-container border border-primary-container/30 rounded-lg"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-caps text-label-caps uppercase text-primary-container">Live Intel Feed: Connected</span></div></div><div class="hidden lg:flex items-center flex-1 max-w-md mx-space-xl"><div class="relative w-full"><span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span><input class="w-full h-9 bg-surface-dim border border-surface-variant rounded-lg pl-9 pr-3 text-on-surface placeholder:text-outline font-code-sm text-code-sm focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all" placeholder="Search packages, CVEs, or dependencies..." type="text"/></div></div><div class="flex items-center gap-space-md"><button class="flex items-center gap-space-xs px-space-md py-1.5 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-[13px] rounded-lg transition-colors shadow-sm font-semibold" type="button"><span class="material-symbols-outlined text-[18px]">radar</span><span>New Scan</span></button><div class="h-5 w-[1px] bg-surface-variant"></div><button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="relative flex items-center gap-space-xs pl-space-xs"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-1 ring-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA54mdzDliohJhL_z7y5wSocDEBIxyh95Ej4lpc0zFs78ugfSARgWUawQFDK8zKo2CqDOIu_FoXOxT3nyqVGeuluEisy4wuRj3kfrk84vJaHAko39rDSX8PTphDVcG9jSOJTl7vhn9fKbt8AlHIwDizW-0jES5nStHRb6Q4dqPoImuOcaE4ARbnS5hcRTHwiM4igQyALo8_e3roHv6rjVM6P6-E24ShKdXjnW-9aX5YupnODUOydE7DGQ"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary-container rounded-full ring-2 ring-surface-dim"></span></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-dim border-r border-surface-variant z-40 flex flex-col justify-between overflow-y-auto"><div class="p-space-md"><div class="px-space-sm pb-space-sm text-outline font-label-caps text-label-caps uppercase">Telemetry &amp; Audit</div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-surface-container-high text-primary-container border-l-2 border-primary-container font-medium"><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="overview" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span>Overview</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="dependency-graph" href="#"><span class="material-symbols-outlined text-[20px]">hub</span><span>Dependency Graph</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="findings-remediation" href="#"><span class="material-symbols-outlined text-[20px]">shield_with_heart</span><span>Findings &amp; Remediation</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg transition-colors bg-surface-container-high text-primary-container border-l-2 border-primary-container font-medium" data-path="scan-history" href="#"><span class="material-symbols-outlined text-[20px]">history</span><span>Scan History</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="policy-compliance" href="#"><span class="material-symbols-outlined text-[20px]">verified_user</span><span>Policy &amp; Rules</span></a></nav><div class="mt-space-xl px-space-sm pb-space-sm text-outline font-label-caps text-label-caps uppercase">Manifest Integrity</div><div class="flex flex-col gap-space-xs"><div class="p-space-sm bg-surface-container-low border border-surface-variant rounded-lg"><div class="flex items-center justify-between text-outline font-code-sm text-code-sm mb-1"><span>SBOM Sync</span><span class="text-primary-container font-code-sm text-code-sm">SPDX 2.3</span></div><div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden"><div class="bg-primary-container h-full w-full"></div></div><div class="mt-2 font-code-sm text-code-sm text-on-surface-variant truncate">sha256:7f4c...982b</div></div></div></div><div class="p-space-md border-t border-surface-variant bg-surface-container-lowest"><div class="flex items-center justify-between text-outline font-code-sm text-code-sm"><span>Engine: v4.12-sec</span><span class="material-symbols-outlined text-[16px] text-primary-container">security</span></div></div></aside><div class="pl-64"><main class="w-full pt-16 min-h-screen bg-background text-on-surface"><div class="flex flex-col w-full">
+<div class="relative px-margin-lg py-space-xl overflow-hidden">
+<div class="absolute -top-32 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/2 -left-20 w-80 h-80 bg-secondary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex flex-col gap-space-lg max-w-7xl mx-auto relative z-10">
+<!-- Top Console Breadcrumb & High-level State Switcher -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md pb-space-sm">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs text-outline font-label-caps text-label-caps uppercase tracking-wider">
+<span>Orchestrator</span>
+<span>/</span>
+<span class="text-primary-container">Ingestion &amp; Deep Inspection</span>
+</div>
+<div class="flex items-baseline gap-space-md">
+<h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">Security Ingestion Pipeline</h1>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Task #SC-9428-B</span>
+</div>
+</div>
+<!-- Mode Toggle Segmented Controller -->
+<div class="flex items-center p-1 bg-surface-container-lowest rounded-lg">
+<button class="flex items-center gap-space-xs px-space-md py-1.5 rounded-DEFAULT font-headline-sm text-[13px] transition-all bg-surface-container-high text-primary-container font-semibold shadow-sm" id="tab-input-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">settings_input_component</span>
+<span>New Scan Input</span>
+<span class="px-1.5 py-0.5 rounded-DEFAULT bg-primary-container/20 text-primary-container font-code-sm text-code-sm">Ready</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-1.5 rounded-DEFAULT font-headline-sm text-[13px] transition-all text-on-surface-variant hover:text-on-surface" id="tab-pipeline-btn" type="button">
+<span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span>
+<span>Live Scanner Pipeline</span>
+<span class="px-1.5 py-0.5 rounded-DEFAULT bg-tertiary-container/20 text-tertiary-container font-code-sm text-code-sm font-semibold">In-flight</span>
+</button>
+</div>
+</div>
+<!-- Dual Workspace Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter-lg items-start">
+<!-- Left Column: Scan Configuration & Ingestion Parameters -->
+<div class="xl:col-span-5 flex flex-col gap-space-lg">
+<div class="bg-surface-container rounded-xl p-space-xl shadow-md relative overflow-hidden">
+<div class="flex items-start justify-between gap-space-md pb-space-md mb-space-lg bg-surface-container-low/50 -mx-space-xl -mt-space-xl p-space-xl">
+<div class="flex flex-col gap-1">
+<div class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary-container text-[22px]">cyclone</span>
+<span>Scan Codebase for Supply-Chain Risks</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Configure target manifest and recursive telemetry policy bounds</p>
+</div>
+<span class="px-2 py-0.5 rounded-DEFAULT bg-surface-container-highest text-outline font-label-caps text-label-caps uppercase">Rev 3.4.1</span>
+</div>
+<!-- Ingestion Mode Selector -->
+<div class="flex flex-col gap-space-sm mb-space-lg">
+<label class="font-label-caps text-label-caps uppercase text-outline">Ingestion Strategy</label>
+<div class="grid grid-cols-2 p-1 bg-surface-container-lowest rounded-lg">
+<button class="flex items-center justify-center gap-space-xs py-2 px-space-sm bg-surface-container-high rounded-DEFAULT text-on-surface font-body-md text-body-md font-medium shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary-container">link</span>
+<span>Git Repository URL</span>
+</button>
+<button class="flex items-center justify-center gap-space-xs py-2 px-space-sm text-on-surface-variant hover:text-on-surface rounded-DEFAULT font-body-md text-body-md transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+<span>Upload Archive</span>
+</button>
+</div>
+</div>
+<!-- Target Repository Inputs -->
+<div class="flex flex-col gap-space-md mb-space-lg">
+<div class="flex flex-col gap-space-xs">
+<div class="flex justify-between items-center">
+<label class="font-label-caps text-label-caps uppercase text-outline">Target Repository Endpoint</label>
+<span class="font-code-sm text-code-sm text-primary-container flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">lock_open</span> Public &amp; Deploy Key Access
+                  </span>
+</div>
+<div class="flex rounded-lg overflow-hidden bg-surface-container-lowest focus-within:ring-1 focus-within:ring-primary-container">
+<div class="px-space-md flex items-center text-outline bg-surface-container-low font-code-sm text-code-sm">
+                    git://
+                  </div>
+<input class="w-full bg-transparent px-space-md py-2.5 text-on-surface font-code-md text-code-md placeholder:text-outline focus:outline-none" type="text" value="https://github.com/acme/store-api"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-outline">Branch / Ref</label>
+<div class="flex items-center bg-surface-container-lowest rounded-lg px-space-md py-2 focus-within:ring-1 focus-within:ring-primary-container">
+<span class="material-symbols-outlined text-outline text-[16px] mr-2">fork_right</span>
+<input class="w-full bg-transparent text-on-surface font-code-md text-code-md focus:outline-none" type="text" value="main"/>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-outline">Subpath Manifest</label>
+<div class="flex items-center bg-surface-container-lowest rounded-lg px-space-md py-2">
+<span class="material-symbols-outlined text-outline text-[16px] mr-2">folder_open</span>
+<input class="w-full bg-transparent text-on-surface font-code-md text-code-md focus:outline-none" placeholder="/" type="text" value="/"/>
+</div>
+</div>
+</div>
+<!-- Ecosystem Compatibility Badges -->
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-outline">Target Ecosystem Resolution</span>
+<div class="flex flex-wrap items-center gap-space-xs">
+<div class="flex items-center gap-1.5 px-2 py-1 bg-surface-container-high rounded-DEFAULT">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span class="font-code-sm text-code-sm text-on-surface">npm (v6, v7, v8, v9)</span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-1 bg-surface-container-low rounded-DEFAULT">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">PyPI (beta)</span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-1 bg-surface-container-lowest rounded-DEFAULT opacity-60">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span class="font-code-sm text-code-sm text-outline">Go Modules (coming soon)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Analysis Policies / Checkboxes -->
+<div class="flex flex-col gap-space-sm mb-space-xl">
+<label class="font-label-caps text-label-caps uppercase text-outline">Active Telemetry &amp; Verification Modules</label>
+<div class="flex flex-col gap-2">
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors cursor-pointer group">
+<input checked="" class="mt-0.5 accent-primary-container w-4 h-4 rounded cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface font-medium group-hover:text-primary-container transition-colors">Transitive Dependency Graph Parsing</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Traverse unlimited sub-tree nodes to uncover nested compromised artifacts</span>
+</div>
+</label>
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors cursor-pointer group">
+<input checked="" class="mt-0.5 accent-primary-container w-4 h-4 rounded cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface font-medium group-hover:text-primary-container transition-colors">Correlate Known CVEs &amp; GHSA Advisories</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Real-time matching against OSV.dev, National Vulnerability DB, and zero-day feeds</span>
+</div>
+</label>
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors cursor-pointer group">
+<input checked="" class="mt-0.5 accent-primary-container w-4 h-4 rounded cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface font-medium group-hover:text-primary-container transition-colors">Typosquatting &amp; Dependency Confusion Heuristics</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Evaluate namespace similarity distance, internal scopes, and public repository collisions</span>
+</div>
+</label>
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors cursor-pointer group">
+<input checked="" class="mt-0.5 accent-primary-container w-4 h-4 rounded cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface font-medium group-hover:text-primary-container transition-colors">SLSA Build Provenance &amp; OpenSSF Scorecard</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Validate cryptographic commit signatures, branch protections, and maintainer posture</span>
+</div>
+</label>
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors cursor-pointer group">
+<input checked="" class="mt-0.5 accent-primary-container w-4 h-4 rounded cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface font-medium group-hover:text-primary-container transition-colors">Explainable Risk Scoring &amp; AI Remediation Engine</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Synthesize non-breaking patch upgrade paths and automated pull-request fixes</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Ingestion Action Trigger -->
+<div class="flex items-center gap-space-md">
+<button class="flex-1 flex items-center justify-center gap-space-sm py-3 px-space-lg bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-headline-sm rounded-lg font-bold shadow-md transition-all active:scale-[0.99]" id="trigger-scan-btn" type="button">
+<span class="material-symbols-outlined text-[20px]">radar</span>
+<span>Initialize Deep Scan</span>
+</button>
+<button class="p-3 bg-surface-container-lowest hover:bg-surface-container-high text-on-surface-variant rounded-lg transition-colors" title="Export Manifest Profile" type="button">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+</div>
+</div>
+<!-- Cryptographic Validation Note -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[20px]">verified</span>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Deterministic Ingestion Mode</span>
+<span class="font-code-sm text-code-sm text-outline">Lockfile SHA256 integrity checks enabled</span>
+</div>
+</div>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Policy: Strict</span>
+</div>
+</div>
+<!-- Right Column: Live Scan Progress & Telemetry Pipeline -->
+<div class="xl:col-span-7 flex flex-col gap-space-lg">
+<!-- Live Pipeline Control Header -->
+<div class="bg-surface-container rounded-xl p-space-xl shadow-md flex flex-col gap-space-lg">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="relative flex items-center justify-center w-3.5 h-3.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary-container"></span>
+</div>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-tertiary-container font-semibold">
+                  Scan in Progress • Acme Store API
+                </span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-code-sm text-code-sm text-outline">Engine Worker #04</span>
+<span class="px-2 py-0.5 rounded-DEFAULT bg-surface-container-highest text-primary-container font-code-sm text-code-sm">v4.12-sec</span>
+</div>
+</div>
+<!-- Progress Meter & Quantitative Counter -->
+<div class="flex flex-col gap-space-xs p-space-md bg-surface-container-lowest rounded-lg">
+<div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
+<div class="flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-on-surface font-headline-md tracking-tight">64%</span>
+<span class="font-body-md text-body-md text-on-surface-variant font-medium">completed</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-code-lg text-code-lg text-primary-container font-semibold">92</span>
+<span class="font-code-sm text-code-sm text-outline">/ 143 dependencies analyzed</span>
+</div>
+</div>
+<!-- Animated Progress Bar -->
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden relative mt-space-xs">
+<div class="h-full bg-gradient-to-r from-primary-container via-tertiary-container to-primary-container w-[64%] rounded-full transition-all duration-500 relative">
+<div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-xs text-outline font-code-sm text-code-sm">
+<span>Elapsed: 00:03.42s</span>
+<span>Est. Remaining: ~00:01.80s</span>
+</div>
+</div>
+<!-- Interactive Stage Stepper -->
+<div class="flex flex-col gap-space-sm">
+<span class="font-label-caps text-label-caps uppercase text-outline">Pipeline Execution Graph</span>
+<div class="flex flex-col gap-space-xs">
+<!-- Step 1: Ingestion (Done) -->
+<div class="flex items-start gap-space-md p-space-sm rounded-lg bg-surface-container-low transition-colors">
+<div class="mt-0.5 flex items-center justify-center w-6 h-6 rounded-full bg-primary-container/10 text-primary-container">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface font-medium">Ingesting repository &amp; manifest</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">package.json + package-lock.json validated</span>
+</div>
+<span class="font-code-sm text-code-sm text-primary-container">0.34s</span>
+</div>
+</div>
+<!-- Step 2: Transitive Graph (Done) -->
+<div class="flex items-start gap-space-md p-space-sm rounded-lg bg-surface-container-low transition-colors">
+<div class="mt-0.5 flex items-center justify-center w-6 h-6 rounded-full bg-primary-container/10 text-primary-container">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface font-medium">Constructing transitive dependency graph</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">143 total nodes resolved across 4 recursion levels</span>
+</div>
+<span class="font-code-sm text-code-sm text-primary-container">0.68s</span>
+</div>
+</div>
+<!-- Step 3: Vulnerability Intel (Done) -->
+<div class="flex items-start gap-space-md p-space-sm rounded-lg bg-surface-container-low transition-colors">
+<div class="mt-0.5 flex items-center justify-center w-6 h-6 rounded-full bg-primary-container/10 text-primary-container">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface font-medium">Querying OSV, GHSA &amp; NVD intelligence feeds</span>
+<span class="font-code-sm text-code-sm text-secondary font-medium">1 Critical vulnerability detected (CVE-2021-23337)</span>
+</div>
+<span class="font-code-sm text-code-sm text-primary-container">1.12s</span>
+</div>
+</div>
+<!-- Step 4: Typosquatting / Confusion (Done) -->
+<div class="flex items-start gap-space-md p-space-sm rounded-lg bg-surface-container-low transition-colors">
+<div class="mt-0.5 flex items-center justify-center w-6 h-6 rounded-full bg-primary-container/10 text-primary-container">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface font-medium">Levenshtein distance &amp; confusion evaluation</span>
+<span class="font-code-sm text-code-sm text-secondary font-medium">1 Namespace anomaly identified ('reqeusts')</span>
+</div>
+<span class="font-code-sm text-code-sm text-primary-container">0.82s</span>
+</div>
+</div>
+<!-- Step 5: Reputation & Drift (ACTIVE - Pulsing Ember) -->
+<div class="flex items-start gap-space-md p-space-sm rounded-lg bg-surface-container-high transition-colors relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-tertiary-container"></div>
+<div class="mt-0.5 flex items-center justify-center w-6 h-6 rounded-full bg-tertiary-container/20 text-tertiary-container">
+<span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-body-md text-body-md text-on-surface font-bold">Analyzing reputation, maintainer drift &amp; provenance</span>
+<span class="px-1.5 py-0.2 rounded-DEFAULT bg-tertiary-container text-on-tertiary font-label-caps text-label-caps font-bold">EXECUTING</span>
+</div>
+<span class="font-code-sm text-code-sm text-tertiary-fixed-dim font-medium">Scorecard audits running for 14 packages (51 remaining)</span>
+</div>
+<span class="font-code-sm text-code-sm text-tertiary-container font-semibold animate-pulse">Running...</span>
+</div>
+</div>
+<!-- Step 6: Risk Score Synthesis (Pending) -->
+<div class="flex items-start gap-space-md p-space-sm rounded-lg bg-surface-container-lowest/40 opacity-70">
+<div class="mt-0.5 flex items-center justify-center w-6 h-6 rounded-full bg-surface-variant text-outline">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+</div>
+<div class="flex-1 flex flex-col">
+<span class="font-body-md text-body-md text-outline font-medium">Synthesizing explainable Supply Chain Risk Score</span>
+<span class="font-code-sm text-code-sm text-outline">Waiting for upstream maintainer drift metrics</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline">Queued</span>
+</div>
+<!-- Step 7: AI Remediation (Pending) -->
+<div class="flex items-start gap-space-md p-space-sm rounded-lg bg-surface-container-lowest/40 opacity-70">
+<div class="mt-0.5 flex items-center justify-center w-6 h-6 rounded-full bg-surface-variant text-outline">
+<span class="material-symbols-outlined text-[16px]">psychology</span>
+</div>
+<div class="flex-1 flex flex-col">
+<span class="font-body-md text-body-md text-outline font-medium">Formulating evidence-backed AI remediation recommendations</span>
+<span class="font-code-sm text-code-sm text-outline">Calculates non-breaking upgrade matrix &amp; auto-PR payloads</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline">Queued</span>
+</div>
+</div>
+</div>
+<!-- Terminal Output Telemetry Console -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-outline font-label-caps text-label-caps uppercase">
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+<span>Diagnostic Execution Stream</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="text-outline hover:text-on-surface font-code-sm text-code-sm flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px]">content_copy</span> Copy Log
+                  </button>
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+</div>
+</div>
+<!-- Terminal Window Container -->
+<div class="bg-surface-container-lowest rounded-lg p-space-md font-code-sm text-code-sm overflow-x-auto flex flex-col gap-1.5 shadow-inner select-text">
+<div class="text-outline flex items-start gap-2">
+<span class="opacity-50">[14:32:01.102]</span>
+<span class="text-primary-container font-semibold">INFO:</span>
+<span class="text-on-surface-variant">Cloned repository branch: <code class="text-on-surface">main</code> (sha: <span class="text-primary-fixed">4f9e2b1d7</span>)</span>
+</div>
+<div class="text-outline flex items-start gap-2">
+<span class="opacity-50">[14:32:01.450]</span>
+<span class="text-primary-container font-semibold">INFO:</span>
+<span class="text-on-surface-variant">Parsed 24 direct dependencies, 119 transitive dependencies from lockfile.</span>
+</div>
+<div class="text-outline flex items-start gap-2 bg-secondary-container/10 -mx-2 px-2 py-0.5 rounded">
+<span class="opacity-50">[14:32:02.120]</span>
+<span class="text-secondary font-bold">WARN:</span>
+<span class="text-secondary-fixed">Critical vulnerability detected in <code class="text-on-surface underline">lodash@4.17.20</code> (<span class="font-semibold text-secondary">CVE-2021-23337</span>, CVSS 9.8).</span>
+</div>
+<div class="text-outline flex items-start gap-2 bg-error-container/20 -mx-2 px-2 py-0.5 rounded">
+<span class="opacity-50">[14:32:02.390]</span>
+<span class="text-error font-bold">ALERT:</span>
+<span class="text-on-surface">Typosquatting detected: <code class="text-error font-bold">'reqeusts@2.31.0'</code> matches <code class="text-primary">'requests'</code> (Levenshtein score: 0.96).</span>
+</div>
+<div class="text-outline flex items-start gap-2">
+<span class="opacity-50">[14:32:02.810]</span>
+<span class="text-tertiary font-semibold">SCANNING:</span>
+<span class="text-tertiary-fixed-dim animate-pulse">Querying OpenSSF Scorecard &amp; SLSA attestations for 14 remaining packages...</span>
+</div>
+<div class="text-outline flex items-start gap-2 pt-1 border-t border-surface-variant/40">
+<span class="opacity-50">[14:32:03.204]</span>
+<span class="text-outline font-semibold">DEBUG:</span>
+<span class="text-on-surface-variant">Resolved provenance token signature via Sigstore cosign root CA.</span>
+</div>
+</div>
+</div>
+<!-- Real-time Ingestion Mini-Metrics Ledger -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm pt-space-xs">
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Direct Roots</span>
+<span class="font-headline-sm text-headline-sm text-on-surface mt-1">24</span>
+<span class="font-code-sm text-code-sm text-primary-container">Top level</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Transitive</span>
+<span class="font-headline-sm text-headline-sm text-on-surface mt-1">119</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Depth ≤ 5</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Advisories</span>
+<span class="font-headline-sm text-headline-sm text-secondary mt-1">1 Crit / 3 Med</span>
+<span class="font-code-sm text-code-sm text-secondary-fixed">Action req.</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">SLSA Grade</span>
+<span class="font-headline-sm text-headline-sm text-tertiary mt-1">Level 2</span>
+<span class="font-code-sm text-code-sm text-tertiary-fixed-dim">Attested</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+    (function() {
+      const tabInputBtn = document.getElementById('tab-input-btn');
+      const tabPipelineBtn = document.getElementById('tab-pipeline-btn');
+      const triggerScanBtn = document.getElementById('trigger-scan-btn');
+
+      if (tabInputBtn && tabPipelineBtn) {
+        tabInputBtn.addEventListener('click', function() {
+          tabInputBtn.className = 'flex items-center gap-space-xs px-space-md py-1.5 rounded-DEFAULT font-headline-sm text-[13px] transition-all bg-surface-container-high text-primary-container font-semibold shadow-sm';
+          tabPipelineBtn.className = 'flex items-center gap-space-xs px-space-md py-1.5 rounded-DEFAULT font-headline-sm text-[13px] transition-all text-on-surface-variant hover:text-on-surface';
+        });
+
+        tabPipelineBtn.addEventListener('click', function() {
+          tabPipelineBtn.className = 'flex items-center gap-space-xs px-space-md py-1.5 rounded-DEFAULT font-headline-sm text-[13px] transition-all bg-surface-container-high text-tertiary font-semibold shadow-sm';
+          tabInputBtn.className = 'flex items-center gap-space-xs px-space-md py-1.5 rounded-DEFAULT font-headline-sm text-[13px] transition-all text-on-surface-variant hover:text-on-surface';
+        });
+      }
+
+      if (triggerScanBtn) {
+        triggerScanBtn.addEventListener('click', function() {
+          const originalText = triggerScanBtn.innerHTML;
+          triggerScanBtn.innerHTML = '<span class="material-symbols-outlined text-[20px] animate-spin">refresh</span><span>Dispatched to Pipeline...</span>';
+          setTimeout(function() {
+            triggerScanBtn.innerHTML = originalText;
+          }, 1800);
+        });
+      }
+    })();
+  </script>
+</div></main></div></body></html>

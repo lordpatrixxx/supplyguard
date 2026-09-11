@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "tertiary-fixed-dim": "#f7bd4f",
+        "surface-variant": "#2f3544",
+        "primary-fixed": "#7af8d3",
+        "inverse-primary": "#006b55",
+        "error-container": "#93000a",
+        "on-error-container": "#ffdad6",
+        "surface-dim": "#0d1321",
+        "secondary-container": "#8f1b01",
+        "inverse-surface": "#dde2f6",
+        "secondary-fixed": "#ffdad2",
+        "outline-variant": "#3d4a44",
+        "surface-bright": "#333949",
+        "on-tertiary-container": "#654600",
+        "secondary": "#ffb4a3",
+        "on-secondary-fixed": "#3d0600",
+        "background": "#0d1321",
+        "secondary-fixed-dim": "#ffb4a3",
+        "on-surface": "#dde2f6",
+        "on-primary-fixed": "#002018",
+        "surface-container-high": "#242a39",
+        "primary-fixed-dim": "#5bdcb8",
+        "on-secondary-container": "#ffa08a",
+        "on-primary": "#00382b",
+        "surface-tint": "#5bdcb8",
+        "primary-container": "#4fd1ae",
+        "on-primary-fixed-variant": "#005140",
+        "tertiary-container": "#ecb346",
+        "on-secondary": "#630f00",
+        "on-tertiary": "#422c00",
+        "surface-container": "#191f2e",
+        "on-secondary-fixed-variant": "#8c1900",
+        "on-surface-variant": "#bccac3",
+        "inverse-on-surface": "#2a303f",
+        "on-primary-container": "#005644",
+        "surface": "#0d1321",
+        "on-error": "#690005",
+        "surface-container-highest": "#2f3544",
+        "surface-container-lowest": "#080e1c",
+        "on-background": "#dde2f6",
+        "outline": "#86948e",
+        "on-tertiary-fixed-variant": "#5f4100",
+        "tertiary-fixed": "#ffdeaa",
+        "surface-container-low": "#151b2a",
+        "on-tertiary-fixed": "#271900",
+        "tertiary": "#ffd184",
+        "error": "#ffb4ab",
+        "primary": "#6feec9"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+      },
+      "spacing": {
+        "margin": "1rem",
+        "space-2xl": "2rem",
+        "space-md": "0.75rem",
+        "space-lg": "1rem",
+        "space-sm": "0.5rem",
+        "space-xl": "1.5rem",
+        "gutter": "1rem",
+        "space-xs": "0.25rem",
+        "gutter-lg": "1.5rem",
+        "margin-lg": "2rem",
+        "margin-md": "1.5rem"
+      },
+      "fontFamily": {
+        "headline-md": [
+          "Space Grotesk"
+        ],
+        "headline-sm": [
+          "Space Grotesk"
+        ],
+        "display-lg": [
+          "Space Grotesk"
+        ],
+        "code-sm": [
+          "JetBrains Mono"
+        ],
+        "code-md": [
+          "JetBrains Mono"
+        ],
+        "label-caps": [
+          "JetBrains Mono"
+        ],
+        "body-md": [
+          "Inter"
+        ],
+        "body-lg": [
+          "Inter"
+        ],
+        "code-lg": [
+          "JetBrains Mono"
+        ],
+        "body-sm": [
+          "Inter"
+        ],
+        "display-lg-mobile": [
+          "Space Grotesk"
+        ]
+      },
+      "fontSize": {
+        "headline-md": [
+          "24px",
+          {
+            "lineHeight": "32px",
+            "letterSpacing": "-0.01em",
+            "fontWeight": "600"
+          }
+        ],
+        "headline-sm": [
+          "18px",
+          {
+            "lineHeight": "26px",
+            "fontWeight": "600"
+          }
+        ],
+        "display-lg": [
+          "32px",
+          {
+            "lineHeight": "40px",
+            "letterSpacing": "-0.02em",
+            "fontWeight": "700"
+          }
+        ],
+        "code-sm": [
+          "11px",
+          {
+            "lineHeight": "14px",
+            "letterSpacing": "0.02em",
+            "fontWeight": "400"
+          }
+        ],
+        "code-md": [
+          "13px",
+          {
+            "lineHeight": "18px",
+            "fontWeight": "400"
+          }
+        ],
+        "label-caps": [
+          "10px",
+          {
+            "lineHeight": "12px",
+            "letterSpacing": "0.08em",
+            "fontWeight": "600"
+          }
+        ],
+        "body-md": [
+          "14px",
+          {
+            "lineHeight": "20px",
+            "fontWeight": "400"
+          }
+        ],
+        "body-lg": [
+          "16px",
+          {
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          }
+        ],
+        "code-lg": [
+          "14px",
+          {
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          }
+        ],
+        "body-sm": [
+          "12px",
+          {
+            "lineHeight": "16px",
+            "fontWeight": "400"
+          }
+        ],
+        "display-lg-mobile": [
+          "26px",
+          {
+            "lineHeight": "34px",
+            "letterSpacing": "-0.01em",
+            "fontWeight": "700"
+          }
+        ]
+      }
+    }
+  }
+}</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 h-16 bg-surface-container-lowest border-b border-surface-variant flex items-center justify-between px-margin-lg"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><img alt="SupplyGuard Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Vr7cSr0tRWuqMopc11rEwcbNiZdHBZ8osuTR4bKLp9Hv0n1AjDghbUC7uObRT-MHn70ydEYnQVD7J72G0FgdJgeDlQmFOpWKAuAH05vuXuHuIDrun_3PVr_IeJ2SmQkOw2SiFSgoH5bitDRfeVXyY5DrdLu8kT7nZW6_k9nhNG97qhQPpve9xHWre9U0O1-I9TX6TVEH9ecHQ1o3Crd4X2bHUqq_OHNuZSpah0HLGd4We5T5bi3XCaWAEz"/><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Supply<span class="text-primary-container">Guard</span></span></div><div class="h-5 w-[1px] bg-surface-variant"></div><div class="flex items-center gap-space-xs px-space-sm py-1 bg-surface-container border border-surface-variant rounded-lg"><span class="material-symbols-outlined text-on-surface-variant text-[16px]">inventory_2</span><span class="font-code-sm text-code-sm text-on-surface font-medium">Acme Store API</span><span class="font-code-sm text-code-sm text-on-surface-variant">(main)</span></div><div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 bg-surface-container border border-primary-container/30 rounded-lg"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-caps text-label-caps uppercase text-primary-container">Live Intel Feed: Connected</span></div></div><div class="hidden lg:flex items-center flex-1 max-w-md mx-space-xl"><div class="relative w-full"><span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span><input class="w-full h-9 bg-surface-dim border border-surface-variant rounded-lg pl-9 pr-3 text-on-surface placeholder:text-outline font-code-sm text-code-sm focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all" placeholder="Search packages, CVEs, or dependencies..." type="text"/></div></div><div class="flex items-center gap-space-md"><button class="flex items-center gap-space-xs px-space-md py-1.5 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-[13px] rounded-lg transition-colors shadow-sm font-semibold" type="button"><span class="material-symbols-outlined text-[18px]">radar</span><span>New Scan</span></button><div class="h-5 w-[1px] bg-surface-variant"></div><button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="relative flex items-center gap-space-xs pl-space-xs"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-1 ring-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA54mdzDliohJhL_z7y5wSocDEBIxyh95Ej4lpc0zFs78ugfSARgWUawQFDK8zKo2CqDOIu_FoXOxT3nyqVGeuluEisy4wuRj3kfrk84vJaHAko39rDSX8PTphDVcG9jSOJTl7vhn9fKbt8AlHIwDizW-0jES5nStHRb6Q4dqPoImuOcaE4ARbnS5hcRTHwiM4igQyALo8_e3roHv6rjVM6P6-E24ShKdXjnW-9aX5YupnODUOydE7DGQ"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary-container rounded-full ring-2 ring-surface-dim"></span></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-dim border-r border-surface-variant z-40 flex flex-col justify-between overflow-y-auto"><div class="p-space-md"><div class="px-space-sm pb-space-sm text-outline font-label-caps text-label-caps uppercase">Telemetry &amp; Audit</div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-surface-container-high text-primary-container border-l-2 border-primary-container font-medium"><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="overview" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span>Overview</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg transition-colors bg-surface-container-high text-primary-container border-l-2 border-primary-container font-medium" data-path="dependency-graph" href="#"><span class="material-symbols-outlined text-[20px]">hub</span><span>Dependency Graph</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="findings-remediation" href="#"><span class="material-symbols-outlined text-[20px]">shield_with_heart</span><span>Findings &amp; Remediation</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="scan-history" href="#"><span class="material-symbols-outlined text-[20px]">history</span><span>Scan History</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="policy-compliance" href="#"><span class="material-symbols-outlined text-[20px]">verified_user</span><span>Policy &amp; Rules</span></a></nav><div class="mt-space-xl px-space-sm pb-space-sm text-outline font-label-caps text-label-caps uppercase">Manifest Integrity</div><div class="flex flex-col gap-space-xs"><div class="p-space-sm bg-surface-container-low border border-surface-variant rounded-lg"><div class="flex items-center justify-between text-outline font-code-sm text-code-sm mb-1"><span>SBOM Sync</span><span class="text-primary-container font-code-sm text-code-sm">SPDX 2.3</span></div><div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden"><div class="bg-primary-container h-full w-full"></div></div><div class="mt-2 font-code-sm text-code-sm text-on-surface-variant truncate">sha256:7f4c...982b</div></div></div></div><div class="p-space-md border-t border-surface-variant bg-surface-container-lowest"><div class="flex items-center justify-between text-outline font-code-sm text-code-sm"><span>Engine: v4.12-sec</span><span class="material-symbols-outlined text-[16px] text-primary-container">security</span></div></div></aside><div class="pl-64"><main class="w-full pt-16 min-h-screen bg-background text-on-surface"><div class="flex flex-col w-full">
+<div class="p-space-lg flex flex-col gap-space-lg w-full max-w-[1720px] mx-auto">
+<!-- Top Telemetry & Health Ribbon -->
+<div class="bg-surface-container-low rounded-xl p-space-lg shadow-md flex flex-col xl:flex-row gap-space-lg justify-between items-stretch">
+<!-- Left: Overall Score Dial & Metadata -->
+<div class="flex items-center gap-space-xl min-w-[320px]">
+<div class="relative flex items-center justify-center w-20 h-20 shrink-0">
+<svg class="w-full h-full -rotate-90 transform" viewbox="0 0 76 76">
+<circle class="text-surface-variant" cx="38" cy="38" fill="transparent" r="32" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-tertiary-container" cx="38" cy="38" fill="transparent" r="32" stroke="currentColor" stroke-dasharray="201.06" stroke-dashoffset="44.23" stroke-linecap="round" stroke-width="6"></circle>
+</svg>
+<div class="absolute flex flex-col items-center justify-center text-center">
+<span class="font-headline-md text-headline-md font-bold text-on-surface leading-none">78</span>
+<span class="font-label-caps text-label-caps text-outline uppercase tracking-wider">/100</span>
+</div>
+</div>
+<div class="flex flex-col justify-center">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-tertiary px-space-xs py-0.5 bg-surface-container-highest rounded">Elevated Posture Deficit</span>
+<span class="font-code-sm text-code-sm text-outline">• SBOM Audit</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface font-semibold tracking-tight mt-0.5">Supply Chain Risk Vector</h1>
+<div class="flex items-center gap-space-xs font-code-sm text-code-sm text-on-surface-variant mt-1">
+<span class="material-symbols-outlined text-[15px] text-outline">schedule</span>
+<span>2 minutes ago</span>
+<span class="text-surface-variant">•</span>
+<span class="text-primary-container">branch: main</span>
+<span class="text-surface-variant">•</span>
+<span class="font-code-sm text-outline">rev: 4f9e2b1</span>
+</div>
+</div>
+</div>
+<!-- Right: Triage Stat Tiles -->
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-space-sm flex-1 items-center">
+<!-- Total -->
+<div class="bg-surface-container px-space-md py-space-sm rounded-lg flex flex-col justify-between h-full">
+<span class="font-label-caps text-label-caps uppercase text-outline">Dependencies</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-display-lg text-display-lg font-bold text-on-surface">143</span>
+<span class="font-code-sm text-code-sm text-outline">pkgs</span>
+</div>
+<div class="font-code-sm text-code-sm text-on-surface-variant flex items-center justify-between mt-1">
+<span>24 Direct</span>
+<span class="text-outline">119 Tr.</span>
+</div>
+</div>
+<!-- Critical -->
+<div class="bg-surface-container px-space-md py-space-sm rounded-lg flex flex-col justify-between h-full bg-gradient-to-br from-error-container/20 to-transparent">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-error">Critical</span>
+<span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+</div>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-display-lg text-display-lg font-bold text-error">03</span>
+<span class="font-label-caps text-label-caps text-error/80 uppercase">Exploit Reg</span>
+</div>
+<span class="font-code-sm text-code-sm text-error/70 truncate">Urgent patch required</span>
+</div>
+<!-- High -->
+<div class="bg-surface-container px-space-md py-space-sm rounded-lg flex flex-col justify-between h-full">
+<span class="font-label-caps text-label-caps uppercase text-secondary">High Risk</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-display-lg text-display-lg font-bold text-secondary">07</span>
+<span class="font-code-sm text-code-sm text-outline">CVSS &gt;7.5</span>
+</div>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Review ingress gates</span>
+</div>
+<!-- Medium / Caution -->
+<div class="bg-surface-container px-space-md py-space-sm rounded-lg flex flex-col justify-between h-full">
+<span class="font-label-caps text-label-caps uppercase text-tertiary">Medium</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-display-lg text-display-lg font-bold text-tertiary">14</span>
+<span class="font-code-sm text-code-sm text-outline">Stale/Prot</span>
+</div>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Telemetry monitored</span>
+</div>
+<!-- Safe -->
+<div class="bg-surface-container px-space-md py-space-sm rounded-lg flex flex-col justify-between h-full bg-gradient-to-br from-primary/10 to-transparent col-span-2 sm:col-span-1">
+<span class="font-label-caps text-label-caps uppercase text-primary">Safe / Clean</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-display-lg text-display-lg font-bold text-primary">100</span>
+<span class="font-code-sm text-code-sm text-outline">Passed</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mt-1">
+<div class="bg-primary h-full w-[70%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Mission Control Stage: Graph Area (65%) + Side Panel (35%) -->
+<div class="flex flex-col lg:flex-row gap-space-lg items-start relative min-h-[760px]">
+<!-- Left Graph & Visual Navigation Canvas (65%) -->
+<div class="w-full lg:w-[63%] xl:w-[65%] flex flex-col gap-space-md">
+<!-- Controls & Scope Toolbar -->
+<div class="bg-surface-container-low p-space-sm rounded-lg shadow-sm flex flex-wrap items-center justify-between gap-space-sm">
+<!-- Filter Inputs -->
+<div class="flex items-center gap-space-sm flex-wrap">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[16px] text-primary">filter_alt</span>
+<input class="h-8 bg-surface-container-highest pl-8 pr-7 rounded font-code-sm text-code-sm text-on-surface focus:outline-none ring-1 ring-primary/40 focus:ring-primary w-40" type="text" value="lodash"/>
+<button class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-[14px] text-outline hover:text-on-surface">close</button>
+</div>
+<button class="flex items-center gap-space-xs px-2.5 py-1 rounded bg-error-container text-on-error-container font-label-caps text-label-caps uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>
+              Critical Only
+            </button>
+<button class="flex items-center gap-space-xs px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps uppercase transition-colors">
+              High Fan-out
+            </button>
+<button class="flex items-center gap-space-xs px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps uppercase transition-colors">
+              Transitive Only
+            </button>
+<div class="px-2 py-1 rounded bg-surface-dim font-code-sm text-code-sm text-outline flex items-center gap-1">
+<span>pkg:</span>
+<span class="text-on-surface">npm</span>
+</div>
+</div>
+<!-- View Manipulation & Canvas Options -->
+<div class="flex items-center gap-space-xs">
+<div class="flex items-center bg-surface-container rounded p-0.5">
+<button class="px-2 py-1 text-on-surface bg-surface-container-highest rounded font-code-sm text-code-sm">2D Net</button>
+<button class="px-2 py-1 text-outline hover:text-on-surface font-code-sm text-code-sm">3D Ortho</button>
+</div>
+<button class="w-7 h-7 flex items-center justify-center bg-surface-container hover:bg-surface-container-highest text-on-surface-variant rounded" title="Reset Zoom">
+<span class="material-symbols-outlined text-[16px]">fit_screen</span>
+</button>
+<div class="h-4 w-px bg-surface-variant mx-1"></div>
+<div class="flex items-center gap-1.5 font-label-caps text-label-caps text-outline">
+<span>Depth</span>
+<span class="text-primary-container font-code-sm text-code-sm">ALL (3)</span>
+</div>
+</div>
+</div>
+<!-- Main Risk Constellation Deep Canvas -->
+<div class="relative w-full h-[660px] bg-surface-container-lowest rounded-xl overflow-hidden shadow-2xl flex flex-col justify-between p-space-md select-none group">
+<!-- Subtle Grid Matrix Background Overlay -->
+<div class="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#2f3544_1px,transparent_1px)] [background-size:24px_24px]"></div>
+<!-- Topology Status HUD Header -->
+<div class="relative z-10 flex items-center justify-between">
+<div class="flex items-center gap-space-sm bg-surface-container/80 backdrop-blur px-space-sm py-1 rounded-md">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-code-sm text-code-sm text-on-surface">DIRECTED GRAPH CLUSTER: VULN-CORE-01</span>
+<span class="text-outline font-label-caps text-label-caps uppercase bg-surface-dim px-1 rounded">16 Nodes Visible</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 rounded bg-surface-container/90 hover:bg-surface-container-highest text-on-surface flex items-center justify-center text-[16px]">
+<span class="material-symbols-outlined text-[16px]">zoom_in</span>
+</button>
+<button class="w-8 h-8 rounded bg-surface-container/90 hover:bg-surface-container-highest text-on-surface flex items-center justify-center text-[16px]">
+<span class="material-symbols-outlined text-[16px]">zoom_out</span>
+</button>
+<button class="w-8 h-8 rounded bg-surface-container/90 hover:bg-surface-container-highest text-on-surface flex items-center justify-center text-[16px]">
+<span class="material-symbols-outlined text-[16px]">fullscreen</span>
+</button>
+</div>
+</div>
+<!-- SVG Topology Visualization Layer -->
+<div class="absolute inset-0 w-full h-full">
+<svg class="w-full h-full" fill="none" viewbox="0 0 960 660">
+<defs>
+<!-- Glowing Filter Effects -->
+<filter height="160%" id="glow-ember" width="160%" x="-30%" y="-30%">
+<fegaussianblur result="blur" stddeviation="6"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+<filter height="140%" id="glow-teal" width="140%" x="-20%" y="-20%">
+<fegaussianblur result="blur" stddeviation="4"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+<!-- Gradients for luminous vectors -->
+<lineargradient id="link-direct" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#4FD1AE" stop-opacity="0.8"></stop>
+<stop offset="100%" stop-color="#FF6B4A" stop-opacity="0.9"></stop>
+</lineargradient>
+<lineargradient id="link-transitive" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#86948E" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#FF6B4A" stop-opacity="0.7"></stop>
+</lineargradient>
+<lineargradient id="link-safe" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#4FD1AE" stop-opacity="0.4"></stop>
+<stop offset="100%" stop-color="#4FD1AE" stop-opacity="0.1"></stop>
+</lineargradient>
+</defs>
+<!-- Connection Vectors (Threads) -->
+<!-- Root: Acme Store API (150, 330) -->
+<path d="M 150 330 Q 260 210 370 190" stroke="#4FD1AE" stroke-dasharray="none" stroke-opacity="0.7" stroke-width="2.5"></path>
+<path d="M 150 330 Q 250 330 350 330" stroke="#4FD1AE" stroke-opacity="0.4" stroke-width="2"></path>
+<path d="M 150 330 Q 260 450 360 470" stroke="#4FD1AE" stroke-opacity="0.5" stroke-width="2"></path>
+<!-- Direct Branches to Transitive Intermediates -->
+<path d="M 370 190 Q 450 180 520 220" stroke="url(#link-direct)" stroke-width="2.5"></path>
+<path d="M 350 330 Q 440 310 520 250" stroke="#86948E" stroke-dasharray="4 4" stroke-opacity="0.5" stroke-width="1.2"></path>
+<path d="M 360 470 Q 460 430 520 380" stroke="#F2B84B" stroke-opacity="0.5" stroke-width="1.5"></path>
+<!-- Convergence to lodash@4.17.20 (540, 270) -->
+<path d="M 520 220 L 590 290" filter="url(#glow-ember)" stroke="#FF6B4A" stroke-width="3"></path>
+<path d="M 520 250 L 590 290" stroke="#FF6B4A" stroke-dasharray="3 3" stroke-width="2"></path>
+<!-- lodash Fan-out connections to leaves -->
+<path d="M 590 290 Q 690 180 780 160" stroke="#FF6B4A" stroke-opacity="0.8" stroke-width="1.5"></path>
+<path d="M 590 290 Q 700 250 810 240" stroke="#FF6B4A" stroke-dasharray="2 2" stroke-opacity="0.8" stroke-width="1.8"></path>
+<path d="M 590 290 Q 710 340 790 350" stroke="#F2B84B" stroke-opacity="0.6" stroke-width="1.2"></path>
+<path d="M 590 290 Q 680 420 760 450" stroke="#4FD1AE" stroke-opacity="0.4" stroke-width="1"></path>
+<!-- Safe Peripheral Cluster Threads -->
+<path d="M 370 190 Q 420 100 500 90" stroke="#4FD1AE" stroke-opacity="0.3" stroke-width="1"></path>
+<path d="M 500 90 L 630 80" stroke="#4FD1AE" stroke-opacity="0.2" stroke-width="1"></path>
+<path d="M 360 470 Q 480 540 600 530" stroke="#4FD1AE" stroke-opacity="0.3" stroke-width="1"></path>
+<!-- Graph Nodes -->
+<!-- 1. ROOT APP NODE -->
+<g class="cursor-pointer" transform="translate(150, 330)">
+<circle fill="#191F2E" filter="url(#glow-teal)" r="22" stroke="#4FD1AE" stroke-width="2"></circle>
+<circle fill="#4FD1AE" r="8"></circle>
+<text class="font-headline-sm text-[12px] font-bold tracking-wider" fill="#DDE2F6" text-anchor="middle" x="0" y="38">ROOT</text>
+<text class="font-code-sm text-[10px]" fill="#86948E" text-anchor="middle" x="0" y="52">Acme Store API</text>
+</g>
+<!-- 2. DIRECT DEPENDENCIES -->
+<!-- express@4.18.2 -->
+<g class="cursor-pointer transition-transform hover:scale-110" transform="translate(370, 190)">
+<circle fill="#191F2E" r="16" stroke="#4FD1AE" stroke-width="2"></circle>
+<circle fill="#4FD1AE" r="5"></circle>
+<text class="font-code-sm text-[11px] font-semibold" fill="#DDE2F6" text-anchor="middle" x="0" y="-22">express</text>
+<text class="font-code-sm text-[9px]" fill="#86948E" text-anchor="middle" x="0" y="-10">v4.18.2 (Direct)</text>
+</g>
+<!-- async@3.2.4 -->
+<g class="cursor-pointer" transform="translate(350, 330)">
+<circle fill="#191F2E" r="13" stroke="#4FD1AE" stroke-width="1.5"></circle>
+<circle fill="#4FD1AE" r="4"></circle>
+<text class="font-code-sm text-[10px]" fill="#DDE2F6" text-anchor="middle" x="0" y="24">async</text>
+</g>
+<!-- pg@8.11.0 -->
+<g class="cursor-pointer" transform="translate(360, 470)">
+<circle fill="#191F2E" r="14" stroke="#4FD1AE" stroke-width="1.5"></circle>
+<circle fill="#4FD1AE" r="4"></circle>
+<text class="font-code-sm text-[10px]" fill="#DDE2F6" text-anchor="middle" x="0" y="26">pg (postgres)</text>
+</g>
+<!-- Clean leaf -->
+<g transform="translate(500, 90)">
+<circle fill="#151B2A" r="10" stroke="#4FD1AE" stroke-width="1"></circle>
+<text class="font-code-sm text-[9px]" fill="#86948E" text-anchor="middle" x="0" y="-14">cors@2.8.5</text>
+</g>
+<g transform="translate(630, 80)">
+<circle fill="#151B2A" r="8" stroke="#4FD1AE" stroke-width="1"></circle>
+<text class="font-code-sm text-[9px]" fill="#86948E" text-anchor="middle" x="0" y="-12">object-assign</text>
+</g>
+<!-- 3. TRANSITIVE INTERMEDIARIES -->
+<!-- body-parser@1.20.1 -->
+<g class="cursor-pointer" transform="translate(520, 220)">
+<circle fill="#242A39" r="13" stroke="#FF6B4A" stroke-width="1.5"></circle>
+<circle fill="#FF6B4A" r="4"></circle>
+<text class="font-code-sm text-[10px]" fill="#DDE2F6" text-anchor="middle" x="0" y="-18">body-parser</text>
+<text class="font-code-sm text-[9px]" fill="#FFB4A3" text-anchor="middle" x="0" y="-7">v1.20.1</text>
+</g>
+<!-- jsonwebtoken (amber) -->
+<g class="cursor-pointer" transform="translate(520, 380)">
+<circle fill="#242A39" r="13" stroke="#F2B84B" stroke-width="1.5"></circle>
+<circle fill="#F2B84B" r="4"></circle>
+<text class="font-code-sm text-[10px]" fill="#DDE2F6" text-anchor="middle" x="0" y="24">jsonwebtoken</text>
+<text class="font-label-caps text-[8px]" fill="#F2B84B" text-anchor="middle" x="0" y="36">CVE-LOW</text>
+</g>
+<!-- 4. HIGHLIGHTED EXPLODING CRITICAL NODE (lodash@4.17.20) -->
+<g class="cursor-pointer" transform="translate(590, 290)">
+<!-- Pulsing Aura Halo Rings -->
+<circle class="animate-ping" fill="none" r="44" stroke="#FF6B4A" stroke-opacity="0.3" stroke-width="1" style="animation-duration: 3s;"></circle>
+<circle fill="#FF6B4A" fill-opacity="0.12" r="34" stroke="#FF6B4A" stroke-dasharray="4 2" stroke-width="1"></circle>
+<circle fill="#191F2E" filter="url(#glow-ember)" r="22" stroke="#FF6B4A" stroke-width="2.5"></circle>
+<circle fill="#FF6B4A" r="9"></circle>
+<!-- Micro Badge Callout -->
+<rect fill="#080E1C" height="38" rx="4" stroke="#FF6B4A" stroke-width="1" width="138" x="26" y="-36"></rect>
+<text class="font-label-caps text-[9px] font-bold uppercase tracking-wider" fill="#FF6B4A" x="34" y="-22">CRITICAL TARGET</text>
+<text class="font-code-sm text-[11px] font-bold" fill="#DDE2F6" x="34" y="-6">lodash@4.17.20</text>
+</g>
+<!-- 5. DOWNSTREAM IMPACT LEAVES -->
+<!-- template compiler -->
+<g transform="translate(780, 160)">
+<circle fill="#191F2E" r="11" stroke="#FF6B4A" stroke-width="1.5"></circle>
+<text class="font-code-sm text-[10px]" fill="#FFB4A3" x="18" y="4">template-runner</text>
+</g>
+<!-- sanitize-html -->
+<g transform="translate(810, 240)">
+<circle fill="#191F2E" r="12" stroke="#FF6B4A" stroke-width="1.5"></circle>
+<text class="font-code-sm text-[10px]" fill="#DDE2F6" x="18" y="4">query-interpolator</text>
+</g>
+<!-- utility belt (amber) -->
+<g transform="translate(790, 350)">
+<circle fill="#191F2E" r="9" stroke="#F2B84B" stroke-width="1"></circle>
+<text class="font-code-sm text-[9px]" fill="#BCCAC3" x="16" y="4">deep-merge-util</text>
+</g>
+<!-- safe leaf -->
+<g transform="translate(760, 450)">
+<circle fill="#191F2E" r="9" stroke="#4FD1AE" stroke-width="1"></circle>
+<text class="font-code-sm text-[9px]" fill="#86948E" x="16" y="4">uuid-generator</text>
+</g>
+</svg>
+</div>
+<!-- Bottom HUD Bar & Legend -->
+<div class="relative z-10 flex flex-wrap items-center justify-between gap-space-md pt-space-sm bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/80 to-transparent">
+<!-- Strict Visual Legend -->
+<div class="flex items-center gap-space-lg bg-surface-container/90 backdrop-blur px-space-md py-space-xs rounded-lg border-b border-surface-variant">
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded-full bg-primary ring-2 ring-primary/20"></span>
+<span class="font-label-caps text-label-caps text-on-surface uppercase">Safe / Verified</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded-full bg-tertiary-container ring-2 ring-tertiary/20"></span>
+<span class="font-label-caps text-label-caps text-on-surface uppercase">Medium / Caution</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded-full bg-error ring-2 ring-error/30 animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-error uppercase font-bold">Critical / Exploit</span>
+</div>
+<div class="h-3 w-px bg-surface-variant hidden sm:block"></div>
+<div class="hidden sm:flex items-center gap-space-md font-code-sm text-code-sm text-outline">
+<span class="flex items-center gap-1.5"><span class="w-4 h-0.5 bg-on-surface"></span> Direct</span>
+<span class="flex items-center gap-1.5"><span class="w-4 h-0.5 border-b border-dashed border-outline"></span> Transitive</span>
+</div>
+</div>
+<!-- Focus Status pill -->
+<div class="flex items-center gap-space-xs font-code-sm text-code-sm bg-surface-dim/90 px-space-sm py-1 rounded border-l-2 border-error">
+<span class="text-outline">Active Focus:</span>
+<span class="text-error font-medium">lodash@4.17.20 (GHSA-35jh-r3h4-6jhm)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Active Finding Detail Side Panel (35%) -->
+<aside class="w-full lg:w-[37%] xl:w-[35%] bg-surface-container-low rounded-xl shadow-xl flex flex-col overflow-hidden">
+<!-- Header Banner -->
+<div class="p-space-lg bg-surface-container flex flex-col gap-space-xs border-b border-surface-variant relative">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded font-label-caps text-label-caps uppercase bg-error-container text-on-error-container font-bold tracking-wider">
+                  Critical Risk (86/100)
+                </span>
+<span class="font-code-sm text-code-sm text-outline">npm package</span>
+</div>
+<h2 class="font-display-lg text-display-lg font-bold text-on-surface tracking-tight mt-1 flex items-baseline gap-space-xs">
+                lodash
+                <span class="font-code-md text-code-md text-error font-normal">@4.17.20</span>
+</h2>
+</div>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded transition-colors" title="Close Inspection">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Transitive Path Pill -->
+<div class="mt-space-xs flex items-center gap-1.5 font-code-sm text-code-sm bg-surface-dim px-space-sm py-1.5 rounded text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-tertiary">fork_right</span>
+<span class="text-outline">Origin:</span>
+<span class="text-on-surface font-medium">Transitive</span>
+<span class="text-outline">via</span>
+<span class="text-primary-container">express@4.18.2</span>
+</div>
+</div>
+<!-- Scrollable Panel Body -->
+<div class="p-space-lg flex flex-col gap-space-xl overflow-y-auto max-h-[720px]">
+<!-- Section 1: Explainable Risk Score Breakdown -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-tertiary text-[18px]">analytics</span>
+                Explainable Risk Score
+              </h3>
+<span class="font-headline-sm text-headline-sm font-bold text-error">86 <span class="font-code-sm text-code-sm text-outline font-normal">/ 100</span></span>
+</div>
+<!-- Formula Bars Matrix -->
+<div class="flex flex-col gap-1.5 bg-surface-container p-space-md rounded-lg">
+<div class="flex items-center justify-between font-code-sm text-code-sm">
+<span class="text-on-surface">Known Exploit Database Match</span>
+<span class="text-error font-semibold">+40</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded">
+<div class="bg-error h-full w-full"></div>
+</div>
+<div class="flex items-center justify-between font-code-sm text-code-sm mt-1">
+<span class="text-on-surface">High Severity CVSS Base (8.8)</span>
+<span class="text-error font-semibold">+20</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded">
+<div class="bg-error h-full w-1/2"></div>
+</div>
+<div class="flex items-center justify-between font-code-sm text-code-sm mt-1">
+<span class="text-on-surface">Outdated Major/Minor Release</span>
+<span class="text-tertiary font-semibold">+10</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded">
+<div class="bg-tertiary-container h-full w-1/4"></div>
+</div>
+<div class="flex items-center justify-between font-code-sm text-code-sm mt-1">
+<span class="text-on-surface">Unpinned Transitive Exposure</span>
+<span class="text-tertiary font-semibold">+08</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded">
+<div class="bg-tertiary-container h-full w-1/5"></div>
+</div>
+<div class="flex items-center justify-between font-code-sm text-code-sm mt-1">
+<span class="text-on-surface">Downstream Fan-out Reachability</span>
+<span class="text-tertiary font-semibold">+08</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded">
+<div class="bg-tertiary-container h-full w-1/5"></div>
+</div>
+</div>
+</div>
+<!-- Section 2: Verified Evidence (Fact-First) -->
+<div class="flex flex-col gap-space-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary-container text-[18px]">verified</span>
+              Verified Evidence Ledger
+            </h3>
+<div class="bg-surface-container p-space-md rounded-lg flex flex-col gap-space-sm font-code-sm text-code-sm">
+<div class="grid grid-cols-3 gap-space-xs pb-space-xs border-b border-surface-variant">
+<span class="text-outline">Advisory ID</span>
+<span class="col-span-2 text-on-surface font-medium selection:bg-primary">GHSA-35jh-r3h4-6jhm</span>
+</div>
+<div class="grid grid-cols-3 gap-space-xs pb-space-xs border-b border-surface-variant">
+<span class="text-outline">CVE Identifier</span>
+<span class="col-span-2 text-error font-medium">CVE-2021-23337</span>
+</div>
+<div class="grid grid-cols-3 gap-space-xs pb-space-xs border-b border-surface-variant">
+<span class="text-outline">Intel Feeds</span>
+<span class="col-span-2 text-on-surface-variant">OSV.dev, GitHub Advisory Database</span>
+</div>
+<div class="grid grid-cols-3 gap-space-xs pb-space-xs border-b border-surface-variant">
+<span class="text-outline">Vulnerability</span>
+<span class="col-span-2 text-on-surface">Command Injection via template engine</span>
+</div>
+<div class="grid grid-cols-3 gap-space-xs">
+<span class="text-outline">Affected Range</span>
+<div class="col-span-2 flex items-center gap-space-xs flex-wrap">
+<span class="text-error bg-error-container/20 px-1.5 py-0.5 rounded font-bold">&lt; 4.17.21</span>
+<span class="text-outline">→</span>
+<span class="text-primary-container bg-surface-dim px-1.5 py-0.5 rounded font-bold">Fixed in 4.17.21+</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 3: Ingestion Path (Visual Dependency Route) -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-outline text-[18px]">account_tree</span>
+                Ingestion Route
+              </h3>
+<span class="font-label-caps text-label-caps uppercase text-outline">Hop Count: 3</span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-lg font-code-sm text-code-sm flex flex-col gap-2">
+<div class="flex items-center gap-space-sm text-on-surface">
+<span class="w-5 h-5 rounded bg-surface-container-high flex items-center justify-center text-[10px] text-primary">01</span>
+<span class="font-bold">Acme Store API</span>
+<span class="text-outline text-[11px]">(Application Manifest)</span>
+</div>
+<div class="pl-2.5 ml-2 border-l border-surface-variant py-0.5 text-on-surface-variant flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[14px] text-outline">subdirectory_arrow_right</span>
+<span>express@4.18.2</span>
+<span class="font-label-caps text-label-caps text-primary px-1 rounded bg-surface-dim">Direct</span>
+</div>
+<div class="pl-2.5 ml-2 border-l border-surface-variant py-0.5 text-on-surface-variant flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[14px] text-outline">subdirectory_arrow_right</span>
+<span>body-parser@1.20.1</span>
+<span class="font-label-caps text-label-caps text-outline px-1 rounded bg-surface-dim">Transitive</span>
+</div>
+<div class="pl-2.5 ml-2 border-l-2 border-error py-0.5 text-error flex items-center gap-space-sm font-semibold">
+<span class="material-symbols-outlined text-[14px] text-error">subdirectory_arrow_right</span>
+<span>lodash@4.17.20</span>
+<span class="font-label-caps text-label-caps text-error bg-error-container px-1 py-0.5 rounded text-on-error-container">Vulnerable Leaf</span>
+</div>
+</div>
+</div>
+<!-- Section 4: AI Security Summary (Evidentiary Callout) -->
+<div class="bg-surface-container p-space-md rounded-lg border-l-4 border-primary-container relative">
+<div class="flex items-center justify-between mb-space-xs">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary-container text-[18px]">psychology</span>
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-wider">AI Security Summary</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline">Model: Sec-Audit-v3</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed">
+              lodash 4.17.20 allows untrusted input into the template function to execute arbitrary commands. While not explicitly imported in your root <code class="font-code-sm text-code-sm bg-surface-dim px-1 py-0.5 rounded text-primary-container">package.json</code>, your request parser exposes this transitive path during payload normalization.
+            </p>
+</div>
+<!-- Section 5: Actionable Remediation -->
+<div class="flex flex-col gap-space-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">build_circle</span>
+              Actionable Remediation
+            </h3>
+<div class="bg-surface-container p-space-md rounded-lg flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Prescribed Fix</span>
+<span class="font-code-sm text-code-sm text-primary-container font-medium">Safe target: &gt;= 4.17.21</span>
+</div>
+<!-- Code Action Snippet -->
+<div class="bg-surface-dim rounded p-space-sm flex items-center justify-between font-code-sm text-code-sm relative">
+<span class="text-on-surface selection:bg-primary-container select-all font-mono">npm install lodash@4.17.21 --save-exact</span>
+<button class="flex items-center gap-1 text-primary-container hover:text-primary font-code-sm text-code-sm px-2 py-1 rounded hover:bg-surface-container transition-colors" title="Copy to clipboard">
+<span class="material-symbols-outlined text-[15px]">content_copy</span>
+<span>Copy</span>
+</button>
+</div>
+<div class="flex items-center justify-between text-outline font-code-sm text-code-sm pt-1">
+<span>Or inject resolution override:</span>
+<a class="text-primary hover:underline text-[12px]" href="#">View package.json diff</a>
+</div>
+<button class="mt-1 w-full py-2 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-headline-sm rounded font-semibold flex items-center justify-center gap-space-xs transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">auto_fix_high</span>
+                Generate Pull Request Fix
+              </button>
+</div>
+</div>
+<!-- Section 6: Package Metadata Specs -->
+<div class="flex flex-col gap-space-xs bg-surface-container px-space-md py-space-sm rounded-lg font-code-sm text-code-sm text-on-surface-variant">
+<div class="flex items-center justify-between py-1 border-b border-surface-variant">
+<span>Active Maintainers</span>
+<span class="text-on-surface font-medium">2 maintainers</span>
+</div>
+<div class="flex items-center justify-between py-1 border-b border-surface-variant">
+<span>Weekly Downloads</span>
+<span class="text-on-surface font-medium">48,219,410 / wk</span>
+</div>
+<div class="flex items-center justify-between py-1 border-b border-surface-variant">
+<span>License Model</span>
+<span class="text-on-surface font-medium">MIT (Permissive)</span>
+</div>
+<div class="flex items-center justify-between py-1">
+<span>OpenSSF Scorecard</span>
+<div class="flex items-center gap-1.5">
+<span class="text-tertiary font-bold">6.4</span>
+<span class="text-outline">/ 10</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Panel Footer -->
+<div class="p-space-md bg-surface-container-highest flex items-center justify-between font-code-sm text-code-sm border-t border-surface-variant text-outline">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span>Policy Status: Blocked CI/CD</span>
+</div>
+<button class="text-on-surface hover:text-primary transition-colors flex items-center gap-1">
+<span>Export Findings</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</button>
+</div>
+</aside>
+</div>
+</div>
+</div></main></div></body></html>

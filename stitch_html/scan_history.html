@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "tertiary-fixed-dim": "#f7bd4f",
+        "surface-variant": "#2f3544",
+        "primary-fixed": "#7af8d3",
+        "inverse-primary": "#006b55",
+        "error-container": "#93000a",
+        "on-error-container": "#ffdad6",
+        "surface-dim": "#0d1321",
+        "secondary-container": "#8f1b01",
+        "inverse-surface": "#dde2f6",
+        "secondary-fixed": "#ffdad2",
+        "outline-variant": "#3d4a44",
+        "surface-bright": "#333949",
+        "on-tertiary-container": "#654600",
+        "secondary": "#ffb4a3",
+        "on-secondary-fixed": "#3d0600",
+        "background": "#0d1321",
+        "secondary-fixed-dim": "#ffb4a3",
+        "on-surface": "#dde2f6",
+        "on-primary-fixed": "#002018",
+        "surface-container-high": "#242a39",
+        "primary-fixed-dim": "#5bdcb8",
+        "on-secondary-container": "#ffa08a",
+        "on-primary": "#00382b",
+        "surface-tint": "#5bdcb8",
+        "primary-container": "#4fd1ae",
+        "on-primary-fixed-variant": "#005140",
+        "tertiary-container": "#ecb346",
+        "on-secondary": "#630f00",
+        "on-tertiary": "#422c00",
+        "surface-container": "#191f2e",
+        "on-secondary-fixed-variant": "#8c1900",
+        "on-surface-variant": "#bccac3",
+        "inverse-on-surface": "#2a303f",
+        "on-primary-container": "#005644",
+        "surface": "#0d1321",
+        "on-error": "#690005",
+        "surface-container-highest": "#2f3544",
+        "surface-container-lowest": "#080e1c",
+        "on-background": "#dde2f6",
+        "outline": "#86948e",
+        "on-tertiary-fixed-variant": "#5f4100",
+        "tertiary-fixed": "#ffdeaa",
+        "surface-container-low": "#151b2a",
+        "on-tertiary-fixed": "#271900",
+        "tertiary": "#ffd184",
+        "error": "#ffb4ab",
+        "primary": "#6feec9"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+      },
+      "spacing": {
+        "margin": "1rem",
+        "space-2xl": "2rem",
+        "space-md": "0.75rem",
+        "space-lg": "1rem",
+        "space-sm": "0.5rem",
+        "space-xl": "1.5rem",
+        "gutter": "1rem",
+        "space-xs": "0.25rem",
+        "gutter-lg": "1.5rem",
+        "margin-lg": "2rem",
+        "margin-md": "1.5rem"
+      },
+      "fontFamily": {
+        "headline-md": [
+          "Space Grotesk"
+        ],
+        "headline-sm": [
+          "Space Grotesk"
+        ],
+        "display-lg": [
+          "Space Grotesk"
+        ],
+        "code-sm": [
+          "JetBrains Mono"
+        ],
+        "code-md": [
+          "JetBrains Mono"
+        ],
+        "label-caps": [
+          "JetBrains Mono"
+        ],
+        "body-md": [
+          "Inter"
+        ],
+        "body-lg": [
+          "Inter"
+        ],
+        "code-lg": [
+          "JetBrains Mono"
+        ],
+        "body-sm": [
+          "Inter"
+        ],
+        "display-lg-mobile": [
+          "Space Grotesk"
+        ]
+      },
+      "fontSize": {
+        "headline-md": [
+          "24px",
+          {
+            "lineHeight": "32px",
+            "letterSpacing": "-0.01em",
+            "fontWeight": "600"
+          }
+        ],
+        "headline-sm": [
+          "18px",
+          {
+            "lineHeight": "26px",
+            "fontWeight": "600"
+          }
+        ],
+        "display-lg": [
+          "32px",
+          {
+            "lineHeight": "40px",
+            "letterSpacing": "-0.02em",
+            "fontWeight": "700"
+          }
+        ],
+        "code-sm": [
+          "11px",
+          {
+            "lineHeight": "14px",
+            "letterSpacing": "0.02em",
+            "fontWeight": "400"
+          }
+        ],
+        "code-md": [
+          "13px",
+          {
+            "lineHeight": "18px",
+            "fontWeight": "400"
+          }
+        ],
+        "label-caps": [
+          "10px",
+          {
+            "lineHeight": "12px",
+            "letterSpacing": "0.08em",
+            "fontWeight": "600"
+          }
+        ],
+        "body-md": [
+          "14px",
+          {
+            "lineHeight": "20px",
+            "fontWeight": "400"
+          }
+        ],
+        "body-lg": [
+          "16px",
+          {
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          }
+        ],
+        "code-lg": [
+          "14px",
+          {
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          }
+        ],
+        "body-sm": [
+          "12px",
+          {
+            "lineHeight": "16px",
+            "fontWeight": "400"
+          }
+        ],
+        "display-lg-mobile": [
+          "26px",
+          {
+            "lineHeight": "34px",
+            "letterSpacing": "-0.01em",
+            "fontWeight": "700"
+          }
+        ]
+      }
+    }
+  }
+}</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 h-16 bg-surface-container-lowest border-b border-surface-variant flex items-center justify-between px-margin-lg"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><img alt="SupplyGuard Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Vr7cSr0tRWuqMopc11rEwcbNiZdHBZ8osuTR4bKLp9Hv0n1AjDghbUC7uObRT-MHn70ydEYnQVD7J72G0FgdJgeDlQmFOpWKAuAH05vuXuHuIDrun_3PVr_IeJ2SmQkOw2SiFSgoH5bitDRfeVXyY5DrdLu8kT7nZW6_k9nhNG97qhQPpve9xHWre9U0O1-I9TX6TVEH9ecHQ1o3Crd4X2bHUqq_OHNuZSpah0HLGd4We5T5bi3XCaWAEz"/><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Supply<span class="text-primary-container">Guard</span></span></div><div class="h-5 w-[1px] bg-surface-variant"></div><div class="flex items-center gap-space-xs px-space-sm py-1 bg-surface-container border border-surface-variant rounded-lg"><span class="material-symbols-outlined text-on-surface-variant text-[16px]">inventory_2</span><span class="font-code-sm text-code-sm text-on-surface font-medium">Acme Store API</span><span class="font-code-sm text-code-sm text-on-surface-variant">(main)</span></div><div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 bg-surface-container border border-primary-container/30 rounded-lg"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-caps text-label-caps uppercase text-primary-container">Live Intel Feed: Connected</span></div></div><div class="hidden lg:flex items-center flex-1 max-w-md mx-space-xl"><div class="relative w-full"><span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span><input class="w-full h-9 bg-surface-dim border border-surface-variant rounded-lg pl-9 pr-3 text-on-surface placeholder:text-outline font-code-sm text-code-sm focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all" placeholder="Search packages, CVEs, or dependencies..." type="text"/></div></div><div class="flex items-center gap-space-md"><button class="flex items-center gap-space-xs px-space-md py-1.5 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-[13px] rounded-lg transition-colors shadow-sm font-semibold" type="button"><span class="material-symbols-outlined text-[18px]">radar</span><span>New Scan</span></button><div class="h-5 w-[1px] bg-surface-variant"></div><button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="relative flex items-center gap-space-xs pl-space-xs"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-1 ring-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA54mdzDliohJhL_z7y5wSocDEBIxyh95Ej4lpc0zFs78ugfSARgWUawQFDK8zKo2CqDOIu_FoXOxT3nyqVGeuluEisy4wuRj3kfrk84vJaHAko39rDSX8PTphDVcG9jSOJTl7vhn9fKbt8AlHIwDizW-0jES5nStHRb6Q4dqPoImuOcaE4ARbnS5hcRTHwiM4igQyALo8_e3roHv6rjVM6P6-E24ShKdXjnW-9aX5YupnODUOydE7DGQ"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary-container rounded-full ring-2 ring-surface-dim"></span></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-dim border-r border-surface-variant z-40 flex flex-col justify-between overflow-y-auto"><div class="p-space-md"><div class="px-space-sm pb-space-sm text-outline font-label-caps text-label-caps uppercase">Telemetry &amp; Audit</div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-surface-container-high text-primary-container border-l-2 border-primary-container font-medium"><a aria-current="page" class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg transition-colors bg-surface-container-high text-primary-container border-l-2 border-primary-container font-medium" data-path="overview" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span>Overview</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="dependency-graph" href="#"><span class="material-symbols-outlined text-[20px]">hub</span><span>Dependency Graph</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="findings-remediation" href="#"><span class="material-symbols-outlined text-[20px]">shield_with_heart</span><span>Findings &amp; Remediation</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="scan-history" href="#"><span class="material-symbols-outlined text-[20px]">history</span><span>Scan History</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="policy-compliance" href="#"><span class="material-symbols-outlined text-[20px]">verified_user</span><span>Policy &amp; Rules</span></a></nav><div class="mt-space-xl px-space-sm pb-space-sm text-outline font-label-caps text-label-caps uppercase">Manifest Integrity</div><div class="flex flex-col gap-space-xs"><div class="p-space-sm bg-surface-container-low border border-surface-variant rounded-lg"><div class="flex items-center justify-between text-outline font-code-sm text-code-sm mb-1"><span>SBOM Sync</span><span class="text-primary-container font-code-sm text-code-sm">SPDX 2.3</span></div><div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden"><div class="bg-primary-container h-full w-full"></div></div><div class="mt-2 font-code-sm text-code-sm text-on-surface-variant truncate">sha256:7f4c...982b</div></div></div></div><div class="p-space-md border-t border-surface-variant bg-surface-container-lowest"><div class="flex items-center justify-between text-outline font-code-sm text-code-sm"><span>Engine: v4.12-sec</span><span class="material-symbols-outlined text-[16px] text-primary-container">security</span></div></div></aside><div class="pl-64"><main class="w-full pt-16 min-h-screen bg-background text-on-surface"><div class="flex flex-col w-full">
+<!-- Content Canvas: SupplyGuard High-Density Ledger -->
+<div class="p-margin-lg flex flex-col gap-space-xl max-w-[1600px] w-full mx-auto">
+<!-- Top Action & Title Header Pane -->
+<section class="flex flex-col xl:flex-row xl:items-end justify-between gap-space-lg">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-primary-container tracking-wider">Historical Audit Stream</span>
+<span class="text-outline font-code-sm text-code-sm">/</span>
+<span class="font-label-caps text-label-caps text-outline uppercase">Vulnerability Drift Matrix</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">Scan History</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+          Historical supply chain security assessments and vulnerability drift over time. Audit cryptographic digests, dependency deltas, and automated risk scoring.
+        </p>
+</div>
+<div class="flex items-center gap-space-md flex-wrap">
+<!-- Live Ledger Metrics Pill -->
+<div class="hidden sm:flex items-center gap-space-sm px-space-md py-space-xs bg-surface-container-low rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-primary-container">sync_alt</span>
+<span class="font-code-sm text-code-sm text-on-surface">Audit Drift: <span class="text-primary-container font-medium">-14.2%</span> (30d)</span>
+</div>
+<button class="flex items-center gap-space-xs px-space-md py-2 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-[13px] rounded-lg transition-all shadow-md active:scale-95" id="trigger-scan-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">add_moderator</span>
+<span class="font-semibold">New Scan</span>
+</button>
+</div>
+</section>
+<!-- Telemetry Strip: Drift Sparklines & Delta Summary -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+<!-- Card 1: Drift Status -->
+<div class="p-space-lg bg-surface-container rounded-xl flex items-center justify-between shadow-sm relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-primary-container/5 blur-xl pointer-events-none"></div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Mean Security Delta</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-display-lg text-display-lg text-on-surface">50.2</span>
+<span class="font-code-sm text-code-sm text-primary-container">▼ -3.4 pts</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Fleet exposure trending downward</span>
+</div>
+<div class="w-24 h-12 flex items-end">
+<svg class="w-full h-full text-primary-container" fill="none" viewbox="0 0 100 40">
+<path d="M0 35 Q20 32 35 25 T70 18 T100 8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.5"></path>
+<path d="M0 35 Q20 32 35 25 T70 18 T100 8 L100 40 L0 40 Z" fill="currentColor" fill-opacity="0.08"></path>
+</svg>
+</div>
+</div>
+<!-- Card 2: Critical Exposure Trend -->
+<div class="p-space-lg bg-surface-container rounded-xl flex items-center justify-between shadow-sm relative overflow-hidden">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Active Critical CVEs</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-display-lg text-display-lg text-secondary">04</span>
+<span class="font-code-sm text-code-sm text-secondary">Direct Upstream</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Acme Store API + Auth Gateway</span>
+</div>
+<div class="flex items-center gap-1.5 p-space-sm bg-surface-container-high rounded-lg">
+<span class="w-2 h-2 rounded-full bg-secondary-container animate-ping"></span>
+<span class="font-code-sm text-code-sm text-secondary font-medium">CVE Priority 1</span>
+</div>
+</div>
+<!-- Card 3: Transitive Ratio -->
+<div class="p-space-lg bg-surface-container rounded-xl flex items-center justify-between shadow-sm relative overflow-hidden">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Transitive Package Depth</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-display-lg text-display-lg text-tertiary">81.2%</span>
+<span class="font-code-sm text-code-sm text-outline">321 / 395</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Deep manifest nesting verified</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[22px]">account_tree</span>
+</div>
+</div>
+</div>
+<!-- Filter & Query Control Console -->
+<div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md p-space-md bg-surface-container-low rounded-xl shadow-sm">
+<div class="flex-1 flex items-center gap-space-md flex-wrap sm:flex-nowrap">
+<!-- Search Input -->
+<div class="relative w-full sm:max-w-md">
+<span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-outline text-[18px]">manage_search</span>
+<input class="w-full h-10 bg-surface-container-lowest rounded-lg pl-9 pr-space-md text-on-surface placeholder:text-outline font-code-sm text-code-sm focus:outline-none focus:bg-surface-container-high transition-all" id="repo-search" placeholder="Filter repositories, commit sha, or branch..." type="text"/>
+<button class="hidden absolute right-space-sm top-1/2 -translate-y-1/2 text-outline hover:text-on-surface text-[14px]" id="clear-search">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+<!-- Filter Pills Group -->
+<div class="flex items-center gap-space-xs p-1 bg-surface-container-lowest rounded-lg overflow-x-auto w-full sm:w-auto">
+<button class="filter-pill px-space-md py-1 text-on-primary bg-primary-container font-headline-sm text-[12px] rounded-lg transition-colors font-medium" data-filter="all" type="button">
+            All Scans (4)
+          </button>
+<button class="filter-pill px-space-md py-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-headline-sm text-[12px] rounded-lg transition-colors" data-filter="critical" type="button">
+            Critical Risks (2)
+          </button>
+<button class="filter-pill px-space-md py-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-headline-sm text-[12px] rounded-lg transition-colors" data-filter="passed" type="button">
+            Passed Audits (2)
+          </button>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-space-sm">
+<div class="flex items-center gap-space-xs text-outline font-code-sm text-code-sm">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+<span class="hidden sm:inline">Sort by:</span>
+<span class="text-on-surface font-medium">Recency (Desc)</span>
+</div>
+<button class="p-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface rounded-lg transition-colors flex items-center gap-space-xs" id="export-sbom-btn" title="Export Ledger as CycloneDX JSON" type="button">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span class="font-code-sm text-code-sm hidden md:inline">Export History</span>
+</button>
+</div>
+</div>
+<!-- Main Audit Data Ledger / Interactive Table -->
+<div class="bg-surface-container rounded-xl overflow-hidden shadow-lg flex flex-col">
+<!-- Table Header Matrix -->
+<div class="hidden xl:grid grid-cols-12 gap-gutter px-space-xl py-space-md bg-surface-container-low text-outline font-label-caps text-label-caps uppercase tracking-wider">
+<div class="col-span-3 flex items-center gap-space-xs">
+<span>Repository &amp; Branch</span>
+</div>
+<div class="col-span-2">Timestamp &amp; Commit</div>
+<div class="col-span-2">Dependency Footprint</div>
+<div class="col-span-2">Risk Index / Score</div>
+<div class="col-span-2">Finding Distribution</div>
+<div class="col-span-1 text-right">Actions</div>
+</div>
+<!-- Scans List Wrapper -->
+<div class="flex flex-col" id="scan-ledger-body">
+<!-- Scan Record 1: Acme Store API -->
+<article class="scan-row group p-space-lg xl:px-space-xl xl:py-space-md bg-surface-container hover:bg-surface-container-high/60 transition-all flex flex-col xl:grid xl:grid-cols-12 gap-space-md xl:gap-gutter items-stretch xl:items-center" data-repo="Acme Store API" data-risk="critical">
+<!-- Column 1: Repo & Target Details -->
+<div class="xl:col-span-3 flex items-start xl:items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary-container shrink-0">
+<span class="material-symbols-outlined text-[20px]">dataset</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate group-hover:text-primary-container transition-colors">Acme Store API</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest font-code-sm text-code-sm text-primary-container">main</span>
+</div>
+<div class="flex items-center gap-space-xs mt-0.5">
+<span class="material-symbols-outlined text-outline text-[13px]">commit</span>
+<span class="font-code-sm text-code-sm text-outline">sha:e89a10c</span>
+<span class="text-outline font-code-sm text-code-sm">•</span>
+<span class="font-code-sm text-code-sm text-primary-container flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span> Completed
+                </span>
+</div>
+</div>
+</div>
+<!-- Column 2: Date and Temporal Context -->
+<div class="xl:col-span-2 flex flex-col justify-center">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-outline text-[16px]">schedule</span>
+<span class="font-code-md text-code-md text-on-surface font-medium">Sep 11, 2026</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline ml-5">14:32:08 UTC</span>
+</div>
+<!-- Column 3: Package Metrics -->
+<div class="xl:col-span-2 flex flex-col justify-center">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-code-lg text-code-lg text-on-surface font-semibold">143</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">total packages</span>
+</div>
+<div class="flex items-center gap-space-xs mt-0.5 font-code-sm text-code-sm text-outline">
+<span class="text-on-surface">24 direct</span>
+<span>/</span>
+<span>119 transitive</span>
+</div>
+</div>
+<!-- Column 4: Risk Score Gauge -->
+<div class="xl:col-span-2 flex items-center gap-space-md">
+<div class="flex flex-col min-w-[70px]">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display-lg text-[22px] text-secondary font-bold">78</span>
+<span class="font-code-sm text-code-sm text-outline">/100</span>
+</div>
+<span class="px-2 py-0.5 bg-secondary-container/30 text-secondary font-label-caps text-label-caps rounded uppercase font-semibold text-center mt-0.5">
+                HIGH RISK
+              </span>
+</div>
+<div class="flex-1 hidden xl:flex flex-col gap-1">
+<div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 78%"></div>
+</div>
+<span class="font-code-sm text-[10px] text-secondary">Exceeds threshold</span>
+</div>
+</div>
+<!-- Column 5: Finding Distribution Breakdown Bar -->
+<div class="xl:col-span-2 flex flex-col gap-1.5 justify-center">
+<!-- Multi-tier Stacked Progress Segment -->
+<div class="h-2 w-full bg-surface-container-lowest rounded flex overflow-hidden">
+<div class="bg-secondary h-full" style="width: 15%" title="3 Critical"></div>
+<div class="bg-tertiary-fixed-dim h-full" style="width: 25%" title="7 High"></div>
+<div class="bg-tertiary-container h-full" style="width: 30%" title="14 Medium"></div>
+<div class="bg-primary-container h-full" style="width: 30%" title="100 Safe"></div>
+</div>
+<!-- Micro Summary Tokens -->
+<div class="flex items-center justify-between font-code-sm text-[11px]">
+<span class="text-secondary font-semibold">3 Crit</span>
+<span class="text-tertiary-fixed-dim">7 High</span>
+<span class="text-tertiary">14 Med</span>
+<span class="text-outline">19 Low</span>
+<span class="text-primary-container">100 Safe</span>
+</div>
+</div>
+<!-- Column 6: Actions Toolbar -->
+<div class="xl:col-span-1 flex items-center justify-end gap-space-xs pt-space-xs xl:pt-0">
+<button class="view-details-btn p-2 bg-surface-container-high hover:bg-surface-bright text-primary-container rounded-lg transition-colors" title="View Audit Results" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="compare-btn p-2 bg-surface-container-high hover:bg-surface-bright text-on-surface-variant hover:text-on-surface rounded-lg transition-colors" title="Compare Scan with Previous Baseline" type="button">
+<span class="material-symbols-outlined text-[18px]">difference</span>
+</button>
+</div>
+</article>
+<!-- Scan Record 2: Payment Service -->
+<article class="scan-row group p-space-lg xl:px-space-xl xl:py-space-md bg-surface-container-low hover:bg-surface-container-high/60 transition-all flex flex-col xl:grid xl:grid-cols-12 gap-space-md xl:gap-gutter items-stretch xl:items-center" data-repo="Payment Service" data-risk="passed">
+<!-- Column 1: Repo & Target Details -->
+<div class="xl:col-span-3 flex items-start xl:items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-tertiary shrink-0">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate group-hover:text-primary-container transition-colors">Payment Service</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest font-code-sm text-code-sm text-tertiary">production</span>
+</div>
+<div class="flex items-center gap-space-xs mt-0.5">
+<span class="material-symbols-outlined text-outline text-[13px]">commit</span>
+<span class="font-code-sm text-code-sm text-outline">sha:4f20bc1</span>
+<span class="text-outline font-code-sm text-code-sm">•</span>
+<span class="font-code-sm text-code-sm text-primary-container flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span> Completed
+                </span>
+</div>
+</div>
+</div>
+<!-- Column 2: Date and Temporal Context -->
+<div class="xl:col-span-2 flex flex-col justify-center">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-outline text-[16px]">schedule</span>
+<span class="font-code-md text-code-md text-on-surface font-medium">Sep 10, 2026</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline ml-5">09:15:44 UTC</span>
+</div>
+<!-- Column 3: Package Metrics -->
+<div class="xl:col-span-2 flex flex-col justify-center">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-code-lg text-code-lg text-on-surface font-semibold">86</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">total packages</span>
+</div>
+<div class="flex items-center gap-space-xs mt-0.5 font-code-sm text-code-sm text-outline">
+<span class="text-on-surface">18 direct</span>
+<span>/</span>
+<span>68 transitive</span>
+</div>
+</div>
+<!-- Column 4: Risk Score Gauge -->
+<div class="xl:col-span-2 flex items-center gap-space-md">
+<div class="flex flex-col min-w-[70px]">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display-lg text-[22px] text-tertiary font-bold">42</span>
+<span class="font-code-sm text-code-sm text-outline">/100</span>
+</div>
+<span class="px-2 py-0.5 bg-tertiary-container/30 text-tertiary font-label-caps text-label-caps rounded uppercase font-semibold text-center mt-0.5">
+                MEDIUM
+              </span>
+</div>
+<div class="flex-1 hidden xl:flex flex-col gap-1">
+<div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full rounded-full" style="width: 42%"></div>
+</div>
+<span class="font-code-sm text-[10px] text-tertiary">Tolerable band</span>
+</div>
+</div>
+<!-- Column 5: Finding Distribution Breakdown Bar -->
+<div class="xl:col-span-2 flex flex-col gap-1.5 justify-center">
+<div class="h-2 w-full bg-surface-container-lowest rounded flex overflow-hidden">
+<div class="bg-secondary h-full" style="width: 0%" title="0 Critical"></div>
+<div class="bg-tertiary-fixed-dim h-full" style="width: 12%" title="2 High"></div>
+<div class="bg-tertiary-container h-full" style="width: 25%" title="6 Medium"></div>
+<div class="bg-primary-container h-full" style="width: 63%" title="67 Safe"></div>
+</div>
+<div class="flex items-center justify-between font-code-sm text-[11px]">
+<span class="text-outline">0 Crit</span>
+<span class="text-tertiary-fixed-dim">2 High</span>
+<span class="text-tertiary">6 Med</span>
+<span class="text-outline">11 Low</span>
+<span class="text-primary-container font-medium">67 Safe</span>
+</div>
+</div>
+<!-- Column 6: Actions Toolbar -->
+<div class="xl:col-span-1 flex items-center justify-end gap-space-xs pt-space-xs xl:pt-0">
+<button class="view-details-btn p-2 bg-surface-container-high hover:bg-surface-bright text-primary-container rounded-lg transition-colors" title="View Audit Results" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="compare-btn p-2 bg-surface-container-high hover:bg-surface-bright text-on-surface-variant hover:text-on-surface rounded-lg transition-colors" title="Compare Scan with Previous Baseline" type="button">
+<span class="material-symbols-outlined text-[18px]">difference</span>
+</button>
+</div>
+</article>
+<!-- Scan Record 3: Portfolio App -->
+<article class="scan-row group p-space-lg xl:px-space-xl xl:py-space-md bg-surface-container hover:bg-surface-container-high/60 transition-all flex flex-col xl:grid xl:grid-cols-12 gap-space-md xl:gap-gutter items-stretch xl:items-center" data-repo="Portfolio App" data-risk="passed">
+<!-- Column 1: Repo & Target Details -->
+<div class="xl:col-span-3 flex items-start xl:items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary-container shrink-0">
+<span class="material-symbols-outlined text-[20px]">web</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate group-hover:text-primary-container transition-colors">Portfolio App</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest font-code-sm text-code-sm text-primary-container">main</span>
+</div>
+<div class="flex items-center gap-space-xs mt-0.5">
+<span class="material-symbols-outlined text-outline text-[13px]">commit</span>
+<span class="font-code-sm text-code-sm text-outline">sha:9c12b77</span>
+<span class="text-outline font-code-sm text-code-sm">•</span>
+<span class="font-code-sm text-code-sm text-primary-container flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span> Completed
+                </span>
+</div>
+</div>
+</div>
+<!-- Column 2: Date and Temporal Context -->
+<div class="xl:col-span-2 flex flex-col justify-center">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-outline text-[16px]">schedule</span>
+<span class="font-code-md text-code-md text-on-surface font-medium">Sep 8, 2026</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline ml-5">18:40:12 UTC</span>
+</div>
+<!-- Column 3: Package Metrics -->
+<div class="xl:col-span-2 flex flex-col justify-center">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-code-lg text-code-lg text-on-surface font-semibold">54</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">total packages</span>
+</div>
+<div class="flex items-center gap-space-xs mt-0.5 font-code-sm text-code-sm text-outline">
+<span class="text-on-surface">12 direct</span>
+<span>/</span>
+<span>42 transitive</span>
+</div>
+</div>
+<!-- Column 4: Risk Score Gauge -->
+<div class="xl:col-span-2 flex items-center gap-space-md">
+<div class="flex flex-col min-w-[70px]">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display-lg text-[22px] text-primary font-bold">17</span>
+<span class="font-code-sm text-code-sm text-outline">/100</span>
+</div>
+<span class="px-2 py-0.5 bg-primary-container/20 text-primary font-label-caps text-label-caps rounded uppercase font-semibold text-center mt-0.5">
+                LOW RISK
+              </span>
+</div>
+<div class="flex-1 hidden xl:flex flex-col gap-1">
+<div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 17%"></div>
+</div>
+<span class="font-code-sm text-[10px] text-primary">Hardened baseline</span>
+</div>
+</div>
+<!-- Column 5: Finding Distribution Breakdown Bar -->
+<div class="xl:col-span-2 flex flex-col gap-1.5 justify-center">
+<div class="h-2 w-full bg-surface-container-lowest rounded flex overflow-hidden">
+<div class="bg-secondary h-full" style="width: 0%" title="0 Critical"></div>
+<div class="bg-tertiary-fixed-dim h-full" style="width: 0%" title="0 High"></div>
+<div class="bg-tertiary-container h-full" style="width: 5%" title="1 Medium"></div>
+<div class="bg-primary-container h-full" style="width: 95%" title="49 Safe"></div>
+</div>
+<div class="flex items-center justify-between font-code-sm text-[11px]">
+<span class="text-outline">0 Crit</span>
+<span class="text-outline">0 High</span>
+<span class="text-tertiary">1 Med</span>
+<span class="text-outline">4 Low</span>
+<span class="text-primary-container font-medium">49 Safe</span>
+</div>
+</div>
+<!-- Column 6: Actions Toolbar -->
+<div class="xl:col-span-1 flex items-center justify-end gap-space-xs pt-space-xs xl:pt-0">
+<button class="view-details-btn p-2 bg-surface-container-high hover:bg-surface-bright text-primary-container rounded-lg transition-colors" title="View Audit Results" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="compare-btn p-2 bg-surface-container-high hover:bg-surface-bright text-on-surface-variant hover:text-on-surface rounded-lg transition-colors" title="Compare Scan with Previous Baseline" type="button">
+<span class="material-symbols-outlined text-[18px]">difference</span>
+</button>
+</div>
+</article>
+<!-- Scan Record 4: Auth Gateway Microservice -->
+<article class="scan-row group p-space-lg xl:px-space-xl xl:py-space-md bg-surface-container-low hover:bg-surface-container-high/60 transition-all flex flex-col xl:grid xl:grid-cols-12 gap-space-md xl:gap-gutter items-stretch xl:items-center" data-repo="Auth Gateway Microservice" data-risk="critical">
+<!-- Column 1: Repo & Target Details -->
+<div class="xl:col-span-3 flex items-start xl:items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[20px]">vpn_key</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate group-hover:text-primary-container transition-colors">Auth Gateway Microservice</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest font-code-sm text-code-sm text-tertiary">staging</span>
+</div>
+<div class="flex items-center gap-space-xs mt-0.5">
+<span class="material-symbols-outlined text-outline text-[13px]">commit</span>
+<span class="font-code-sm text-code-sm text-outline">sha:771ca0d</span>
+<span class="text-outline font-code-sm text-code-sm">•</span>
+<span class="font-code-sm text-code-sm text-primary-container flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span> Completed
+                </span>
+</div>
+</div>
+</div>
+<!-- Column 2: Date and Temporal Context -->
+<div class="xl:col-span-2 flex flex-col justify-center">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-outline text-[16px]">schedule</span>
+<span class="font-code-md text-code-md text-on-surface font-medium">Sep 5, 2026</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline ml-5">11:20:51 UTC</span>
+</div>
+<!-- Column 3: Package Metrics -->
+<div class="xl:col-span-2 flex flex-col justify-center">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-code-lg text-code-lg text-on-surface font-semibold">112</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">total packages</span>
+</div>
+<div class="flex items-center gap-space-xs mt-0.5 font-code-sm text-code-sm text-outline">
+<span class="text-on-surface">20 direct</span>
+<span>/</span>
+<span>92 transitive</span>
+</div>
+</div>
+<!-- Column 4: Risk Score Gauge -->
+<div class="xl:col-span-2 flex items-center gap-space-md">
+<div class="flex flex-col min-w-[70px]">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display-lg text-[22px] text-tertiary-fixed-dim font-bold">64</span>
+<span class="font-code-sm text-code-sm text-outline">/100</span>
+</div>
+<span class="px-2 py-0.5 bg-tertiary-container/30 text-tertiary-fixed-dim font-label-caps text-label-caps rounded uppercase font-semibold text-center mt-0.5">
+                MED-HIGH
+              </span>
+</div>
+<div class="flex-1 hidden xl:flex flex-col gap-1">
+<div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden">
+<div class="bg-tertiary-fixed-dim h-full rounded-full" style="width: 64%"></div>
+</div>
+<span class="font-code-sm text-[10px] text-tertiary-fixed-dim">Action required</span>
+</div>
+</div>
+<!-- Column 5: Finding Distribution Breakdown Bar -->
+<div class="xl:col-span-2 flex flex-col gap-1.5 justify-center">
+<div class="h-2 w-full bg-surface-container-lowest rounded flex overflow-hidden">
+<div class="bg-secondary h-full" style="width: 6%" title="1 Critical"></div>
+<div class="bg-tertiary-fixed-dim h-full" style="width: 20%" title="4 High"></div>
+<div class="bg-tertiary-container h-full" style="width: 28%" title="8 Medium"></div>
+<div class="bg-primary-container h-full" style="width: 46%" title="84 Safe"></div>
+</div>
+<div class="flex items-center justify-between font-code-sm text-[11px]">
+<span class="text-secondary font-semibold">1 Crit</span>
+<span class="text-tertiary-fixed-dim">4 High</span>
+<span class="text-tertiary">8 Med</span>
+<span class="text-outline">15 Low</span>
+<span class="text-primary-container">84 Safe</span>
+</div>
+</div>
+<!-- Column 6: Actions Toolbar -->
+<div class="xl:col-span-1 flex items-center justify-end gap-space-xs pt-space-xs xl:pt-0">
+<button class="view-details-btn p-2 bg-surface-container-high hover:bg-surface-bright text-primary-container rounded-lg transition-colors" title="View Audit Results" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="compare-btn p-2 bg-surface-container-high hover:bg-surface-bright text-on-surface-variant hover:text-on-surface rounded-lg transition-colors" title="Compare Scan with Previous Baseline" type="button">
+<span class="material-symbols-outlined text-[18px]">difference</span>
+</button>
+</div>
+</article>
+</div>
+</div>
+<!-- Contextual Comparison Tray / Drawer Trigger (Hidden State) -->
+<div class="hidden p-space-md bg-surface-container-high rounded-xl flex items-center justify-between shadow-xl" id="compare-tray">
+<div class="flex items-center gap-space-md">
+<span class="material-symbols-outlined text-primary-container text-[24px]">compare_arrows</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">Telemetry Diff Staged</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Comparing <span class="font-code-sm text-on-surface" id="diff-repo-a">Acme Store API</span> against baseline snapshot.</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="px-space-md py-1.5 bg-surface-container text-on-surface font-body-sm text-body-sm rounded-lg hover:bg-surface-container-lowest transition-colors" id="dismiss-diff-btn">Dismiss</button>
+<button class="px-space-md py-1.5 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-[13px] rounded-lg transition-colors font-semibold" id="launch-diff-btn">Launch Visual Diff</button>
+</div>
+</div>
+<!-- Bottom Fleet Statistics Instrument Bar -->
+<footer class="mt-space-lg p-space-xl bg-surface-container-low rounded-xl shadow-md">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-xl">
+<!-- Metric 1: Repos Monitored -->
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary-container shadow-inner shrink-0">
+<span class="material-symbols-outlined text-[24px]">account_tree</span>
+</div>
+<div class="flex flex-col">
+<span class="font-display-lg text-display-lg text-on-surface tracking-tight leading-none">04</span>
+<span class="font-label-caps text-label-caps uppercase text-outline mt-1">Repositories Monitored</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Fleet coverage 100% active</span>
+</div>
+</div>
+<!-- Metric 2: Dependencies Tracked -->
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary-container shadow-inner shrink-0">
+<span class="material-symbols-outlined text-[24px]">inventory</span>
+</div>
+<div class="flex flex-col">
+<span class="font-display-lg text-display-lg text-on-surface tracking-tight leading-none">395</span>
+<span class="font-label-caps text-label-caps uppercase text-outline mt-1">Total Dependencies Tracked</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">74 direct • 321 transitive</span>
+</div>
+</div>
+<!-- Metric 3: Critical Vulnerabilities -->
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-secondary-container/20 flex items-center justify-center text-secondary shadow-inner shrink-0">
+<span class="material-symbols-outlined text-[24px]">fmd_bad</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-display-lg text-display-lg text-secondary tracking-tight leading-none">04</span>
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/40 text-secondary font-code-sm text-[10px] font-bold">URGENT</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase text-outline mt-1">Total Critical Findings</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Active across total fleet</span>
+</div>
+</div>
+<!-- Metric 4: Mean Time to Remediate -->
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-tertiary shadow-inner shrink-0">
+<span class="material-symbols-outlined text-[24px]">speed</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-baseline gap-1">
+<span class="font-display-lg text-display-lg text-on-surface tracking-tight leading-none">1.8</span>
+<span class="font-headline-sm text-headline-sm text-tertiary">days</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase text-outline mt-1">Mean Time to Remediate</span>
+<span class="font-body-sm text-[11px] text-primary-container font-medium">-0.4d vs previous quarter</span>
+</div>
+</div>
+</div>
+</footer>
+<!-- Security Attestation Watermark & Cryptographic Seal -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-md pt-space-xs pb-space-lg text-outline font-code-sm text-code-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[14px] text-primary-container">fingerprint</span>
+<span>Attestation Chain: Validated by SupplyGuard KMS Ledger [Node: us-east-1a]</span>
+</div>
+<div class="flex items-center gap-space-md">
+<span class="hover:text-on-surface cursor-pointer transition-colors">Export All SPDX</span>
+<span>•</span>
+<span class="hover:text-on-surface cursor-pointer transition-colors">Signature Log</span>
+<span>•</span>
+<span class="hover:text-on-surface cursor-pointer transition-colors">API Endpoint Docs</span>
+</div>
+</div>
+</div>
+<!-- Interactive Client Behavior Script -->
+<script>
+    (function initScanHistoryInteractions() {
+      const searchInput = document.getElementById('repo-search');
+      const clearSearchBtn = document.getElementById('clear-search');
+      const filterPills = document.querySelectorAll('.filter-pill');
+      const rows = document.querySelectorAll('.scan-row');
+      const compareTray = document.getElementById('compare-tray');
+      const dismissDiffBtn = document.getElementById('dismiss-diff-btn');
+      const diffRepoLabel = document.getElementById('diff-repo-a');
+
+      let currentFilter = 'all';
+      let searchQuery = '';
+
+      function applyFilters() {
+        rows.forEach(row => {
+          const repoName = (row.getAttribute('data-repo') || '').toLowerCase();
+          const riskGroup = row.getAttribute('data-risk') || '';
+          
+          const matchesQuery = repoName.includes(searchQuery.toLowerCase());
+          let matchesFilter = true;
+
+          if (currentFilter === 'critical') {
+            matchesFilter = (riskGroup === 'critical');
+          } else if (currentFilter === 'passed') {
+            matchesFilter = (riskGroup === 'passed');
+          }
+
+          if (matchesQuery && matchesFilter) {
+            row.classList.remove('hidden');
+          } else {
+            row.classList.add('hidden');
+          }
+        });
+      }
+
+      // Search field handler
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          searchQuery = e.target.value;
+          if (searchQuery.length > 0) {
+            clearSearchBtn?.classList.remove('hidden');
+          } else {
+            clearSearchBtn?.classList.add('hidden');
+          }
+          applyFilters();
+        });
+      }
+
+      if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', () => {
+          if (searchInput) {
+            searchInput.value = '';
+            searchQuery = '';
+            clearSearchBtn.classList.add('hidden');
+            applyFilters();
+          }
+        });
+      }
+
+      // Filter Pill buttons
+      filterPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          filterPills.forEach(p => {
+            p.classList.remove('bg-primary-container', 'text-on-primary', 'font-medium');
+            p.classList.add('text-on-surface-variant');
+          });
+          pill.classList.remove('text-on-surface-variant');
+          pill.classList.add('bg-primary-container', 'text-on-primary', 'font-medium');
+
+          currentFilter = pill.getAttribute('data-filter') || 'all';
+          applyFilters();
+        });
+      });
+
+      // Compare actions simulation
+      document.querySelectorAll('.compare-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const row = e.target.closest('.scan-row');
+          const repo = row?.getAttribute('data-repo') || 'Repository';
+          if (diffRepoLabel) diffRepoLabel.textContent = repo;
+          if (compareTray) compareTray.classList.remove('hidden');
+        });
+      });
+
+      if (dismissDiffBtn) {
+        dismissDiffBtn.addEventListener('click', () => {
+          compareTray?.classList.add('hidden');
+        });
+      }
+
+      // Action: View Results mock trigger
+      document.querySelectorAll('.view-details-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const row = e.target.closest('.scan-row');
+          const repo = row?.getAttribute('data-repo') || 'target';
+          const originalHTML = btn.innerHTML;
+          btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span>';
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 bg-surface-container-highest border-l-4 border-primary-container text-on-surface p-3 rounded shadow-lg z-50 font-code-sm text-code-sm flex items-center gap-2';
+            notification.innerHTML = '<span class="material-symbols-outlined text-primary-container text-[18px]">verified</span> Loading findings for ' + repo + '...';
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 2500);
+          }, 450);
+        });
+      });
+
+      // Launch New Scan Mock Button
+      const newScanBtn = document.getElementById('trigger-scan-btn');
+      if (newScanBtn) {
+        newScanBtn.addEventListener('click', () => {
+          const orig = newScanBtn.innerHTML;
+          newScanBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">radar</span><span>Scanning Fleet...</span>';
+          setTimeout(() => {
+            newScanBtn.innerHTML = orig;
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 right-8 bg-surface-container-high border border-primary-container/40 p-4 rounded-xl shadow-2xl z-50 flex items-center gap-3';
+            toast.innerHTML = '<span class="material-symbols-outlined text-primary-container text-[24px]">task_alt</span><div><div class="font-headline-sm text-[13px] text-on-surface font-bold">Fleet Telemetry Updated</div><div class="font-code-sm text-code-sm text-outline">Triggered SBOM pipeline for 4 registered repositories</div></div>';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+          }, 1000);
+        });
+      }
+    })();
+  </script>
+</div></main></div></body></html>

@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "tertiary-fixed-dim": "#f7bd4f",
+        "surface-variant": "#2f3544",
+        "primary-fixed": "#7af8d3",
+        "inverse-primary": "#006b55",
+        "error-container": "#93000a",
+        "on-error-container": "#ffdad6",
+        "surface-dim": "#0d1321",
+        "secondary-container": "#8f1b01",
+        "inverse-surface": "#dde2f6",
+        "secondary-fixed": "#ffdad2",
+        "outline-variant": "#3d4a44",
+        "surface-bright": "#333949",
+        "on-tertiary-container": "#654600",
+        "secondary": "#ffb4a3",
+        "on-secondary-fixed": "#3d0600",
+        "background": "#0d1321",
+        "secondary-fixed-dim": "#ffb4a3",
+        "on-surface": "#dde2f6",
+        "on-primary-fixed": "#002018",
+        "surface-container-high": "#242a39",
+        "primary-fixed-dim": "#5bdcb8",
+        "on-secondary-container": "#ffa08a",
+        "on-primary": "#00382b",
+        "surface-tint": "#5bdcb8",
+        "primary-container": "#4fd1ae",
+        "on-primary-fixed-variant": "#005140",
+        "tertiary-container": "#ecb346",
+        "on-secondary": "#630f00",
+        "on-tertiary": "#422c00",
+        "surface-container": "#191f2e",
+        "on-secondary-fixed-variant": "#8c1900",
+        "on-surface-variant": "#bccac3",
+        "inverse-on-surface": "#2a303f",
+        "on-primary-container": "#005644",
+        "surface": "#0d1321",
+        "on-error": "#690005",
+        "surface-container-highest": "#2f3544",
+        "surface-container-lowest": "#080e1c",
+        "on-background": "#dde2f6",
+        "outline": "#86948e",
+        "on-tertiary-fixed-variant": "#5f4100",
+        "tertiary-fixed": "#ffdeaa",
+        "surface-container-low": "#151b2a",
+        "on-tertiary-fixed": "#271900",
+        "tertiary": "#ffd184",
+        "error": "#ffb4ab",
+        "primary": "#6feec9"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+      },
+      "spacing": {
+        "margin": "1rem",
+        "space-2xl": "2rem",
+        "space-md": "0.75rem",
+        "space-lg": "1rem",
+        "space-sm": "0.5rem",
+        "space-xl": "1.5rem",
+        "gutter": "1rem",
+        "space-xs": "0.25rem",
+        "gutter-lg": "1.5rem",
+        "margin-lg": "2rem",
+        "margin-md": "1.5rem"
+      },
+      "fontFamily": {
+        "headline-md": [
+          "Space Grotesk"
+        ],
+        "headline-sm": [
+          "Space Grotesk"
+        ],
+        "display-lg": [
+          "Space Grotesk"
+        ],
+        "code-sm": [
+          "JetBrains Mono"
+        ],
+        "code-md": [
+          "JetBrains Mono"
+        ],
+        "label-caps": [
+          "JetBrains Mono"
+        ],
+        "body-md": [
+          "Inter"
+        ],
+        "body-lg": [
+          "Inter"
+        ],
+        "code-lg": [
+          "JetBrains Mono"
+        ],
+        "body-sm": [
+          "Inter"
+        ],
+        "display-lg-mobile": [
+          "Space Grotesk"
+        ]
+      },
+      "fontSize": {
+        "headline-md": [
+          "24px",
+          {
+            "lineHeight": "32px",
+            "letterSpacing": "-0.01em",
+            "fontWeight": "600"
+          }
+        ],
+        "headline-sm": [
+          "18px",
+          {
+            "lineHeight": "26px",
+            "fontWeight": "600"
+          }
+        ],
+        "display-lg": [
+          "32px",
+          {
+            "lineHeight": "40px",
+            "letterSpacing": "-0.02em",
+            "fontWeight": "700"
+          }
+        ],
+        "code-sm": [
+          "11px",
+          {
+            "lineHeight": "14px",
+            "letterSpacing": "0.02em",
+            "fontWeight": "400"
+          }
+        ],
+        "code-md": [
+          "13px",
+          {
+            "lineHeight": "18px",
+            "fontWeight": "400"
+          }
+        ],
+        "label-caps": [
+          "10px",
+          {
+            "lineHeight": "12px",
+            "letterSpacing": "0.08em",
+            "fontWeight": "600"
+          }
+        ],
+        "body-md": [
+          "14px",
+          {
+            "lineHeight": "20px",
+            "fontWeight": "400"
+          }
+        ],
+        "body-lg": [
+          "16px",
+          {
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          }
+        ],
+        "code-lg": [
+          "14px",
+          {
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          }
+        ],
+        "body-sm": [
+          "12px",
+          {
+            "lineHeight": "16px",
+            "fontWeight": "400"
+          }
+        ],
+        "display-lg-mobile": [
+          "26px",
+          {
+            "lineHeight": "34px",
+            "letterSpacing": "-0.01em",
+            "fontWeight": "700"
+          }
+        ]
+      }
+    }
+  }
+}</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 h-16 bg-surface-container-lowest border-b border-surface-variant flex items-center justify-between px-margin-lg"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><img alt="SupplyGuard Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Vr7cSr0tRWuqMopc11rEwcbNiZdHBZ8osuTR4bKLp9Hv0n1AjDghbUC7uObRT-MHn70ydEYnQVD7J72G0FgdJgeDlQmFOpWKAuAH05vuXuHuIDrun_3PVr_IeJ2SmQkOw2SiFSgoH5bitDRfeVXyY5DrdLu8kT7nZW6_k9nhNG97qhQPpve9xHWre9U0O1-I9TX6TVEH9ecHQ1o3Crd4X2bHUqq_OHNuZSpah0HLGd4We5T5bi3XCaWAEz"/><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Supply<span class="text-primary-container">Guard</span></span></div><div class="h-5 w-[1px] bg-surface-variant"></div><div class="flex items-center gap-space-xs px-space-sm py-1 bg-surface-container border border-surface-variant rounded-lg"><span class="material-symbols-outlined text-on-surface-variant text-[16px]">inventory_2</span><span class="font-code-sm text-code-sm text-on-surface font-medium">Acme Store API</span><span class="font-code-sm text-code-sm text-on-surface-variant">(main)</span></div><div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 bg-surface-container border border-primary-container/30 rounded-lg"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-caps text-label-caps uppercase text-primary-container">Live Intel Feed: Connected</span></div></div><div class="hidden lg:flex items-center flex-1 max-w-md mx-space-xl"><div class="relative w-full"><span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span><input class="w-full h-9 bg-surface-dim border border-surface-variant rounded-lg pl-9 pr-3 text-on-surface placeholder:text-outline font-code-sm text-code-sm focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all" placeholder="Search packages, CVEs, or dependencies..." type="text"/></div></div><div class="flex items-center gap-space-md"><button class="flex items-center gap-space-xs px-space-md py-1.5 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-[13px] rounded-lg transition-colors shadow-sm font-semibold" type="button"><span class="material-symbols-outlined text-[18px]">radar</span><span>New Scan</span></button><div class="h-5 w-[1px] bg-surface-variant"></div><button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="relative flex items-center gap-space-xs pl-space-xs"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-1 ring-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA54mdzDliohJhL_z7y5wSocDEBIxyh95Ej4lpc0zFs78ugfSARgWUawQFDK8zKo2CqDOIu_FoXOxT3nyqVGeuluEisy4wuRj3kfrk84vJaHAko39rDSX8PTphDVcG9jSOJTl7vhn9fKbt8AlHIwDizW-0jES5nStHRb6Q4dqPoImuOcaE4ARbnS5hcRTHwiM4igQyALo8_e3roHv6rjVM6P6-E24ShKdXjnW-9aX5YupnODUOydE7DGQ"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary-container rounded-full ring-2 ring-surface-dim"></span></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-dim border-r border-surface-variant z-40 flex flex-col justify-between overflow-y-auto"><div class="p-space-md"><div class="px-space-sm pb-space-sm text-outline font-label-caps text-label-caps uppercase">Telemetry &amp; Audit</div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-surface-container-high text-primary-container border-l-2 border-primary-container font-medium"><a aria-current="page" class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg transition-colors bg-surface-container-high text-primary-container border-l-2 border-primary-container font-medium" data-path="overview" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span>Overview</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="dependency-graph" href="#"><span class="material-symbols-outlined text-[20px]">hub</span><span>Dependency Graph</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="findings-remediation" href="#"><span class="material-symbols-outlined text-[20px]">shield_with_heart</span><span>Findings &amp; Remediation</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="scan-history" href="#"><span class="material-symbols-outlined text-[20px]">history</span><span>Scan History</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="policy-compliance" href="#"><span class="material-symbols-outlined text-[20px]">verified_user</span><span>Policy &amp; Rules</span></a></nav><div class="mt-space-xl px-space-sm pb-space-sm text-outline font-label-caps text-label-caps uppercase">Manifest Integrity</div><div class="flex flex-col gap-space-xs"><div class="p-space-sm bg-surface-container-low border border-surface-variant rounded-lg"><div class="flex items-center justify-between text-outline font-code-sm text-code-sm mb-1"><span>SBOM Sync</span><span class="text-primary-container font-code-sm text-code-sm">SPDX 2.3</span></div><div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden"><div class="bg-primary-container h-full w-full"></div></div><div class="mt-2 font-code-sm text-code-sm text-on-surface-variant truncate">sha256:7f4c...982b</div></div></div></div><div class="p-space-md border-t border-surface-variant bg-surface-container-lowest"><div class="flex items-center justify-between text-outline font-code-sm text-code-sm"><span>Engine: v4.12-sec</span><span class="material-symbols-outlined text-[16px] text-primary-container">security</span></div></div></aside><div class="pl-64"><main class="w-full pt-16 min-h-screen bg-background text-on-surface"><div class="flex flex-col w-full">
+<!-- Dynamic Atmospheric Glows -->
+<div class="relative w-full overflow-hidden px-margin-md lg:px-margin-lg py-space-xl">
+<div class="absolute -top-32 -left-20 w-96 h-96 rounded-full bg-primary/5 blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/4 right-0 w-[30rem] h-[30rem] rounded-full bg-secondary-container/10 blur-[100px] pointer-events-none"></div>
+<!-- Hero Asymmetric Split Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-lg items-start relative z-10">
+<!-- Left Column: Mission Narrative & Directive Input (45% -> 5 cols lg / 5.5 cols xl) -->
+<div class="lg:col-span-5 flex flex-col gap-space-lg">
+<!-- Challenge Badge -->
+<div class="inline-flex items-center gap-space-xs self-start px-space-sm py-1 bg-surface-container-high rounded-full shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+<span class="font-label-caps text-label-caps uppercase text-primary-container tracking-wider">PS14 Supply Chain Defense • National Cyber Challenge</span>
+</div>
+<!-- Master Headline -->
+<h1 class="font-display-lg text-display-lg text-on-surface tracking-tight leading-tight">
+          See what is hidden in your dependency chain, understand why it matters, and fix <span class="text-secondary underline decoration-secondary/30 decoration-2 underline-offset-4">high-risk issues first</span>.
+        </h1>
+<!-- Subheadline -->
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+          Automated deep dependency tree analysis, real-time vulnerability cross-referencing, typosquatting detection, and explainable AI-backed remediation for modern engineering teams.
+        </p>
+<!-- Quick Scan Directive Input Box -->
+<div class="flex flex-col gap-space-xs p-space-sm bg-surface-container-low rounded-xl shadow-md">
+<div class="flex flex-col sm:flex-row gap-space-xs items-stretch sm:items-center">
+<div class="relative flex-1 flex items-center bg-surface-dim rounded-lg px-space-sm py-2">
+<span class="material-symbols-outlined text-outline text-[20px] mr-2 shrink-0">account_tree</span>
+<input class="w-full bg-transparent font-code-md text-code-md text-on-surface focus:outline-none placeholder:text-outline" id="repoInput" placeholder="git@github.com:org/repository.git" type="text" value="https://github.com/acme/store-api"/>
+<button class="font-code-sm text-code-sm text-outline hover:text-primary-container transition-colors ml-1 px-1 bg-surface-container-highest rounded" onclick="document.getElementById('repoInput').value='https://github.com/torvalds/linux'" title="Use demo target" type="button">DEMO</button>
+</div>
+<button class="flex items-center justify-center gap-space-xs px-space-xl py-3 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-headline-sm rounded-lg shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99] font-bold shrink-0 cursor-pointer" type="button">
+<span class="material-symbols-outlined text-[20px]">troubleshoot</span>
+<span>Analyze Repository</span>
+</button>
+</div>
+<!-- Manifest Subtext & Quick Signals -->
+<div class="flex items-center justify-between px-space-xs pt-1 text-on-surface-variant">
+<span class="font-code-sm text-code-sm flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-[14px]">lock_reset</span>
+              Zero-token ingestion via shallow git bundle
+            </span>
+<span class="font-code-sm text-code-sm text-primary-container">Auto-detect: package.json, Cargo.lock, go.sum</span>
+</div>
+</div>
+<!-- Value Proposition Badges -->
+<div class="flex flex-wrap gap-space-xs pt-space-xs">
+<div class="flex items-center gap-1.5 px-space-sm py-1.5 bg-surface-container rounded-md text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-primary-container">device_hub</span>
+<span class="font-code-sm text-code-sm">Transitive Depth Traversal (Depth 14+)</span>
+</div>
+<div class="flex items-center gap-1.5 px-space-sm py-1.5 bg-surface-container rounded-md text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-secondary">spellcheck</span>
+<span class="font-code-sm text-code-sm">Typosquatting &amp; Confusion Alerts</span>
+</div>
+<div class="flex items-center gap-1.5 px-space-sm py-1.5 bg-surface-container rounded-md text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-tertiary">verified</span>
+<span class="font-code-sm text-code-sm">Provenance Attestation (SLSA L3)</span>
+</div>
+</div>
+<!-- Trust & Intelligence Strip -->
+<div class="flex flex-col gap-space-xs pt-space-sm">
+<span class="font-label-caps text-label-caps uppercase text-outline">Correlated Threat Feeds &amp; Attestation Standards</span>
+<div class="flex items-center gap-space-lg flex-wrap text-on-surface-variant font-code-sm text-code-sm">
+<span class="flex items-center gap-1 px-2 py-1 bg-surface-container-high rounded text-on-surface">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>OSV.dev
+            </span>
+<span class="flex items-center gap-1 px-2 py-1 bg-surface-container-high rounded text-on-surface">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>GitHub Advisory (GHSA)
+            </span>
+<span class="flex items-center gap-1 px-2 py-1 bg-surface-container-high rounded text-on-surface">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>NIST NVD
+            </span>
+<span class="flex items-center gap-1 px-2 py-1 bg-surface-container-high rounded text-on-surface">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>OpenSSF Scorecards
+            </span>
+<span class="flex items-center gap-1 px-2 py-1 bg-surface-container-high rounded text-on-surface">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>npm Signals
+            </span>
+</div>
+</div>
+</div>
+<!-- Right Column: Risk Constellation 3D Telemetry Canvas (55% -> 7 cols lg) -->
+<div class="lg:col-span-7 flex flex-col gap-space-sm">
+<!-- Constellation Container Card -->
+<div class="relative w-full h-[580px] bg-surface-container-low rounded-xl overflow-hidden shadow-xl p-space-md flex flex-col justify-between">
+<!-- Subtle canvas background grid & glow -->
+<div class="absolute inset-0 bg-gradient-to-tr from-surface-dim via-surface-container-low to-surface-container opacity-90"></div>
+<div class="absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-secondary-container/20 blur-3xl pointer-events-none"></div>
+<div class="absolute top-10 left-10 w-72 h-72 rounded-full bg-primary/10 blur-2xl pointer-events-none"></div>
+<!-- Interactive Constellation Graph Engine (SVG) -->
+<div class="absolute inset-0 w-full h-full">
+<svg class="w-full h-full" fill="none" viewbox="0 0 700 560" xmlns="http://www.w3.org/2000/svg">
+<!-- Radial background guides -->
+<circle class="text-surface-variant/40" cx="350" cy="270" r="90" stroke="currentColor" stroke-dasharray="3 3" stroke-width="1"></circle>
+<circle class="text-surface-variant/30" cx="350" cy="270" r="180" stroke="currentColor" stroke-dasharray="4 4" stroke-width="1"></circle>
+<circle class="text-surface-variant/20" cx="350" cy="270" r="260" stroke="currentColor" stroke-dasharray="6 6" stroke-width="1"></circle>
+<!-- Constellation Lines (Edges) -->
+<!-- Root to direct packages -->
+<line class="text-primary-container/40" stroke="currentColor" stroke-width="2" x1="350" x2="230" y1="270" y2="180"></line>
+<line class="text-primary-container/40" stroke="currentColor" stroke-width="2" x1="350" x2="480" y1="270" y2="160"></line>
+<line class="text-tertiary/40" stroke="currentColor" stroke-width="2" x1="350" x2="290" y1="270" y2="400"></line>
+<line class="text-secondary/40" stroke="currentColor" stroke-width="2" x1="350" x2="490" y1="270" y2="380"></line>
+<!-- Transitive critical path vectors -->
+<line class="text-secondary/70" stroke="currentColor" stroke-dasharray="4 2" stroke-width="2.5" x1="230" x2="130" y1="180" y2="110"></line>
+<line class="text-secondary/80" stroke="currentColor" stroke-width="2" x1="480" x2="610" y1="160" y2="100"></line>
+<line class="text-tertiary/60" stroke="currentColor" stroke-width="1.5" x1="290" x2="160" y1="400" y2="460"></line>
+<line class="text-secondary/70" stroke="currentColor" stroke-dasharray="3 3" stroke-width="2" x1="490" x2="590" y1="380" y2="470"></line>
+<!-- Ambient meshes -->
+<line class="text-surface-variant" stroke="currentColor" stroke-width="1" x1="130" x2="70" y1="110" y2="220"></line>
+<line class="text-surface-variant" stroke="currentColor" stroke-width="1" x1="230" x2="70" y1="180" y2="220"></line>
+<line class="text-primary-container/30" stroke="currentColor" stroke-width="1" x1="480" x2="560" y1="160" y2="250"></line>
+<line class="text-surface-variant" stroke="currentColor" stroke-width="1" x1="610" x2="560" y1="100" y2="250"></line>
+<line class="text-surface-variant" stroke="currentColor" stroke-width="1" x1="290" x2="400" y1="400" y2="480"></line>
+<line class="text-surface-variant" stroke="currentColor" stroke-width="1" x1="490" x2="400" y1="380" y2="480"></line>
+<!-- Central Root Package Node -->
+<g class="cursor-pointer">
+<circle class="text-surface-dim" cx="350" cy="270" fill="currentColor" r="18"></circle>
+<circle class="text-primary-container" cx="350" cy="270" fill="currentColor" r="14"></circle>
+<circle class="text-primary-container/30" cx="350" cy="270" r="24" stroke="currentColor" stroke-width="2"></circle>
+<text class="font-code-sm text-code-sm fill-on-surface font-semibold" text-anchor="middle" x="350" y="308">acme/store-api</text>
+</g>
+<!-- Node: express@4.18.2 (Clean Direct) -->
+<g class="cursor-pointer transition-transform duration-200 hover:scale-110">
+<circle class="text-primary-container" cx="230" cy="180" fill="currentColor" r="10"></circle>
+<circle class="text-primary-container/40" cx="230" cy="180" r="16" stroke="currentColor" stroke-width="1.5"></circle>
+<text class="font-code-sm text-code-sm fill-on-surface font-medium" text-anchor="middle" x="210" y="160">express@4.18.2</text>
+</g>
+<!-- Node: axios@1.6.0 (Clean Direct) -->
+<g class="cursor-pointer">
+<circle class="text-primary-container" cx="480" cy="160" fill="currentColor" r="9"></circle>
+<text class="font-code-sm text-code-sm fill-on-surface" text-anchor="start" x="500" y="145">axios@1.6.0</text>
+</g>
+<!-- CRITICAL NODE: lodash@4.17.20 (Prototype Pollution CVE-2021-23337) -->
+<g class="cursor-pointer animate-pulse">
+<circle class="text-secondary" cx="130" cy="110" fill="currentColor" r="14"></circle>
+<circle class="text-secondary/60" cx="130" cy="110" r="22" stroke="currentColor" stroke-width="2"></circle>
+<circle class="text-secondary/20" cx="130" cy="110" r="32" stroke="currentColor" stroke-width="1"></circle>
+</g>
+<!-- CRITICAL NODE: reqeusts@2.31.0 (Typosquatting Risk) -->
+<g class="cursor-pointer">
+<circle class="text-secondary" cx="610" cy="100" fill="currentColor" r="12"></circle>
+<circle class="text-secondary/60" cx="610" cy="100" r="18" stroke="currentColor" stroke-dasharray="2 2" stroke-width="1.5"></circle>
+</g>
+<!-- AMBER NODE: old-package@0.9.4 (Stale Maintenance) -->
+<g class="cursor-pointer">
+<circle class="text-tertiary" cx="160" cy="460" fill="currentColor" r="8"></circle>
+<text class="font-code-sm text-code-sm fill-on-surface-variant" text-anchor="middle" x="160" y="482">old-package@0.9.4</text>
+</g>
+<!-- AMBER NODE: package-x@2.1.0 (High Fan-out) -->
+<g class="cursor-pointer">
+<circle class="text-tertiary" cx="290" cy="400" fill="currentColor" r="9"></circle>
+<circle class="text-tertiary/40" cx="290" cy="400" r="14" stroke="currentColor" stroke-width="1"></circle>
+<text class="font-code-sm text-code-sm fill-on-surface" text-anchor="middle" x="290" y="425">package-x@2.1.0</text>
+</g>
+<!-- Ambient Leaf Nodes -->
+<circle class="text-primary-container/80" cx="70" cy="220" fill="currentColor" r="4"></circle>
+<circle class="text-primary-container/60" cx="560" cy="250" fill="currentColor" r="5"></circle>
+<circle class="text-primary-container/70" cx="400" cy="480" fill="currentColor" r="5"></circle>
+<circle class="text-secondary/80" cx="490" cy="380" fill="currentColor" r="7"></circle>
+<circle class="text-secondary/80" cx="590" cy="470" fill="currentColor" r="5"></circle>
+<circle class="text-surface-variant" cx="170" cy="290" fill="currentColor" r="4"></circle>
+<circle class="text-surface-variant" cx="440" cy="80" fill="currentColor" r="3"></circle>
+</svg>
+</div>
+<!-- HUD Floating Overlay Elements -->
+<!-- Top Telemetry Header Strip -->
+<div class="relative z-20 flex items-center justify-between">
+<div class="flex items-center gap-space-xs px-space-sm py-1 bg-surface-dim/95 backdrop-blur rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-primary-container text-[16px]">radar</span>
+<span class="font-label-caps text-label-caps uppercase text-on-surface">Constellation Map • Transitive Graph</span>
+</div>
+<!-- Risk Priority HUD Badge -->
+<div class="flex items-center gap-2 px-space-sm py-1.5 bg-secondary-container/90 text-on-secondary-container backdrop-blur rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[16px]">crisis_alert</span>
+<span class="font-label-caps text-label-caps uppercase font-bold tracking-wide">Risk Score: 78/100 • Critical Prioritization</span>
+</div>
+</div>
+<!-- Floating Interactive Inspector Callouts pinned near the SVG nodes -->
+<div class="relative z-20 pointer-events-none flex flex-col justify-between h-full pt-space-xl pb-space-sm">
+<!-- Left High Alert Annotation (lodash) -->
+<div class="pointer-events-auto self-start max-w-[260px] bg-surface-dim/95 backdrop-blur p-space-sm rounded-lg shadow-md -mt-2">
+<div class="flex items-center gap-1.5 mb-1">
+<span class="px-1.5 py-0.5 rounded font-label-caps text-label-caps uppercase bg-secondary-container text-secondary font-semibold">CVE-2021-23337</span>
+<span class="font-code-sm text-code-sm font-semibold text-on-surface">lodash@4.17.20</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary leading-snug">
+                Prototype pollution in <code class="font-code-sm bg-surface-container px-1 py-0.5 rounded text-on-surface">template()</code> enables remote execution.
+              </p>
+<div class="mt-2 flex items-center justify-between font-code-sm text-code-sm text-outline">
+<span>Depth: L2 (via express)</span>
+<span class="text-primary-container hover:underline cursor-pointer">Fix: → 4.17.21</span>
+</div>
+</div>
+<!-- Right High Alert Annotation (reqeusts typosquat) -->
+<div class="pointer-events-auto self-end max-w-[270px] bg-surface-dim/95 backdrop-blur p-space-sm rounded-lg shadow-md mr-2">
+<div class="flex items-center gap-1.5 mb-1">
+<span class="px-1.5 py-0.5 rounded font-label-caps text-label-caps uppercase bg-secondary-container text-secondary font-semibold">Typosquat Alert</span>
+<span class="font-code-sm text-code-sm font-semibold text-secondary">reqeusts@2.31.0</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">
+                96% Levenshtein similarity to canonical <span class="text-primary-container font-code-sm">requests</span>. Unpublished owner, zero commit history.
+              </p>
+<div class="mt-2 flex items-center justify-between font-code-sm text-code-sm">
+<span class="text-secondary font-medium">Flagged: Dependency Confusion</span>
+<button class="px-1.5 py-0.5 bg-secondary hover:bg-on-secondary-container text-on-secondary rounded font-label-caps uppercase text-[9px] font-bold transition-colors" type="button">Quarantine</button>
+</div>
+</div>
+<!-- Bottom Left High Fan-out callout -->
+<div class="pointer-events-auto self-start max-w-[240px] bg-surface-dim/90 backdrop-blur p-space-sm rounded-lg shadow-sm">
+<div class="flex items-center gap-1.5 mb-1">
+<span class="px-1.5 py-0.5 rounded font-label-caps text-label-caps uppercase bg-surface-container text-tertiary font-semibold">High Fan-Out</span>
+<span class="font-code-sm text-code-sm text-on-surface">package-x@2.1.0</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                14 downstream dependents in graph. Single point of architectural failure.
+              </p>
+</div>
+</div>
+<!-- Bottom Telemetry HUD Counter Strip -->
+<div class="relative z-20 flex items-center justify-between pt-space-xs bg-surface-dim/95 backdrop-blur px-space-sm py-2 rounded-lg">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-code-sm text-code-sm text-on-surface font-semibold">143 Packages Analyzed</span>
+</div>
+<span class="text-outline">•</span>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-code-sm text-code-sm text-secondary font-medium">3 Critical</span>
+</div>
+<span class="text-outline">•</span>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="font-code-sm text-code-sm text-tertiary font-medium">7 High Risk</span>
+</div>
+</div>
+<span class="font-label-caps text-label-caps uppercase text-outline">Realtime Attestation: Active</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Pipeline Process Strip: How It Works (5 Stages) -->
+<div class="mt-space-2xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-outline">Inspection Architecture</span>
+<span class="text-outline">•</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">5-Stage Deterministic Verification Pipeline</span>
+</div>
+<span class="hidden md:inline font-code-sm text-code-sm text-primary-container">SLSA Level 3 Compliant Attestation Engine</span>
+</div>
+<!-- Horizontal Stage Steps Grid -->
+<div class="grid grid-cols-1 md:grid-cols-5 gap-space-sm">
+<!-- Stage 1 -->
+<div class="p-space-md bg-surface-container rounded-xl flex flex-col gap-space-xs relative group hover:bg-surface-container-high transition-colors">
+<div class="flex items-center justify-between text-outline">
+<span class="font-label-caps text-label-caps uppercase text-primary-container font-semibold">STAGE 01</span>
+<span class="material-symbols-outlined text-[18px] text-primary-container">download</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Repository Ingestion</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Ephemerally mirrors manifests, direct lockfiles, and git commits with verifiable provenance.
+          </p>
+<div class="mt-auto pt-2">
+<span class="font-code-sm text-code-sm text-outline">Latency: ~240ms</span>
+</div>
+</div>
+<!-- Stage 2 -->
+<div class="p-space-md bg-surface-container rounded-xl flex flex-col gap-space-xs relative group hover:bg-surface-container-high transition-colors">
+<div class="flex items-center justify-between text-outline">
+<span class="font-label-caps text-label-caps uppercase text-primary-container font-semibold">STAGE 02</span>
+<span class="material-symbols-outlined text-[18px] text-primary-container">hub</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Graph Resolution</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Recursively unfolds transitive trees, cyclic references, and peer dependencies down to leaf nodes.
+          </p>
+<div class="mt-auto pt-2">
+<span class="font-code-sm text-code-sm text-outline">Depth Limit: Infinite</span>
+</div>
+</div>
+<!-- Stage 3 -->
+<div class="p-space-md bg-surface-container rounded-xl flex flex-col gap-space-xs relative group hover:bg-surface-container-high transition-colors">
+<div class="flex items-center justify-between text-outline">
+<span class="font-label-caps text-label-caps uppercase text-secondary font-semibold">STAGE 03</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">security</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Threat Correlation</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Matches SHA256 hashes against GHSA, OSV, NVD databases and runs typosquat distance heuristics.
+          </p>
+<div class="mt-auto pt-2">
+<span class="font-code-sm text-code-sm text-secondary">Cross-reference: 5 Datasets</span>
+</div>
+</div>
+<!-- Stage 4 -->
+<div class="p-space-md bg-surface-container rounded-xl flex flex-col gap-space-xs relative group hover:bg-surface-container-high transition-colors">
+<div class="flex items-center justify-between text-outline">
+<span class="font-label-caps text-label-caps uppercase text-tertiary font-semibold">STAGE 04</span>
+<span class="material-symbols-outlined text-[18px] text-tertiary">psychology</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Risk Scoring</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Contextualizes reachability. A CVSS 9.8 vulnerability that is unreachable is appropriately de-prioritized.
+          </p>
+<div class="mt-auto pt-2">
+<span class="font-code-sm text-code-sm text-outline">Graph Reachability Filter</span>
+</div>
+</div>
+<!-- Stage 5 -->
+<div class="p-space-md bg-surface-container rounded-xl flex flex-col gap-space-xs relative group hover:bg-surface-container-high transition-colors">
+<div class="flex items-center justify-between text-outline">
+<span class="font-label-caps text-label-caps uppercase text-primary-container font-semibold">STAGE 05</span>
+<span class="material-symbols-outlined text-[18px] text-primary-container">auto_fix_high</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Remediation</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Generates copy-paste package manager lockfile overrides and automated pull requests with test validation.
+          </p>
+<div class="mt-auto pt-2">
+<span class="font-code-sm text-code-sm text-primary-container">1-Click PR Ready</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Feature Deep-Dive Cards Bento Grid -->
+<div class="mt-space-2xl grid grid-cols-1 md:grid-cols-3 gap-gutter-lg">
+<!-- Feature 1: Vulnerability & Confusion Intelligence -->
+<div class="p-space-xl bg-surface-container-low rounded-xl flex flex-col justify-between shadow-md relative overflow-hidden group">
+<div class="flex flex-col gap-space-sm relative z-10">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary mb-1">
+<span class="material-symbols-outlined text-[24px]">troubleshoot</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Vulnerability &amp; Confusion Intelligence</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Beyond standard CVE lookups, SupplyGuard actively scans for typosquatting attacks, dependency confusion vectors, and unauthorized package transfers in public ecosystems.
+          </p>
+<!-- Mock visual telemetry snippet -->
+<div class="mt-space-sm p-space-sm bg-surface-dim rounded-lg font-code-sm text-code-sm text-outline space-y-1">
+<div class="text-secondary flex items-center justify-between">
+<span>! SQUAT_DETECTED</span>
+<span>SIMILARITY: 0.96</span>
+</div>
+<div class="text-on-surface-variant truncate">Original: "requests" (Author: Kenneth Reitz)</div>
+<div class="text-secondary truncate">Candidate: "reqeusts" (Unclaimed author, 0 commits)</div>
+</div>
+</div>
+<div class="pt-space-lg relative z-10">
+<a class="inline-flex items-center gap-1 font-code-sm text-code-sm text-primary-container hover:underline font-semibold" href="#">
+<span>Explore Attack Pattern Catalog</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Feature 2: Transitive Risk Reasoning -->
+<div class="p-space-xl bg-surface-container-low rounded-xl flex flex-col justify-between shadow-md relative overflow-hidden group">
+<div class="flex flex-col gap-space-sm relative z-10">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-tertiary mb-1">
+<span class="material-symbols-outlined text-[24px]">account_tree</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Transitive Risk Reasoning</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Vulnerabilities buried 8 levels deep shouldn't cause panic if their vulnerable AST functions are never exported or called. Our call-graph solver isolates truly exploitable paths.
+          </p>
+<!-- Mock visual AST Reachability -->
+<div class="mt-space-sm p-space-sm bg-surface-dim rounded-lg font-code-sm text-code-sm text-outline space-y-1">
+<div class="text-primary-container flex items-center justify-between">
+<span>CALL GRAPH STATUS</span>
+<span>UNREACHABLE</span>
+</div>
+<div class="text-on-surface-variant">Target: lodash.template() • CVSS 7.4</div>
+<div class="text-primary-container">Verdict: De-escalate to Low (Zero execution vector)</div>
+</div>
+</div>
+<div class="pt-space-lg relative z-10">
+<a class="inline-flex items-center gap-1 font-code-sm text-code-sm text-tertiary hover:underline font-semibold" href="#">
+<span>View Graph Traversal Benchmark</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Feature 3: Actionable Developer Remediation -->
+<div class="p-space-xl bg-surface-container-low rounded-xl flex flex-col justify-between shadow-md relative overflow-hidden group">
+<div class="flex flex-col gap-space-sm relative z-10">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary-container mb-1">
+<span class="material-symbols-outlined text-[24px]">build</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Actionable Developer Remediation</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Never guess which semver range fixes the upstream dependency without breaking peer constraints. Receive surgical patch directives and pin overrides ready for pull request merge.
+          </p>
+<!-- Mock code diff snippet -->
+<div class="mt-space-sm p-space-sm bg-surface-dim rounded-lg font-code-sm text-code-sm text-outline space-y-1">
+<div class="text-primary-container flex items-center justify-between">
+<span>SUGGESTED RESOLUTION</span>
+<span>AUTO-APPLY</span>
+</div>
+<div class="text-secondary bg-secondary-container/20 px-1 py-0.5 rounded truncate">- "resolutions": { "lodash": "4.17.20" }</div>
+<div class="text-primary-container bg-primary/10 px-1 py-0.5 rounded truncate">+ "resolutions": { "lodash": "^4.17.21" }</div>
+</div>
+</div>
+<div class="pt-space-lg relative z-10">
+<a class="inline-flex items-center gap-1 font-code-sm text-code-sm text-primary-container hover:underline font-semibold" href="#">
+<span>Review Automated PR Workflows</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Engineering & Compliance Spec Strip (Footer Section) -->
+<div class="mt-space-2xl pt-space-xl pb-space-lg bg-surface-container-lowest rounded-xl p-space-xl flex flex-col gap-space-lg shadow-md">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[24px]">terminal</span>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface">SupplyGuard SecOps Terminal • v4.12-sec</div>
+<div class="font-code-sm text-code-sm text-outline">PS14 National Cyber Challenge Reference Architecture</div>
+</div>
+</div>
+<div class="flex items-center gap-space-md font-code-sm text-code-sm text-on-surface-variant flex-wrap">
+<div class="flex items-center gap-1.5 px-space-sm py-1 bg-surface-container rounded">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span>CLI Status: 0 Warnings</span>
+</div>
+<div class="flex items-center gap-1.5 px-space-sm py-1 bg-surface-container rounded">
+<span class="material-symbols-outlined text-[14px] text-tertiary">terminal</span>
+<span>npm i -g @supplyguard/cli</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-lg pt-space-sm text-body-sm font-body-sm text-on-surface-variant">
+<div>
+<div class="font-label-caps text-label-caps uppercase text-outline mb-2">Specifications</div>
+<ul class="space-y-1 font-code-sm text-code-sm">
+<li><a class="hover:text-primary-container transition-colors" href="#">SPDX 2.3 Integration</a></li>
+<li><a class="hover:text-primary-container transition-colors" href="#">CycloneDX 1.5 JSON</a></li>
+<li><a class="hover:text-primary-container transition-colors" href="#">SLSA Provenance V1.0</a></li>
+<li><a class="hover:text-primary-container transition-colors" href="#">In-toto Link Attestation</a></li>
+</ul>
+</div>
+<div>
+<div class="font-label-caps text-label-caps uppercase text-outline mb-2">Security Feeds</div>
+<ul class="space-y-1 font-code-sm text-code-sm">
+<li><a class="hover:text-primary-container transition-colors" href="#">Open Source Vulnerabilities</a></li>
+<li><a class="hover:text-primary-container transition-colors" href="#">NIST CVE / NVD Mirror</a></li>
+<li><a class="hover:text-primary-container transition-colors" href="#">CISA KEV Catalog</a></li>
+<li><a class="hover:text-primary-container transition-colors" href="#">npm Registry Live Audit</a></li>
+</ul>
+</div>
+<div>
+<div class="font-label-caps text-label-caps uppercase text-outline mb-2">Platform Docs</div>
+<ul class="space-y-1 font-code-sm text-code-sm">
+<li><a class="hover:text-primary-container transition-colors" href="#">Graph Traversal Syntax</a></li>
+<li><a class="hover:text-primary-container transition-colors" href="#">Call Graph Profiler</a></li>
+<li><a class="hover:text-primary-container transition-colors" href="#">GitHub Action CI Setup</a></li>
+<li><a class="hover:text-primary-container transition-colors" href="#">GitLab &amp; Bitbucket API</a></li>
+</ul>
+</div>
+<div>
+<div class="font-label-caps text-label-caps uppercase text-outline mb-2">Repository &amp; Specs</div>
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container hover:bg-surface-container-high rounded text-on-surface font-code-sm text-code-sm transition-colors w-fit" href="#">
+<span class="material-symbols-outlined text-[16px]">code</span>
+<span>github.com/supplyguard</span>
+</a>
+<span class="font-code-sm text-code-sm text-outline">Engine Build: sha256:49c0d12e</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

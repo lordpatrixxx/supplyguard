@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "tertiary-fixed-dim": "#f7bd4f",
+        "surface-variant": "#2f3544",
+        "primary-fixed": "#7af8d3",
+        "inverse-primary": "#006b55",
+        "error-container": "#93000a",
+        "on-error-container": "#ffdad6",
+        "surface-dim": "#0d1321",
+        "secondary-container": "#8f1b01",
+        "inverse-surface": "#dde2f6",
+        "secondary-fixed": "#ffdad2",
+        "outline-variant": "#3d4a44",
+        "surface-bright": "#333949",
+        "on-tertiary-container": "#654600",
+        "secondary": "#ffb4a3",
+        "on-secondary-fixed": "#3d0600",
+        "background": "#0d1321",
+        "secondary-fixed-dim": "#ffb4a3",
+        "on-surface": "#dde2f6",
+        "on-primary-fixed": "#002018",
+        "surface-container-high": "#242a39",
+        "primary-fixed-dim": "#5bdcb8",
+        "on-secondary-container": "#ffa08a",
+        "on-primary": "#00382b",
+        "surface-tint": "#5bdcb8",
+        "primary-container": "#4fd1ae",
+        "on-primary-fixed-variant": "#005140",
+        "tertiary-container": "#ecb346",
+        "on-secondary": "#630f00",
+        "on-tertiary": "#422c00",
+        "surface-container": "#191f2e",
+        "on-secondary-fixed-variant": "#8c1900",
+        "on-surface-variant": "#bccac3",
+        "inverse-on-surface": "#2a303f",
+        "on-primary-container": "#005644",
+        "surface": "#0d1321",
+        "on-error": "#690005",
+        "surface-container-highest": "#2f3544",
+        "surface-container-lowest": "#080e1c",
+        "on-background": "#dde2f6",
+        "outline": "#86948e",
+        "on-tertiary-fixed-variant": "#5f4100",
+        "tertiary-fixed": "#ffdeaa",
+        "surface-container-low": "#151b2a",
+        "on-tertiary-fixed": "#271900",
+        "tertiary": "#ffd184",
+        "error": "#ffb4ab",
+        "primary": "#6feec9"
+      },
+      "borderRadius": {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+      },
+      "spacing": {
+        "margin": "1rem",
+        "space-2xl": "2rem",
+        "space-md": "0.75rem",
+        "space-lg": "1rem",
+        "space-sm": "0.5rem",
+        "space-xl": "1.5rem",
+        "gutter": "1rem",
+        "space-xs": "0.25rem",
+        "gutter-lg": "1.5rem",
+        "margin-lg": "2rem",
+        "margin-md": "1.5rem"
+      },
+      "fontFamily": {
+        "headline-md": [
+          "Space Grotesk"
+        ],
+        "headline-sm": [
+          "Space Grotesk"
+        ],
+        "display-lg": [
+          "Space Grotesk"
+        ],
+        "code-sm": [
+          "JetBrains Mono"
+        ],
+        "code-md": [
+          "JetBrains Mono"
+        ],
+        "label-caps": [
+          "JetBrains Mono"
+        ],
+        "body-md": [
+          "Inter"
+        ],
+        "body-lg": [
+          "Inter"
+        ],
+        "code-lg": [
+          "JetBrains Mono"
+        ],
+        "body-sm": [
+          "Inter"
+        ],
+        "display-lg-mobile": [
+          "Space Grotesk"
+        ]
+      },
+      "fontSize": {
+        "headline-md": [
+          "24px",
+          {
+            "lineHeight": "32px",
+            "letterSpacing": "-0.01em",
+            "fontWeight": "600"
+          }
+        ],
+        "headline-sm": [
+          "18px",
+          {
+            "lineHeight": "26px",
+            "fontWeight": "600"
+          }
+        ],
+        "display-lg": [
+          "32px",
+          {
+            "lineHeight": "40px",
+            "letterSpacing": "-0.02em",
+            "fontWeight": "700"
+          }
+        ],
+        "code-sm": [
+          "11px",
+          {
+            "lineHeight": "14px",
+            "letterSpacing": "0.02em",
+            "fontWeight": "400"
+          }
+        ],
+        "code-md": [
+          "13px",
+          {
+            "lineHeight": "18px",
+            "fontWeight": "400"
+          }
+        ],
+        "label-caps": [
+          "10px",
+          {
+            "lineHeight": "12px",
+            "letterSpacing": "0.08em",
+            "fontWeight": "600"
+          }
+        ],
+        "body-md": [
+          "14px",
+          {
+            "lineHeight": "20px",
+            "fontWeight": "400"
+          }
+        ],
+        "body-lg": [
+          "16px",
+          {
+            "lineHeight": "24px",
+            "fontWeight": "400"
+          }
+        ],
+        "code-lg": [
+          "14px",
+          {
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          }
+        ],
+        "body-sm": [
+          "12px",
+          {
+            "lineHeight": "16px",
+            "fontWeight": "400"
+          }
+        ],
+        "display-lg-mobile": [
+          "26px",
+          {
+            "lineHeight": "34px",
+            "letterSpacing": "-0.01em",
+            "fontWeight": "700"
+          }
+        ]
+      }
+    }
+  }
+}</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 h-16 bg-surface-container-lowest border-b border-surface-variant flex items-center justify-between px-margin-lg"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><img alt="SupplyGuard Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Vr7cSr0tRWuqMopc11rEwcbNiZdHBZ8osuTR4bKLp9Hv0n1AjDghbUC7uObRT-MHn70ydEYnQVD7J72G0FgdJgeDlQmFOpWKAuAH05vuXuHuIDrun_3PVr_IeJ2SmQkOw2SiFSgoH5bitDRfeVXyY5DrdLu8kT7nZW6_k9nhNG97qhQPpve9xHWre9U0O1-I9TX6TVEH9ecHQ1o3Crd4X2bHUqq_OHNuZSpah0HLGd4We5T5bi3XCaWAEz"/><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Supply<span class="text-primary-container">Guard</span></span></div><div class="h-5 w-[1px] bg-surface-variant"></div><div class="flex items-center gap-space-xs px-space-sm py-1 bg-surface-container border border-surface-variant rounded-lg"><span class="material-symbols-outlined text-on-surface-variant text-[16px]">inventory_2</span><span class="font-code-sm text-code-sm text-on-surface font-medium">Acme Store API</span><span class="font-code-sm text-code-sm text-on-surface-variant">(main)</span></div><div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 bg-surface-container border border-primary-container/30 rounded-lg"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-caps text-label-caps uppercase text-primary-container">Live Intel Feed: Connected</span></div></div><div class="hidden lg:flex items-center flex-1 max-w-md mx-space-xl"><div class="relative w-full"><span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span><input class="w-full h-9 bg-surface-dim border border-surface-variant rounded-lg pl-9 pr-3 text-on-surface placeholder:text-outline font-code-sm text-code-sm focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all" placeholder="Search packages, CVEs, or dependencies..." type="text"/></div></div><div class="flex items-center gap-space-md"><button class="flex items-center gap-space-xs px-space-md py-1.5 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-[13px] rounded-lg transition-colors shadow-sm font-semibold" type="button"><span class="material-symbols-outlined text-[18px]">radar</span><span>New Scan</span></button><div class="h-5 w-[1px] bg-surface-variant"></div><button class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="relative flex items-center gap-space-xs pl-space-xs"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-1 ring-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA54mdzDliohJhL_z7y5wSocDEBIxyh95Ej4lpc0zFs78ugfSARgWUawQFDK8zKo2CqDOIu_FoXOxT3nyqVGeuluEisy4wuRj3kfrk84vJaHAko39rDSX8PTphDVcG9jSOJTl7vhn9fKbt8AlHIwDizW-0jES5nStHRb6Q4dqPoImuOcaE4ARbnS5hcRTHwiM4igQyALo8_e3roHv6rjVM6P6-E24ShKdXjnW-9aX5YupnODUOydE7DGQ"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary-container rounded-full ring-2 ring-surface-dim"></span></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-dim border-r border-surface-variant z-40 flex flex-col justify-between overflow-y-auto"><div class="p-space-md"><div class="px-space-sm pb-space-sm text-outline font-label-caps text-label-caps uppercase">Telemetry &amp; Audit</div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-surface-container-high text-primary-container border-l-2 border-primary-container font-medium"><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="overview" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span>Overview</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="dependency-graph" href="#"><span class="material-symbols-outlined text-[20px]">hub</span><span>Dependency Graph</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="findings-remediation" href="#"><span class="material-symbols-outlined text-[20px]">shield_with_heart</span><span>Findings &amp; Remediation</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="scan-history" href="#"><span class="material-symbols-outlined text-[20px]">history</span><span>Scan History</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-md text-body-md transition-colors" data-path="policy-compliance" href="#"><span class="material-symbols-outlined text-[20px]">verified_user</span><span>Policy &amp; Rules</span></a></nav><div class="mt-space-xl px-space-sm pb-space-sm text-outline font-label-caps text-label-caps uppercase">Manifest Integrity</div><div class="flex flex-col gap-space-xs"><div class="p-space-sm bg-surface-container-low border border-surface-variant rounded-lg"><div class="flex items-center justify-between text-outline font-code-sm text-code-sm mb-1"><span>SBOM Sync</span><span class="text-primary-container font-code-sm text-code-sm">SPDX 2.3</span></div><div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden"><div class="bg-primary-container h-full w-full"></div></div><div class="mt-2 font-code-sm text-code-sm text-on-surface-variant truncate">sha256:7f4c...982b</div></div></div></div><div class="p-space-md border-t border-surface-variant bg-surface-container-lowest"><div class="flex items-center justify-between text-outline font-code-sm text-code-sm"><span>Engine: v4.12-sec</span><span class="material-symbols-outlined text-[16px] text-primary-container">security</span></div></div></aside><div class="pl-64"><main class="w-full pt-16 min-h-screen bg-background text-on-surface"><div class="flex flex-col w-full">
+<!-- Top Ambient Telemetry Beam -->
+<div class="relative w-full overflow-hidden bg-surface-container-lowest py-space-xl px-margin-lg">
+<div class="absolute -top-24 -right-16 w-96 h-96 rounded-full bg-primary-container/5 blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-24 left-1/4 w-80 h-80 rounded-full bg-error/5 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 max-w-7xl mx-auto flex flex-col gap-space-xl">
+<!-- Action Bar & Breadcrumbs -->
+<div class="flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm font-code-sm text-code-sm text-outline">
+<span class="flex items-center gap-1 hover:text-primary-container transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[16px]">folder_supervised</span>
+<span>acme-corp</span>
+</span>
+<span>/</span>
+<span class="text-on-surface font-medium">Acme Store API</span>
+<span>/</span>
+<span class="text-primary-container">remediation-ledger#v4.12</span>
+<span class="ml-space-xs px-2 py-0.5 rounded-full bg-surface-container-high text-primary-container text-[10px] font-semibold uppercase tracking-wider">Audit Pass Verified</span>
+</div>
+<!-- Quick CTAs -->
+<div class="flex flex-wrap items-center gap-space-sm">
+<div class="relative inline-block text-left" id="exportMenuWrapper">
+<button class="flex items-center gap-space-xs px-space-md py-1.5 bg-surface-container-high hover:bg-surface-bright text-on-surface rounded-lg text-body-sm font-body-sm transition-colors shadow-sm" id="exportDropdownBtn" type="button">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">receipt_long</span>
+<span>Export SBOM</span>
+<span class="material-symbols-outlined text-[14px]">expand_more</span>
+</button>
+<div class="hidden absolute right-0 mt-2 w-56 rounded-lg bg-surface-container-highest shadow-xl z-50 p-1 font-code-sm text-code-sm" id="exportMenu">
+<a class="flex items-center justify-between px-3 py-2 rounded text-on-surface hover:bg-surface-bright transition-colors" href="#cyclonedx">
+<span>CycloneDX 1.5 JSON</span>
+<span class="text-outline text-[10px]">.json</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded text-on-surface hover:bg-surface-bright transition-colors" href="#spdx">
+<span>SPDX 2.3 Tag-Value</span>
+<span class="text-outline text-[10px]">.spdx</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded text-on-surface hover:bg-surface-bright transition-colors" href="#csv">
+<span>Audit CSV Manifest</span>
+<span class="text-outline text-[10px]">.csv</span>
+</a>
+</div>
+</div>
+<button class="flex items-center gap-space-xs px-space-md py-1.5 bg-surface-container-high hover:bg-surface-bright text-on-surface rounded-lg text-body-sm font-body-sm transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container">picture_as_pdf</span>
+<span>Download PDF</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-lg py-1.5 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-[13px] font-semibold rounded-lg shadow-sm transition-all transform active:scale-95" onclick="triggerGlobalPRSimulation()" type="button">
+<span class="material-symbols-outlined text-[18px]">alt_route</span>
+<span>Generate Remediation PR</span>
+</button>
+</div>
+</div>
+<!-- Header Title & Subtitle with Grid Accent -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-end">
+<div class="lg:col-span-8 flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[22px]">verified_user</span>
+<span class="font-label-caps text-label-caps uppercase text-secondary tracking-wider">Automated Prioritization Matrix</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-on-surface tracking-tight">
+            Prioritized Supply Chain Remediation Report
+          </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl">
+            Ranked action items for <span class="font-code-md text-code-md text-on-surface bg-surface-container px-1.5 py-0.5 rounded">Acme Store API</span> based on CVSS severity, exploitability, blast radius, and transitive graph vulnerability.
+          </p>
+</div>
+<!-- Before / After Score Pill -->
+<div class="lg:col-span-4 flex justify-start lg:justify-end">
+<div class="bg-surface-container p-space-md rounded-xl shadow-md flex items-center gap-space-md">
+<div class="flex flex-col items-center">
+<span class="font-label-caps text-label-caps uppercase text-error tracking-wider">Current Risk</span>
+<div class="flex items-baseline gap-0.5">
+<span class="font-display-lg text-display-lg text-error">78</span>
+<span class="font-code-sm text-code-sm text-outline">/100</span>
+</div>
+</div>
+<div class="flex flex-col items-center px-space-xs">
+<span class="material-symbols-outlined text-primary-container text-[24px]">trending_down</span>
+<span class="font-label-caps text-[9px] text-primary-container uppercase font-bold tracking-tight">-54 PTS</span>
+</div>
+<div class="flex flex-col items-center pl-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-primary-container tracking-wider">Projected</span>
+<div class="flex items-baseline gap-0.5">
+<span class="font-display-lg text-display-lg text-primary-container">24</span>
+<span class="font-code-sm text-code-sm text-outline">/100</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Telemetry Metric Strip -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-space-md">
+<!-- Metric 1 -->
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between">
+<div class="flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Actionable Items</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary">checklist</span>
+</div>
+<div class="mt-space-sm flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg text-on-surface">10</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">total vectors</span>
+</div>
+<div class="mt-2 text-outline font-code-sm text-code-sm">
+            3 Critical · 7 High Priority
+          </div>
+</div>
+<!-- Metric 2 -->
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between">
+<div class="flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Critical CVEs</span>
+<span class="material-symbols-outlined text-[16px] text-error">gpp_maybe</span>
+</div>
+<div class="mt-space-sm flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg text-error">03</span>
+<span class="font-body-sm text-body-sm text-on-error-container">Immediate block</span>
+</div>
+<div class="mt-2 text-outline font-code-sm text-code-sm">
+            2 RCE / Code Injection vectors
+          </div>
+</div>
+<!-- Metric 3 -->
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between">
+<div class="flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Transitive Burden</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim">account_tree</span>
+</div>
+<div class="mt-space-sm flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg text-on-surface">80%</span>
+<span class="font-body-sm text-body-sm text-tertiary">8/10 Transitive</span>
+</div>
+<div class="mt-2 text-outline font-code-sm text-code-sm">
+            Max graph depth: 4 sub-hops
+          </div>
+</div>
+<!-- Metric 4 -->
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between">
+<div class="flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Auto-Patch Confidence</span>
+<span class="material-symbols-outlined text-[16px] text-primary-container">verified</span>
+</div>
+<div class="mt-space-sm flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg text-primary-container">94%</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Zero breaking API</span>
+</div>
+<div class="mt-2 text-outline font-code-sm text-code-sm">
+            Verified by Sandbox Test Matrix
+          </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Body Content: Ranked Worklist & Context Panel -->
+<div class="max-w-7xl mx-auto w-full px-margin-lg py-space-2xl">
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-xl">
+<!-- Left Column: Priority Stack (Numbered Cards 1 to 5+) -->
+<div class="xl:col-span-8 flex flex-col gap-space-lg">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface">Ranked Execution Ledger</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container font-code-sm text-code-sm text-outline">Sorted by Net Risk Reduction</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline hidden sm:inline">Engine evaluation: 2m ago</span>
+</div>
+<!-- Card 1 (Priority #1 - CRITICAL) -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-md transition-all hover:bg-surface-container">
+<div class="p-space-lg flex flex-col gap-space-md">
+<!-- Card Header Meta -->
+<div class="flex flex-wrap items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="w-7 h-7 rounded-lg bg-error text-on-error font-headline-sm text-[13px] font-bold flex items-center justify-center">
+                  #1
+                </span>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-code-lg text-code-lg font-semibold text-on-surface">lodash@4.17.20</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-highest text-outline font-label-caps text-label-caps uppercase">Transitive</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase text-error font-semibold">Known Command Injection Vulnerability (CVE-2021-23337)</span>
+</div>
+</div>
+<!-- Badges -->
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps uppercase font-bold">
+                  CRITICAL · CVSS 8.8
+                </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-secondary font-code-sm text-code-sm font-medium">
+                  Risk 86/100
+                </span>
+</div>
+</div>
+<!-- Vulnerability Path Diagram -->
+<div class="bg-surface-container-lowest p-space-sm rounded-lg flex flex-col gap-space-xs">
+<span class="text-outline font-label-caps text-label-caps uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">fork_right</span>
+                Dependency Vector Trace
+              </span>
+<div class="flex flex-wrap items-center gap-1 font-code-sm text-code-sm text-on-surface">
+<span class="text-primary-container font-medium">Acme Store API</span>
+<span class="text-outline">→</span>
+<span>express@4.18.2</span>
+<span class="text-outline">→</span>
+<span>body-parser@1.20.1</span>
+<span class="text-outline">→</span>
+<span class="text-error font-semibold underline decoration-error/50">lodash@4.17.20</span>
+</div>
+</div>
+<!-- AI Plain-English Impact Note -->
+<div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-high/60">
+<span class="material-symbols-outlined text-primary-container text-[18px] mt-0.5">neurology</span>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-primary-container font-bold">AI Threat Context</span>
+<p class="font-body-md text-body-md text-on-surface mt-0.5">
+                  Allows arbitrary JavaScript code execution via unescaped template parsing in HTTP payload handling. Public proof-of-concept exploits active in threat feeds.
+                </p>
+</div>
+</div>
+<!-- Actionable Fix Strip -->
+<div class="pt-space-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Actionable Fix</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold">Upgrade transitive resolution to <code class="font-code-md text-code-md text-primary-container bg-surface-dim px-1 rounded">lodash@4.17.21+</code></span>
+</div>
+<div class="flex items-center gap-space-sm w-full sm:w-auto">
+<div class="flex-1 sm:flex-initial flex items-center bg-surface-container-lowest px-space-sm py-1.5 rounded-lg">
+<code class="font-code-sm text-code-sm text-on-surface select-all mr-2">npm install lodash@4.17.21</code>
+<button class="text-outline hover:text-primary-container transition-colors" onclick="copyToClipboard('npm install lodash@4.17.21', this)" title="Copy Command" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<div class="px-space-sm py-1 bg-primary-container/10 rounded-lg text-primary-container font-code-sm text-code-sm whitespace-nowrap font-semibold">
+                  −24 pts
+                </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2 (Priority #2 - CRITICAL) -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-md transition-all hover:bg-surface-container">
+<div class="p-space-lg flex flex-col gap-space-md">
+<!-- Card Header Meta -->
+<div class="flex flex-wrap items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="w-7 h-7 rounded-lg bg-error text-on-error font-headline-sm text-[13px] font-bold flex items-center justify-center">
+                  #2
+                </span>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-code-lg text-code-lg font-semibold text-on-surface">reqeusts@2.31.0</span>
+<span class="px-1.5 py-0.2 rounded bg-secondary-container text-on-secondary-container font-label-caps text-label-caps uppercase font-bold">Direct Dependency</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase text-error font-semibold">Suspected Malicious Typosquatting Attack</span>
+</div>
+</div>
+<!-- Badges -->
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-error-container text-on-error-container font-label-caps text-label-caps uppercase font-bold">
+                  CRITICAL
+                </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-secondary font-code-sm text-code-sm font-medium">
+                  Risk 74/100
+                </span>
+</div>
+</div>
+<!-- Finding Detail & Vector -->
+<div class="bg-surface-container-lowest p-space-sm rounded-lg flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Direct Path In Manifest</span>
+<span class="text-error font-semibold">Levenshtein similarity: 96%</span>
+</div>
+<div class="font-code-sm text-code-sm text-on-surface flex items-center gap-space-xs">
+<span class="text-on-surface-variant">package.json</span>
+<span>→</span>
+<span class="text-error font-mono font-bold bg-error/10 px-1.5 rounded">dependencies["reqeusts"]</span>
+<span class="text-outline text-[11px]">(Zero verified git provenance, published 3 days ago by anonymous maintainer)</span>
+</div>
+</div>
+<!-- AI Plain-English Impact Note -->
+<div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-high/60">
+<span class="material-symbols-outlined text-primary-container text-[18px] mt-0.5">neurology</span>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-primary-container font-bold">AI Threat Context</span>
+<p class="font-body-md text-body-md text-on-surface mt-0.5">
+                  Potential malicious package masquerading as popular HTTP client; contains obfuscated <code class="font-code-sm text-code-sm bg-surface-dim px-1 rounded text-secondary">postinstall</code> lifecycle script designed to exfiltrate build environment credentials.
+                </p>
+</div>
+</div>
+<!-- Actionable Fix Strip -->
+<div class="pt-space-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Actionable Fix</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold">Purge typosquat immediately &amp; install genuine package</span>
+</div>
+<div class="flex items-center gap-space-sm w-full sm:w-auto">
+<div class="flex-1 sm:flex-initial flex items-center bg-surface-container-lowest px-space-sm py-1.5 rounded-lg">
+<code class="font-code-sm text-code-sm text-on-surface select-all mr-2">npm uninstall reqeusts &amp;&amp; npm install requests</code>
+<button class="text-outline hover:text-primary-container transition-colors" onclick="copyToClipboard('npm uninstall reqeusts &amp;&amp; npm install requests', this)" title="Copy Command" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<div class="px-space-sm py-1 bg-primary-container/10 rounded-lg text-primary-container font-code-sm text-code-sm whitespace-nowrap font-semibold">
+                  −20 pts
+                </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3 (Priority #3 - HIGH) -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-md transition-all hover:bg-surface-container">
+<div class="p-space-lg flex flex-col gap-space-md">
+<!-- Card Header Meta -->
+<div class="flex flex-wrap items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="w-7 h-7 rounded-lg bg-tertiary-container text-on-tertiary font-headline-sm text-[13px] font-bold flex items-center justify-center">
+                  #3
+                </span>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-code-lg text-code-lg font-semibold text-on-surface">old-package@0.9.4</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-highest text-outline font-label-caps text-label-caps uppercase">Transitive</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase text-tertiary font-semibold">Unmaintained / Deprecated Dependency Warning</span>
+</div>
+</div>
+<!-- Badges -->
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-tertiary-container/20 text-tertiary font-label-caps text-label-caps uppercase font-bold">
+                  HIGH SEVERITY
+                </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-secondary font-code-sm text-code-sm font-medium">
+                  Risk 58/100
+                </span>
+</div>
+</div>
+<!-- Finding Path -->
+<div class="bg-surface-container-lowest p-space-sm rounded-lg flex flex-col gap-space-xs">
+<span class="text-outline font-label-caps text-label-caps uppercase">Transitive Call Chain</span>
+<div class="font-code-sm text-code-sm text-on-surface flex items-center gap-space-xs flex-wrap">
+<span class="text-primary-container">Acme Store API</span>
+<span class="text-outline">→</span>
+<span>data-tools@1.1.0</span>
+<span class="text-outline">→</span>
+<span class="text-tertiary font-medium">old-package@0.9.4</span>
+<span class="text-outline text-[11px]">(Last release 6 years ago · Maintainer account inactive)</span>
+</div>
+</div>
+<!-- Actionable Fix Strip -->
+<div class="pt-space-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Actionable Fix</span>
+<span class="font-body-md text-body-md text-on-surface">Replace dependency with active alternative <code class="font-code-md text-code-md text-primary-container bg-surface-dim px-1 rounded">@stdlib/math</code></span>
+</div>
+<div class="flex items-center gap-space-sm w-full sm:w-auto">
+<div class="flex-1 sm:flex-initial flex items-center bg-surface-container-lowest px-space-sm py-1.5 rounded-lg">
+<code class="font-code-sm text-code-sm text-on-surface select-all mr-2">npm i @stdlib/math &amp;&amp; npm rm old-package</code>
+<button class="text-outline hover:text-primary-container transition-colors" onclick="copyToClipboard('npm i @stdlib/math &amp;&amp; npm rm old-package', this)" title="Copy Command" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<div class="px-space-sm py-1 bg-primary-container/10 rounded-lg text-primary-container font-code-sm text-code-sm whitespace-nowrap font-semibold">
+                  −6 pts
+                </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 4 (Priority #4 - HIGH) -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-md transition-all hover:bg-surface-container">
+<div class="p-space-lg flex flex-col gap-space-md">
+<div class="flex flex-wrap items-start justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="w-7 h-7 rounded-lg bg-surface-container-highest text-on-surface font-headline-sm text-[13px] font-bold flex items-center justify-center">
+                  #4
+                </span>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-code-lg text-code-lg font-semibold text-on-surface">package-x@2.1.0</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-highest text-outline font-label-caps text-label-caps uppercase">High Fan-Out</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase text-outline font-semibold">Missing SLSA Cryptographic Provenance Attestation</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-caps text-label-caps uppercase font-bold">
+                  MEDIUM-HIGH
+                </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-secondary font-code-sm text-code-sm font-medium">
+                  Risk 49/100
+                </span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-lg flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Blast Radius Telemetry</span>
+<span class="text-tertiary">14 internal submodules affected</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Package is referenced across order-fulfillment, billing-adapter, and auth modules. Lacks SLSA Level 2+ attestation. Enforce verified vendor signature in build gate.
+              </p>
+</div>
+<!-- Actionable Fix Strip -->
+<div class="pt-space-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-outline">Actionable Fix</span>
+<span class="font-body-md text-body-md text-on-surface">Update lockfile to verified binary release <code class="font-code-md text-code-md text-primary-container bg-surface-dim px-1 rounded">package-x@2.2.0-slsa</code></span>
+</div>
+<div class="flex items-center gap-space-sm w-full sm:w-auto">
+<div class="flex-1 sm:flex-initial flex items-center bg-surface-container-lowest px-space-sm py-1.5 rounded-lg">
+<code class="font-code-sm text-code-sm text-on-surface select-all mr-2">npm update package-x</code>
+<button class="text-outline hover:text-primary-container transition-colors" onclick="copyToClipboard('npm update package-x', this)" title="Copy Command" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<div class="px-space-sm py-1 bg-primary-container/10 rounded-lg text-primary-container font-code-sm text-code-sm whitespace-nowrap font-semibold">
+                  −4 pts
+                </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination & Bulk Execution Callout -->
+<div class="flex flex-col sm:flex-row items-center justify-between p-space-md bg-surface-container-low rounded-xl gap-space-md">
+<span class="font-code-sm text-code-sm text-outline">Showing 4 of 10 prioritized findings</span>
+<div class="flex items-center gap-space-xs">
+<button class="px-space-md py-1.5 bg-surface-container hover:bg-surface-bright text-on-surface rounded-lg font-body-sm text-body-sm transition-colors" type="button">
+              Load Remaining 6 High Vectors
+            </button>
+<button class="px-space-md py-1.5 bg-primary-container text-on-primary font-headline-sm text-[12px] font-semibold rounded-lg hover:bg-primary transition-colors" onclick="triggerGlobalPRSimulation()" type="button">
+              Apply All Top-4 Patches
+            </button>
+</div>
+</div>
+</div>
+<!-- Right Column: Audit Ledger Overview & Live Graph Insight -->
+<div class="xl:col-span-4 flex flex-col gap-space-lg">
+<!-- Graph Micro-Visualizer Bento Card -->
+<div class="bg-surface-container-low p-space-lg rounded-xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">Blast Radius Topology</span>
+<span class="material-symbols-outlined text-primary-container text-[18px]">hub</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Live transitive exposure mapping through <span class="text-on-surface font-medium">express</span> middleware pipeline.
+          </p>
+<!-- SVG Visual Representation of Dependency Tree -->
+<div class="w-full h-48 bg-surface-container-lowest rounded-lg p-2 relative overflow-hidden flex items-center justify-center">
+<svg class="w-full h-full text-outline/30" fill="none" viewbox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+<!-- Grid lines -->
+<path d="M40 80 H 120 M 120 80 L 200 40 M 120 80 L 200 120 M 200 40 L 280 40 M 200 120 L 280 120" stroke="currentColor" stroke-dasharray="3 3" stroke-width="1.5"></path>
+<!-- Root node -->
+<circle class="fill-surface-container-high stroke-primary-container" cx="40" cy="80" r="14" stroke-width="2"></circle>
+<text class="fill-on-surface text-[8px] font-mono font-bold" text-anchor="middle" x="40" y="84">API</text>
+<!-- Hop 1 -->
+<circle class="fill-surface-container-high stroke-on-surface-variant" cx="120" cy="80" r="12" stroke-width="1.5"></circle>
+<text class="fill-on-surface-variant text-[7px] font-mono" text-anchor="middle" x="120" y="83">express</text>
+<!-- Hop 2 (Body parser) -->
+<circle class="fill-surface-container-high stroke-on-surface-variant" cx="200" cy="40" r="12" stroke-width="1.5"></circle>
+<text class="fill-on-surface-variant text-[7px] font-mono" text-anchor="middle" x="200" y="43">parser</text>
+<!-- Hop 2 (Reqeusts typosquat node) -->
+<circle class="fill-error/20 stroke-error" cx="200" cy="120" r="13" stroke-width="2"></circle>
+<text class="fill-error text-[7px] font-mono font-bold" text-anchor="middle" x="200" y="123">reqeust</text>
+<!-- Hop 3 (Vulnerable lodash) -->
+<circle class="fill-error/20 stroke-error" cx="280" cy="40" r="14" stroke-width="2"></circle>
+<text class="fill-error text-[8px] font-mono font-bold" text-anchor="middle" x="280" y="44">lodash</text>
+<!-- Hop 3 (Normal package) -->
+<circle class="fill-surface-container-highest stroke-outline" cx="280" cy="120" r="10" stroke-width="1"></circle>
+<text class="fill-outline text-[6px] font-mono" text-anchor="middle" x="280" y="123">std</text>
+</svg>
+<div class="absolute bottom-2 left-3 font-code-sm text-[10px] text-error flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>
+              2 Critical vectors exposed to external ingestion
+            </div>
+</div>
+<!-- Quick Telemetry List -->
+<div class="flex flex-col gap-space-xs font-code-sm text-code-sm">
+<div class="flex justify-between py-1 border-b border-surface-container-highest/40">
+<span class="text-outline">Total Scanned Artifacts</span>
+<span class="text-on-surface font-medium">842 packages</span>
+</div>
+<div class="flex justify-between py-1 border-b border-surface-container-highest/40">
+<span class="text-outline">Direct Vulnerabilities</span>
+<span class="text-error font-medium">1 Vector (Typosquat)</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-outline">Transitive Deep Path</span>
+<span class="text-tertiary font-medium">3 Hops (Max)</span>
+</div>
+</div>
+</div>
+<!-- Exploitability Feed Snapshot -->
+<div class="bg-surface-container-low p-space-lg rounded-xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">EPSS &amp; Threat Intelligence</span>
+<span class="material-symbols-outlined text-tertiary-container text-[18px]">bolt</span>
+</div>
+<div class="space-y-space-sm">
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-code-sm text-code-sm text-error font-semibold">CVE-2021-23337</span>
+<span class="font-label-caps text-label-caps uppercase bg-error/10 text-error px-1.5 rounded">EPSS: 94.2%</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Actively leveraged in remote code execution chains against public Node.js endpoints.
+              </p>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-code-sm text-code-sm text-secondary font-semibold">MAL-2024-9182</span>
+<span class="font-label-caps text-label-caps uppercase bg-secondary/10 text-secondary px-1.5 rounded">Zero-Day Flag</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Suspicious install lifecycle hook triggered on package load. Threat catalog updated 4h ago.
+              </p>
+</div>
+</div>
+<div class="bg-primary-container/10 p-space-sm rounded-lg flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[20px]">shield_locked</span>
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm font-semibold text-primary-container">Runtime Guard Policy Active</span>
+<span class="text-[11px] text-outline">Acme runtime firewall is currently dropping untrusted outbound payloads.</span>
+</div>
+</div>
+</div>
+<!-- Evidence Verification Badge -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[22px]">fingerprint</span>
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm text-on-surface font-semibold">SBOM Checksum</span>
+<span class="font-code-sm text-[10px] text-outline truncate max-w-[160px]">sha256:d89e41fc...4018</span>
+</div>
+</div>
+<button class="text-outline hover:text-primary-container p-1 rounded transition-colors" onclick="copyToClipboard('d89e41fc89aa32049e295484809bc12', this)" type="button">
+<span class="material-symbols-outlined text-[18px]">copy_all</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Remediation Simulator (Before vs After Delta) -->
+<div class="mt-space-2xl bg-surface-container-low rounded-xl p-space-xl relative overflow-hidden shadow-xl">
+<div class="flex flex-col gap-space-xl">
+<!-- Section Header -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm border-b border-surface-container-highest pb-space-lg">
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary-container text-[20px]">tune</span>
+<span class="font-label-caps text-label-caps uppercase text-primary-container font-semibold tracking-wider">Predictive Security Modeling</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface mt-1">
+              Remediation Simulator: Before vs After Delta
+            </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Simulated security posture change after merging recommended automated supply chain patches.
+            </p>
+</div>
+<!-- Primary Simulation Action Button -->
+<button class="flex items-center gap-space-xs px-space-xl py-space-md bg-primary-container hover:bg-primary text-on-primary rounded-lg font-headline-sm text-headline-sm transition-all transform active:scale-95 shadow-md font-semibold" id="remediationPRBtn" onclick="triggerGlobalPRSimulation()" type="button">
+<span class="material-symbols-outlined text-[20px]">merge</span>
+<span>Create Remediation PR on GitHub</span>
+</button>
+</div>
+<!-- Visual Two-Column Comparison Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-xl">
+<!-- BEFORE COLUMN -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl flex flex-col gap-space-md relative border-l-2 border-error">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded-full bg-error"></span>
+<span class="font-headline-sm text-headline-sm text-on-surface">CURRENT AUDIT STATE</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase px-2 py-0.5 rounded bg-error-container text-on-error-container font-bold">Unshielded</span>
+</div>
+<!-- Metric readout -->
+<div class="flex items-baseline gap-space-sm py-space-xs">
+<span class="font-display-lg text-[42px] leading-tight font-display-lg text-error">78</span>
+<span class="font-code-md text-code-md text-outline">/100 Composite Vulnerability Score</span>
+</div>
+<!-- Spec Breakdown -->
+<div class="flex flex-col gap-space-xs font-code-sm text-code-sm">
+<div class="flex justify-between py-1.5 border-b border-surface-container-highest/30">
+<span class="text-outline">Critical Severity Findings</span>
+<span class="text-error font-bold">3 Active Vectors</span>
+</div>
+<div class="flex justify-between py-1.5 border-b border-surface-container-highest/30">
+<span class="text-outline">High Severity Findings</span>
+<span class="text-tertiary font-bold">7 Active Vectors</span>
+</div>
+<div class="flex justify-between py-1.5 border-b border-surface-container-highest/30">
+<span class="text-outline">Supply Chain Integrity Level</span>
+<span class="text-secondary">SLSA Level 0 (Incomplete)</span>
+</div>
+<div class="flex justify-between py-1.5">
+<span class="text-outline">Overall Threat Exposure</span>
+<span class="text-error uppercase font-bold">CRITICAL EXPOSURE</span>
+</div>
+</div>
+<!-- Micro Bar Visualization -->
+<div class="mt-space-xs flex flex-col gap-1">
+<div class="flex justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Vulnerability Density</span>
+<span>78%</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-error rounded-full" style="width: 78%;"></div>
+</div>
+</div>
+</div>
+<!-- AFTER COLUMN -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl flex flex-col gap-space-md relative border-l-2 border-primary-container">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-headline-sm text-headline-sm text-on-surface">PROJECTED POST-PATCH STATE</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase px-2 py-0.5 rounded bg-primary-container/20 text-primary-container font-bold">Clean Pass</span>
+</div>
+<!-- Metric readout -->
+<div class="flex items-baseline gap-space-sm py-space-xs">
+<span class="font-display-lg text-[42px] leading-tight font-display-lg text-primary-container">24</span>
+<span class="font-code-md text-code-md text-outline">/100 Composite Vulnerability Score (-54 pts)</span>
+</div>
+<!-- Spec Breakdown -->
+<div class="flex flex-col gap-space-xs font-code-sm text-code-sm">
+<div class="flex justify-between py-1.5 border-b border-surface-container-highest/30">
+<span class="text-outline">Critical Severity Findings</span>
+<span class="text-primary-container font-bold">0 Active (100% Resolved)</span>
+</div>
+<div class="flex justify-between py-1.5 border-b border-surface-container-highest/30">
+<span class="text-outline">High Severity Findings</span>
+<span class="text-on-surface font-medium">1 Remainder (Low Risk / Non-prod)</span>
+</div>
+<div class="flex justify-between py-1.5 border-b border-surface-container-highest/30">
+<span class="text-outline">Supply Chain Integrity Level</span>
+<span class="text-primary-container">SLSA Level 3 Certified</span>
+</div>
+<div class="flex justify-between py-1.5">
+<span class="text-outline">Overall Threat Exposure</span>
+<span class="text-primary-container uppercase font-bold">MINIMAL EXPOSURE</span>
+</div>
+</div>
+<!-- Micro Bar Visualization -->
+<div class="mt-space-xs flex flex-col gap-1">
+<div class="flex justify-between text-outline font-label-caps text-label-caps uppercase">
+<span>Vulnerability Density</span>
+<span>24%</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary-container rounded-full transition-all duration-1000" style="width: 24%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pull Request Terminal Output Preview (Toggles on interaction) -->
+<div class="hidden bg-surface-dim p-space-md rounded-lg font-code-sm text-code-sm flex flex-col gap-space-xs text-on-surface" id="prTerminalPreview">
+<div class="flex items-center justify-between text-outline border-b border-surface-container-highest/50 pb-2">
+<span class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-error inline-block"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary inline-block"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container inline-block"></span>
+<span class="ml-2 font-mono">supplyguard-bot — git commit preview</span>
+</span>
+<span class="text-primary-container font-bold">PR #104 Prepared</span>
+</div>
+<pre class="overflow-x-auto text-on-surface py-2 leading-relaxed"><span class="text-outline"># Target:</span> acme-corp/acme-store-api:main ← fix/supplyguard-remediation-v4
+<span class="text-outline"># Commits included:</span>
+  - fix(security): upgrade lodash from 4.17.20 to 4.17.21 (resolves CVE-2021-23337)
+  - fix(malware): remove typosquatted package reqeusts@2.31.0 and link requests
+  - refactor(deps): replace deprecated old-package@0.9.4 with @stdlib/math
+  - chore(sbom): regenerate spdx.json with signed SHA-256 build attestation
+<span class="text-primary-container">✓ CI Pre-Flight Checks: All 412 unit &amp; integration tests passed in ephemeral runner.</span></pre>
+<div class="flex items-center justify-end gap-space-sm pt-2">
+<a class="px-space-md py-1 bg-primary-container hover:bg-primary text-on-primary rounded font-headline-sm text-[12px] font-semibold transition-colors" href="https://github.com" target="_blank">
+              Open Pull Request on GitHub →
+            </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Micro Notification Toast Container -->
+<div class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none" id="toastContainer"></div>
+<!-- Interactive Scripts -->
+<script>
+    // Copy to clipboard helper
+    function copyToClipboard(text, btnElement) {
+      navigator.clipboard.writeText(text).then(() => {
+        const icon = btnElement.querySelector('.material-symbols-outlined');
+        if (icon) {
+          const originalText = icon.innerText;
+          icon.innerText = 'check';
+          icon.classList.add('text-primary-container');
+          setTimeout(() => {
+            icon.innerText = originalText;
+            icon.classList.remove('text-primary-container');
+          }, 2000);
+        }
+        showToast('Command copied to clipboard: ' + text);
+      }).catch(() => {
+        showToast('Error copying to clipboard');
+      });
+    }
+
+    // Interactive PR Simulator generator
+    function triggerGlobalPRSimulation() {
+      const terminal = document.getElementById('prTerminalPreview');
+      const btn = document.getElementById('remediationPRBtn');
+      if (terminal) {
+        terminal.classList.toggle('hidden');
+        if (!terminal.classList.contains('hidden')) {
+          terminal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          showToast('Automated Remediation Branch Prepared (#104)');
+        }
+      }
+    }
+
+    // Toast generator
+    function showToast(message) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = 'pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-lg bg-surface-container-highest text-on-surface shadow-xl border border-surface-variant font-code-sm text-code-sm transform transition-all duration-300 opacity-0 translate-y-2';
+      toast.innerHTML = '<span class="material-symbols-outlined text-[16px] text-primary-container">info</span><span>' + message + '</span>';
+
+      container.appendChild(toast);
+
+      // Animation in
+      requestAnimationFrame(() => {
+        toast.classList.remove('opacity-0', 'translate-y-2');
+      });
+
+      // Auto dismiss
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // Dropdown toggle logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const exportBtn = document.getElementById('exportDropdownBtn');
+      const exportMenu = document.getElementById('exportMenu');
+
+      if (exportBtn && exportMenu) {
+        exportBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          exportMenu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', () => {
+          exportMenu.classList.add('hidden');
+        });
+      }
+    });
+  </script>
+</div></main></div></body></html>
