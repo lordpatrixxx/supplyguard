@@ -17,6 +17,7 @@ export const SignUpPage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [verificationPending, setVerificationPending] = useState(false);
+  const [isAlreadyRegistered, setIsAlreadyRegistered] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendStatus, setResendStatus] = useState<string | null>(null);
 
@@ -97,14 +98,20 @@ export const SignUpPage: React.FC = () => {
         (res.error as any).code === 'over_email_send_rate_limit' ||
         (res.error as any).status === 429;
 
-      if (isLimit) {
+      if (res.alreadyRegistered || /already.*exists|already.*registered/i.test(msg)) {
+        setIsAlreadyRegistered(true);
+        setErrorMsg(null);
+      } else if (isLimit) {
         setIsRateLimited(true);
         setErrorMsg('Email delivery rate limit exceeded.');
-      } else if (msg.toLowerCase().includes('already registered')) {
-        setErrorMsg('An account with this email address already exists. Please Sign In.');
       } else {
         setErrorMsg(msg || 'Registration failed. Please verify your credentials and try again.');
       }
+      return;
+    }
+
+    if (res.alreadyRegistered) {
+      setIsAlreadyRegistered(true);
       return;
     }
 
@@ -316,6 +323,32 @@ export const SignUpPage: React.FC = () => {
                 <p className="text-on-surface-variant text-sm mb-6">
                   Enroll your credentials to begin scanning repositories with SupplyGuard.
                 </p>
+
+                {isAlreadyRegistered && (
+                  <div className="mb-6 p-4 bg-primary/10 border border-primary/40 rounded-xl text-xs space-y-2">
+                    <div className="flex items-center gap-2 font-semibold text-primary">
+                      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" />
+                      </svg>
+                      <span>Account Already Registered & Verified</span>
+                    </div>
+                    <p className="text-on-surface-variant leading-relaxed">
+                      An account with <strong className="text-on-surface">{email}</strong> is already registered and confirmed in SupplyGuard. You can sign in immediately with your password.
+                    </p>
+                    <div className="pt-2 flex items-center gap-3">
+                      <Link
+                        to="/signin"
+                        state={{ returnTo: '/app' }}
+                        className="px-4 py-2 bg-primary hover:bg-primary-container text-on-primary rounded font-semibold text-xs inline-flex items-center gap-1.5 no-underline transition-all"
+                      >
+                        <span>Sign In with Existing Password</span>
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                    </div>
+                  </div>
+                )}
 
                 {isRateLimited && (
                   <div className="mb-6 p-4 bg-warning/10 border border-warning/40 rounded-xl text-xs space-y-2">

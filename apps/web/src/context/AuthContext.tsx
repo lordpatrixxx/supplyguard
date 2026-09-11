@@ -6,6 +6,7 @@ export interface SignUpResult {
   user: User | null;
   session: Session | null;
   needsEmailConfirmation: boolean;
+  alreadyRegistered?: boolean;
   error: Error | null;
 }
 
@@ -21,6 +22,17 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const getAppUrl = (): string => {
+  const envUrl = import.meta.env.VITE_APP_URL;
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim().length > 0) {
+    return envUrl.trim().replace(/\/+$/, '');
+  }
+  if (typeof window !== 'undefined' && window.location.origin) {
+    return window.location.origin;
+  }
+  return 'https://supplyguard-rho.vercel.app';
+};
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -62,12 +74,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, fullName: string): Promise<SignUpResult> => {
     setLoading(true);
+    const callbackUrl = `${getAppUrl()}/auth/callback`;
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
       options: {
         data: { full_name: fullName.trim() },
-        emailRedirectTo: `${window.location.origin}/signin`,
+        emailRedirectTo: callbackUrl,
       },
     });
 
@@ -89,7 +102,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user: data.user,
         session: data.session,
         needsEmailConfirmation: false,
+        alreadyRegistered: false,
         error: null,
+      };
+    }
+
+    // Check if user already exists (Supabase returns empty identities array for existing users)
+    if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      setLoading(false);
+      return {
+        user: data.user,
+        session: null,
+        needsEmailConfirmation: false,
+        alreadyRegistered: true,
+        error: new Error('An account with this email address already exists. Please sign in with your password.'),
       };
     }
 
@@ -99,16 +125,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user: data.user,
       session: null,
       needsEmailConfirmation: true,
+      alreadyRegistered: false,
       error: null,
     };
   };
 
   const resendVerificationEmail = async (email: string): Promise<{ error: Error | null }> => {
+    const callbackUrl = `${getAppUrl()}/auth/callback`;
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email: email.trim(),
       options: {
-        emailRedirectTo: `${window.location.origin}/signin`,
+        emailRedirectTo: callbackUrl,
       },
     });
     return { error: error as Error | null };
@@ -123,8 +151,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const resetPassword = async (email: string) => {
+    const callbackUrl = `${getAppUrl()}/auth/callback`;
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/signin`,
+      redirectTo: callbackUrl,
     });
     return { error: error as Error | null };
   };
