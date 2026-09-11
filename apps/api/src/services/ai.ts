@@ -64,6 +64,14 @@ export async function generateRemediation(
       if (parsed.fix_command.includes('--force')) {
         parsed.fix_command = parsed.fix_command.replace(/--force/g, '').trim();
       }
+      // If AI recommends direct npm install for a deeply nested transitive dependency, convert to safe update/override
+      if (!pkg.isDirect && parsed.fix_command.startsWith(`npm install ${pkg.name}@`)) {
+        const fixedVer = pkg.vulnerabilities[0]?.fixedIn;
+        parsed.fix_command = `npm update ${pkg.name} --depth 999`;
+        if (fixedVer) {
+          parsed.fix += ` Alternatively, pin the nested version by adding "${pkg.name}": "^${fixedVer}" to "overrides" in package.json.`;
+        }
+      }
       return parsed;
     }
 
@@ -99,8 +107,11 @@ ${vulnSummaries || 'None reported'}
 
 Rules:
 1. Explain why this package was flagged using safe, objective wording (e.g. "This package was flagged because its installed version matches a known vulnerable range" rather than declarative statements of malice).
-2. Recommend a safe, precise upgrade command (e.g., "npm install ${pkg.name}@<fixedVersion>") or manual review. NEVER recommend "npm audit fix --force".
-3. Return a JSON object with:
+2. For direct dependencies with fixed versions, recommend "npm install ${pkg.name}@<fixedVersion>".
+3. For transitive dependencies, recommend updating the root parent dependency or using "npm update ${pkg.name} --depth 999" and npm package.json "overrides". NEVER recommend "npm install" into root for transitive packages.
+4. For heuristic typosquats, recommend inspecting package provenance using "npm view" rather than an automatic uninstall command.
+5. NEVER recommend "npm audit fix --force".
+6. Return a JSON object with:
    - "why_risky": 1-2 sentence plain-language factual explanation.
    - "fix": 1-2 sentence actionable developer guidance.
    - "fix_command": The exact, non-destructive CLI command.`;
@@ -117,9 +128,9 @@ function generateTemplateFallback(pkg: PackageNode): Remediation {
   let fix_command: string;
 
   if (pkg.typosquatFlag) {
-    why_risky = `The package name "${pkg.name}" is ${pkg.typosquatFlag.similarity}% similar to the popular package "${pkg.typosquatFlag.similarTo}" (edit distance: ${pkg.typosquatFlag.distance}). This pattern indicates a potential typosquatting risk.`;
-    fix = `Verify whether this is the intended package. If not, replace it with the verified upstream package "${pkg.typosquatFlag.similarTo}".`;
-    fix_command = `npm uninstall ${pkg.name} && npm install ${pkg.typosquatFlag.similarTo}`;
+    why_risky = `Package "${pkg.name}" matches a heuristic typosquatting indicator (${pkg.typosquatFlag.similarity}% similar to "${pkg.typosquatFlag.similarTo}", edit distance: ${pkg.typosquatFlag.distance}).`;
+    fix = `Inspect your codebase imports to verify whether "${pkg.name}" is the intended dependency or if "${pkg.typosquatFlag.similarTo}" was intended.`;
+    fix_command = `npm view ${pkg.name} && npm view ${pkg.typosquatFlag.similarTo}`;
   } else if (pkg.confusionFlag) {
     why_risky = `This package was flagged for potential dependency-confusion risk: ${pkg.confusionFlag.reason}`;
     fix = `Ensure internal package scopes are mapped to your private registry in your project's .npmrc file to prevent public namespace substitution.`;
@@ -127,8 +138,14 @@ function generateTemplateFallback(pkg: PackageNode): Remediation {
   } else if (topVuln) {
     why_risky = `${pkg.name}@${pkg.version} was flagged because its installed version contains known vulnerability ${topVuln.id} (${topVuln.severity}, CVSS ${topVuln.cvss}/10): ${topVuln.summary}`;
     if (topVuln.fixedIn) {
-      fix = `Upgrade to version ${topVuln.fixedIn} or later, which resolves ${topVuln.id}.`;
-      fix_command = `npm install ${pkg.name}@${topVuln.fixedIn}`;
+      if (pkg.isDirect) {
+        fix = `Upgrade to version ${topVuln.fixedIn} or later, which resolves ${topVuln.id}.`;
+        fix_command = `npm install ${pkg.name}@${topVuln.fixedIn}`;
+      } else {
+        const rootParent = pkg.path[0] || 'root package';
+        fix = `Upgrade parent package "${rootParent}" to pull in a safe version, or pin "${pkg.name}": "^${topVuln.fixedIn}" under "overrides" in package.json to resolve ${topVuln.id}.`;
+        fix_command = `npm update ${pkg.name} --depth 999`;
+      }
     } else {
       fix = `No direct patch version is currently published for ${topVuln.id}. Review upstream advisories or evaluate alternative packages.`;
       fix_command = `npm outdated ${pkg.name}`;

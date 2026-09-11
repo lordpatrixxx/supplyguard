@@ -1,10 +1,12 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { extractPackageNameFromPath, createUniqueNodeId, parseLockfile } from '../services/dependencyTree.js';
+import { extractPackageNameFromPath, createUniqueNodeId, parseLockfile, parsePackageJsonDirect } from '../services/dependencyTree.js';
 import { checkTyposquat } from '../services/typosquat.js';
 import { checkDependencyConfusion } from '../services/dependencyConfusion.js';
 import { scorePackage } from '../services/scoring.js';
 import { generateCycloneDXSBOM } from '../services/sbom.js';
+import { parseCvssVector } from '../services/osv.js';
+import { simulateRemediation } from '../services/simulation.js';
 import type { Vulnerability, ReputationData, ProvenanceSignals, ScanResult } from '../types/index.js';
 
 describe('Dependency Tree & Identity', () => {
@@ -64,6 +66,26 @@ describe('Dependency Tree & Identity', () => {
     assert.ok(versions.has('4.17.20'));
     assert.ok(versions.has('4.17.21'));
   });
+
+  it('provides direct dependency fallback parsing when lockfile is absent', () => {
+    const packageJson = {
+      name: 'direct-fallback-test',
+      dependencies: {
+        'axios': '^1.6.0',
+        'dotenv': '~16.3.1',
+      },
+      devDependencies: {
+        'typescript': '^5.3.0',
+      },
+    };
+
+    const { packages, edges } = parsePackageJsonDirect(packageJson);
+    assert.equal(packages.length, 3, 'Should parse all 3 direct dependencies');
+    assert.ok(packages.every((p) => p.isDirect && p.depth === 1), 'All nodes should be marked direct depth 1');
+    assert.ok(packages.some((p) => p.name === 'axios' && p.version === '1.6.0'));
+    assert.ok(packages.some((p) => p.name === 'dotenv' && p.version === '16.3.1'));
+    assert.ok(packages.some((p) => p.name === 'typescript' && p.version === '5.3.0'));
+  });
 });
 
 describe('Typosquatting Detection', () => {
@@ -79,10 +101,34 @@ describe('Typosquatting Detection', () => {
     assert.equal(flagAxios?.similarTo, 'axios');
   });
 
-  it('does not flag legitimate popular packages', () => {
+  it('does not flag legitimate popular or short core packages', () => {
     assert.equal(checkTyposquat('react'), null);
     assert.equal(checkTyposquat('express'), null);
     assert.equal(checkTyposquat('lodash'), null);
+    // Core ecosystem packages that were previously false positives:
+    assert.equal(checkTyposquat('qs'), null);
+    assert.equal(checkTyposquat('send'), null);
+    assert.equal(checkTyposquat('etag'), null);
+    assert.equal(checkTyposquat('ip'), null);
+    assert.equal(checkTyposquat('depd'), null);
+    assert.equal(checkTyposquat('vary'), null);
+    assert.equal(checkTyposquat('mime-types'), null);
+  });
+});
+
+describe('CVSS v3.1 Vector Parsing', () => {
+  it('calculates the exact base score conforming to the FIRST CVSS v3.1 specification', () => {
+    // Critical network exploit: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H -> 9.8
+    const scoreCritical = parseCvssVector('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H');
+    assert.equal(scoreCritical, 9.8);
+
+    // High network exploit with low privilege: CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H -> 8.8
+    const scoreHigh = parseCvssVector('CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H');
+    assert.equal(scoreHigh, 8.8);
+
+    // Non-vector fallback
+    const scoreFallback = parseCvssVector('invalid-string');
+    assert.equal(scoreFallback, 0.0);
   });
 });
 
@@ -287,77 +333,138 @@ describe('CycloneDX 1.5 JSON SBOM Export', () => {
     assert.equal(sbom.components?.length, 1);
     assert.equal(sbom.components?.[0].name, 'lodash');
     assert.equal(sbom.components?.[0].purl, 'pkg:npm/lodash@4.17.20');
+    assert.equal(sbom.components?.[0]['bom-ref'], 'lodash@4.17.20#node_modules/lodash', 'Component must have valid bom-ref');
     assert.equal(sbom.vulnerabilities?.length, 1);
     assert.equal(sbom.vulnerabilities?.[0].id, 'GHSA-35jh-r3h4-6jhm');
     assert.equal(sbom.dependencies?.length, 1);
   });
+});
 
-  describe('Server-Side Authorization & Tenant Isolation', () => {
-    it('blocks unauthenticated requests missing Bearer token', async () => {
-      const { requireAuth } = await import('../middleware/auth.js');
-      let status = 0;
-      let responseBody: any = null;
-
-      const req: any = { headers: {} };
-      const res: any = {
-        status: (s: number) => {
-          status = s;
-          return {
-            json: (b: any) => {
-              responseBody = b;
-            },
-          };
+describe('Evidence-Based Remediation Simulation', () => {
+  it('mathematically simulates vulnerability resolution when patched version is available', () => {
+    const vulnerablePkg = {
+      id: 'lodash@4.17.20#node_modules/lodash',
+      name: 'lodash',
+      version: '4.17.20',
+      isDirect: true,
+      path: ['lodash'],
+      depth: 1,
+      dependentCount: 0,
+      downstreamDependents: [],
+      riskScore: 86,
+      advisorySeverity: 'HIGH' as const,
+      riskTier: 'critical' as const,
+      riskBreakdown: {
+        knownVulnerability: 40,
+        severityContribution: 17,
+        outdatedVersion: 10,
+        transitiveExposure: 0,
+        downstreamImpact: 0,
+        typosquatConfusion: 0,
+        totalScore: 86,
+      },
+      vulnerabilities: [
+        {
+          id: 'GHSA-35jh-r3h4-6jhm',
+          source: 'GHSA' as const,
+          summary: 'Command injection',
+          cvss: 8.5,
+          severity: 'HIGH' as const,
+          fixedIn: '4.17.21',
         },
-      };
-      let nextCalled = false;
-      const next = () => {
-        nextCalled = true;
-      };
+      ],
+      reputation: {
+        lastPublished: '2020-01-01',
+        maintainerCount: 2,
+        weeklyDownloads: 40000000,
+        signals: [],
+      },
+      provenance: {
+        sourceRepo: 'Available' as const,
+        sourceRepoUrl: 'https://github.com/lodash/lodash',
+        registryMetadata: 'Available' as const,
+        lockfileIntegrity: 'Present' as const,
+        buildAttestation: 'Not available' as const,
+      },
+    };
 
-      await requireAuth(req, res, next);
-      assert.equal(status, 401);
-      assert.ok(responseBody?.error?.includes('Unauthorized'));
-      assert.equal(nextCalled, false);
-    });
+    const simulation = simulateRemediation([vulnerablePkg]);
+    assert.equal(simulation.simulatedPackages.length, 1);
+    assert.equal(simulation.resolvedVulnCount, 1, 'Should resolve 1 vulnerability');
 
-    it('authenticates valid tokens and derives req.user server-side', async () => {
-      process.env.NODE_ENV = 'test';
-      const { requireAuth } = await import('../middleware/auth.js');
-      const req: any = {
-        headers: { authorization: 'Bearer test-token-secops-user-42' },
-      };
-      const res: any = {
-        status: () => res,
-        json: () => {},
-      };
-      let nextCalled = false;
-      const next = () => {
-        nextCalled = true;
-      };
+    const simulated = simulation.simulatedPackages[0];
+    assert.equal(simulated.isRemediated, true);
+    assert.ok(simulated.ptsReduced > 0, 'Risk score should decrease');
+    assert.ok(simulated.projectedRiskScore < simulated.riskScore, 'Projected risk score should be lower than original');
+    assert.ok(simulation.projectedOverallScore < simulation.currentOverallScore, 'Overall repository risk should drop');
+  });
+});
 
-      await requireAuth(req, res, next);
-      assert.equal(nextCalled, true);
-      assert.equal(req.user?.id, 'secops-user-42');
-      assert.equal(req.user?.email, 'secops-user-42@supplyguard.internal');
-    });
+describe('Server-Side Authorization & Tenant Isolation', () => {
+  it('blocks unauthenticated requests missing Bearer token', async () => {
+    const { requireAuth } = await import('../middleware/auth.js');
+    let status = 0;
+    let responseBody: any = null;
 
-    it('enforces tenant isolation preventing cross-user scan retrieval', () => {
-      const userAScan: ScanResult = {
-        scanId: 'scan-user-a',
-        userId: 'user-a',
-        repoUrl: 'https://github.com/org/repo-a',
-        status: 'complete',
-        overallRiskScore: 45,
-        packages: [],
-        edges: [],
-        createdAt: new Date().toISOString(),
-      };
+    const req: any = { headers: {} };
+    const res: any = {
+      status: (s: number) => {
+        status = s;
+        return {
+          json: (b: any) => {
+            responseBody = b;
+          },
+        };
+      },
+    };
+    let nextCalled = false;
+    const next = () => {
+      nextCalled = true;
+    };
 
-      const callerUserId = 'user-b';
-      // Verification logic identical to GET /api/scans/:id route
-      const isAuthorized = userAScan.userId === callerUserId;
-      assert.equal(isAuthorized, false, 'User B must not be authorized to view User A scan');
-    });
+    await requireAuth(req, res, next);
+    assert.equal(status, 401);
+    assert.ok(responseBody?.error?.includes('Unauthorized'));
+    assert.equal(nextCalled, false);
+  });
+
+  it('authenticates valid tokens and derives req.user server-side', async () => {
+    process.env.NODE_ENV = 'test';
+    const { requireAuth } = await import('../middleware/auth.js');
+    const req: any = {
+      headers: { authorization: 'Bearer test-token-secops-user-42' },
+    };
+    const res: any = {
+      status: () => res,
+      json: () => {},
+    };
+    let nextCalled = false;
+    const next = () => {
+      nextCalled = true;
+    };
+
+    await requireAuth(req, res, next);
+    assert.equal(nextCalled, true);
+    assert.equal(req.user?.id, 'secops-user-42');
+    assert.equal(req.user?.email, 'secops-user-42@supplyguard.internal');
+  });
+
+  it('enforces tenant isolation preventing cross-user scan retrieval', () => {
+    const userAScan: ScanResult = {
+      scanId: 'scan-user-a',
+      userId: 'user-a',
+      repoUrl: 'https://github.com/org/repo-a',
+      status: 'complete',
+      overallRiskScore: 45,
+      packages: [],
+      edges: [],
+      createdAt: new Date().toISOString(),
+    };
+
+    const callerUserId = 'user-b';
+    // Verification logic identical to GET /api/scans/:id route
+    const isAuthorized = userAScan.userId === callerUserId;
+    assert.equal(isAuthorized, false, 'User B must not be authorized to view User A scan');
   });
 });
 

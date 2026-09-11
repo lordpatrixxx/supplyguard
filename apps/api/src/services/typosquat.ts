@@ -34,6 +34,9 @@ try {
   popularNames = ['lodash', 'react', 'express', 'axios', 'chalk', 'request', 'requests', 'commander', 'moment', 'debug'];
 }
 
+// Build a fast lowercase Set of popular names for O(1) membership check
+const popularNamesSet = new Set(popularNames.map((p) => p.toLowerCase()));
+
 /**
  * Computes Levenshtein distance between two strings.
  */
@@ -72,44 +75,78 @@ function normalizePkgForComparison(name: string): string {
 
 /**
  * Detects potential typosquat packages by comparing package names
- * against popular npm packages using Levenshtein distance <= 2.
- * Only flags names that are NOT an exact match.
+ * against popular npm packages using calibrated Levenshtein distance.
+ * 
+ * Rules to eliminate false positives on legitimate packages:
+ * 1. Exact match against top package index is immediately skipped.
+ * 2. Words < 4 characters are NEVER flagged on distance 1 (e.g. 'qs' vs 'ws').
+ * 3. Words < 6 characters are NEVER flagged on distance 2 (e.g. 'send' vs 'bent').
+ * 4. Similarity score must be >= 70% to trigger a flag.
+ * 5. High-volume packages (> 20,000 downloads) are bypassed if download data is supplied.
  */
 export function detectTyposquats(
-  depNames: string[]
+  depNames: string[],
+  weeklyDownloadsMap?: Map<string, number>
 ): Map<string, TyposquatFlag> {
   const results = new Map<string, TyposquatFlag>();
 
   for (const depName of depNames) {
     const compareName = normalizePkgForComparison(depName).toLowerCase();
 
-    // Skip if exact match with a popular package
-    if (popularNames.some((p) => p.toLowerCase() === compareName)) continue;
+    // 1. Skip if exact match with any popular package
+    if (popularNamesSet.has(compareName)) continue;
+
+    // 2. Skip if package has verified high weekly adoption (> 20,000 downloads/week)
+    if (weeklyDownloadsMap && (weeklyDownloadsMap.get(depName) || 0) > 20000) {
+      continue;
+    }
+
+    // 3. Length floor: packages shorter than 4 characters cannot be typosquats via edit distance
+    if (compareName.length < 4) continue;
 
     let bestMatch: { name: string; distance: number; similarity: number } | null = null;
 
     for (const popular of popularNames) {
       const popLower = popular.toLowerCase();
-      // Quick length check
-      if (Math.abs(compareName.length - popLower.length) > 2) continue;
+      
+      // Quick length difference check
+      const lenDiff = Math.abs(compareName.length - popLower.length);
+      if (lenDiff > 2) continue;
+
+      // Edit distance 2 requires length of at least 6 characters
+      if (compareName.length < 6 && lenDiff > 1) continue;
 
       const distance = levenshtein(compareName, popLower);
 
-      if (distance > 0 && distance <= 2) {
+      // Distance gating:
+      // - distance 1 requires length >= 4 and similarity >= 70%
+      // - distance 2 requires length >= 5 and similarity >= 60% (catches transpositions like axois vs axios)
+      if (distance === 1 && compareName.length >= 4) {
         const maxLen = Math.max(compareName.length, popLower.length);
         const similarity = Math.round((1 - distance / maxLen) * 100);
 
-        if (!bestMatch || distance < bestMatch.distance) {
+        if (similarity >= 70 && (!bestMatch || distance < bestMatch.distance)) {
+          bestMatch = { name: popular, distance, similarity };
+        }
+      } else if (distance === 2 && compareName.length >= 5) {
+        const maxLen = Math.max(compareName.length, popLower.length);
+        const similarity = Math.round((1 - distance / maxLen) * 100);
+
+        if (similarity >= 60 && (!bestMatch || distance < bestMatch.distance)) {
           bestMatch = { name: popular, distance, similarity };
         }
       }
     }
 
     if (bestMatch) {
+      const confidence: 'high' | 'medium' | 'low' =
+        bestMatch.similarity >= 85 ? 'high' : 'medium';
+
       results.set(depName, {
         similarTo: bestMatch.name,
         distance: bestMatch.distance,
         similarity: bestMatch.similarity,
+        confidence,
         indicator: 'Possible typosquatting indicator',
         reason: `Package "${depName}" is ${bestMatch.similarity}% similar to popular package "${bestMatch.name}" (Levenshtein distance: ${bestMatch.distance}). Verify this is the intended upstream package.`,
       });
@@ -122,6 +159,7 @@ export function detectTyposquats(
 /**
  * Checks a single package name for typosquatting against top packages.
  */
-export function checkTyposquat(depName: string): TyposquatFlag | null {
-  return detectTyposquats([depName]).get(depName) || null;
+export function checkTyposquat(depName: string, weeklyDownloads?: number): TyposquatFlag | null {
+  const map = weeklyDownloads !== undefined ? new Map([[depName, weeklyDownloads]]) : undefined;
+  return detectTyposquats([depName], map).get(depName) || null;
 }

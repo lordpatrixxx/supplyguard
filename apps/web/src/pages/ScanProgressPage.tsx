@@ -83,17 +83,16 @@ export function ScanProgressPage() {
     return 45
   }, [scan?.status, activeStageIndex])
 
-  const totalPackages = scan?.packages?.length || 143
-  const analyzedCount = Math.min(
-    totalPackages,
-    Math.max(12, Math.round((progressPercent / 100) * totalPackages))
-  )
+  const totalPackages = scan?.packages?.length || 0
+  const analyzedCount = totalPackages > 0
+    ? Math.min(totalPackages, Math.max(1, Math.round((progressPercent / 100) * totalPackages)))
+    : null
 
   const copyLogs = () => {
     const logText = [
       `[INFO] Target: ${scan?.repoUrl}`,
       `[INFO] Status: ${scan?.statusMessage || scan?.status}`,
-      `[INFO] Analyzed: ${analyzedCount}/${totalPackages} packages`,
+      `[INFO] Analyzed: ${totalPackages > 0 ? `${analyzedCount}/${totalPackages} packages` : 'Resolving packages...'}`,
       scan?.status === 'failed' ? `[HALT] ${scan.statusMessage}` : `[INFO] Pipeline in-flight`,
     ].join('\n')
     navigator.clipboard.writeText(logText)
@@ -598,7 +597,13 @@ export function ScanProgressPage() {
                   <span className="font-body-md text-xs text-on-surface-variant">completed</span>
                 </div>
                 <div className="font-code-sm text-xs text-primary font-semibold">
-                  {analyzedCount} <span className="text-outline font-normal">/ {totalPackages} packages evaluated</span>
+                  {analyzedCount !== null ? (
+                    <>
+                      {analyzedCount} <span className="text-outline font-normal">/ {totalPackages} packages evaluated</span>
+                    </>
+                  ) : (
+                    <span className="text-outline font-normal">Resolving package graph...</span>
+                  )}
                 </div>
               </div>
 
@@ -632,7 +637,7 @@ export function ScanProgressPage() {
                 <PipelineStep
                   stepNum={2}
                   title="Constructing transitive dependency graph"
-                  detail={`${totalPackages} total nodes resolved across sub-tree`}
+                  detail={totalPackages > 0 ? `${totalPackages} total nodes resolved across sub-tree` : 'Resolving nodes across sub-tree'}
                   duration="0.68s"
                   state={activeStageIndex > 1 ? 'done' : activeStageIndex === 1 ? 'active' : 'pending'}
                 />

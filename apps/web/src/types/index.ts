@@ -22,6 +22,7 @@ export interface TyposquatFlag {
   similarity: number; // e.g. 92%
   indicator: string;  // "Possible typosquatting indicator"
   reason: string;
+  confidence?: 'high' | 'medium' | 'low';
 }
 
 export interface DependencyConfusionFlag {
@@ -73,6 +74,8 @@ export interface PackageNode {
   typosquatFlag?: TyposquatFlag;
   confusionFlag?: DependencyConfusionFlag;
   remediation?: Remediation;
+  projectedRiskScore?: number;
+  ptsReduced?: number;
 }
 
 export interface GraphEdge {
@@ -93,6 +96,8 @@ export interface ScanResult {
   status: ScanStatus;
   statusMessage?: string;
   overallRiskScore: number;
+  projectedOverallRiskScore?: number;
+  limitations?: string[];
   packages: PackageNode[];
   edges: GraphEdge[];
   createdAt: string;

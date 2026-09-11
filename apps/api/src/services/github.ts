@@ -47,32 +47,55 @@ export async function fetchManifests(
   const pkgFilePath = cleanSubpath ? `${cleanSubpath}/package.json` : 'package.json';
   const lockFilePath = cleanSubpath ? `${cleanSubpath}/package-lock.json` : 'package-lock.json';
 
-  // Fetch package.json
-  let packageJson: Record<string, unknown> | null = null;
-  try {
-    const pkgRes = await fetch(`${baseUrl}/${encodeURI(pkgFilePath)}?ref=${encodeURIComponent(ref)}`, { headers });
-    if (pkgRes.ok) {
-      packageJson = (await pkgRes.json()) as Record<string, unknown>;
+  // Helper to fetch file content: tries API first, then falls back to raw.githubusercontent.com for large files (> 1MB)
+  async function fetchFileContent(filePath: string): Promise<Record<string, unknown> | null> {
+    // 1. Try GitHub Contents API
+    try {
+      const apiUrl = `${baseUrl}/${encodeURI(filePath)}?ref=${encodeURIComponent(ref)}`;
+      const res = await fetch(apiUrl, { headers });
+
+      if (res.status === 403 && res.headers.get('x-ratelimit-remaining') === '0') {
+        throw new Error('GitHub API rate limit exceeded (60 req/hr unauthenticated limit). Please configure GITHUB_TOKEN in environment variables to raise limit to 5,000 req/hr.');
+      }
+
+      if (res.ok) {
+        const text = await res.text();
+        return JSON.parse(text) as Record<string, unknown>;
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('rate limit')) throw err;
     }
-  } catch {
-    // package.json not found
+
+    // 2. Fallback to raw.githubusercontent.com (bypasses 1MB API limit, supports up to 25MB)
+    try {
+      const rawUrl = `https://raw.githubusercontent.com/${owner}/${cleanRepo}/${encodeURIComponent(ref)}/${filePath}`;
+      const rawHeaders: Record<string, string> = {
+        'User-Agent': 'SupplyGuard/1.0',
+      };
+      if (process.env.GITHUB_TOKEN) {
+        rawHeaders.Authorization = `token ${process.env.GITHUB_TOKEN}`;
+      }
+
+      const rawRes = await fetch(rawUrl, { headers: rawHeaders });
+      if (rawRes.ok) {
+        const rawText = await rawRes.text();
+        return JSON.parse(rawText) as Record<string, unknown>;
+      }
+    } catch {
+      // Non-fatal fallback
+    }
+
+    return null;
   }
 
+  // Fetch package.json
+  const packageJson = await fetchFileContent(pkgFilePath);
+
   // Fetch package-lock.json
-  let lockfile: Record<string, unknown> | null = null;
-  try {
-    const lockRes = await fetch(`${baseUrl}/${encodeURI(lockFilePath)}?ref=${encodeURIComponent(ref)}`, { headers });
-    if (lockRes.ok) {
-      lockfile = (await lockRes.json()) as Record<string, unknown>;
-    } else if (cleanSubpath) {
-      // In monorepos, check root package-lock.json if subpath doesn't have its own
-      const rootLockRes = await fetch(`${baseUrl}/package-lock.json?ref=${encodeURIComponent(ref)}`, { headers });
-      if (rootLockRes.ok) {
-        lockfile = (await rootLockRes.json()) as Record<string, unknown>;
-      }
-    }
-  } catch {
-    // lockfile not found
+  let lockfile = await fetchFileContent(lockFilePath);
+  if (!lockfile && cleanSubpath) {
+    // In monorepos, check root package-lock.json if subpath doesn't have its own
+    lockfile = await fetchFileContent('package-lock.json');
   }
 
   return { packageJson, lockfile, owner, repo: cleanRepo, subpath: cleanSubpath, branch: ref };

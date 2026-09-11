@@ -4,8 +4,42 @@ const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ykzjbxtjzxmpuwpuyvzr.s
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlrempieHRqenhtcHV3cHV5dnpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1MjA1NDQsImV4cCI6MjEwNDA5NjU0NH0.j7v8hmWSN8fcqSQa2pAh7_l8YQ8PUJn-kshuZfUwJQw';
 
 /**
- * Asynchronously persists scan metadata and raw result to Supabase public.scans
- * and itemized findings to public.findings.
+ * Lightweight progress update: only patches status and status_message in public.scans.
+ * Does NOT send the heavy raw_result, avoiding database locks and thread timeouts.
+ * Will NOT overwrite if scan is already 'complete'.
+ */
+export async function persistScanProgress(
+  scanId: string,
+  userId: string | undefined,
+  status: string,
+  statusMessage?: string
+): Promise<void> {
+  try {
+    if (!userId) return;
+
+    // Direct PATCH to public.scans where scan_id = scanId AND status != 'complete'
+    const url = `${SUPABASE_URL}/rest/v1/scans?scan_id=eq.${encodeURIComponent(scanId)}&status=neq.complete`;
+    await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify({
+        status,
+        status_message: statusMessage || null,
+      }),
+    });
+  } catch {
+    // Non-fatal progress update
+  }
+}
+
+/**
+ * Persists full scan metadata and raw result to Supabase public.scans
+ * on completion or failure.
  */
 export async function persistScanToSupabase(scan: ScanResult): Promise<void> {
   try {

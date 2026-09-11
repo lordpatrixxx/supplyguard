@@ -33,7 +33,9 @@ export function ReportPage() {
   }, [scan?.packages])
 
   const currentScore = scan?.overallRiskScore || 0
-  const projectedScore = Math.max(10, Math.round(currentScore * 0.35))
+  const projectedScore = scan?.projectedOverallRiskScore !== undefined
+    ? scan.projectedOverallRiskScore
+    : Math.max(0, currentScore - flaggedPackages.reduce((acc, p) => acc + (p.ptsReduced || 0), 0))
   const scoreDelta = Math.max(0, currentScore - projectedScore)
 
   const handleCopyCommand = (cmd: string, index: number) => {
@@ -390,12 +392,18 @@ export function ReportPage() {
                             className="text-outline hover:text-primary transition-colors cursor-pointer bg-transparent border-none p-0.5"
                             title="Copy Command"
                           >
-                            {copiedIndex === idx ? <Check className="w-3.5 h-3.5 text-safe" /> : <Copy className="w-3.5 h-3.5" />}
+                          {copiedIndex === idx ? <Check className="w-3.5 h-3.5 text-safe" /> : <Copy className="w-3.5 h-3.5" />}
                           </button>
                         </div>
-                        <div className="px-2.5 py-1 bg-primary/10 rounded-lg text-primary font-code-sm text-xs font-semibold whitespace-nowrap">
-                          −{Math.round(pkg.riskScore * 0.35)} pts
-                        </div>
+                        {pkg.ptsReduced && pkg.ptsReduced > 0 ? (
+                          <div className="px-2.5 py-1 bg-primary/10 rounded-lg text-primary font-code-sm text-xs font-semibold whitespace-nowrap">
+                            −{pkg.ptsReduced} pts
+                          </div>
+                        ) : (
+                          <div className="px-2.5 py-1 bg-surface-container rounded-lg text-outline font-code-sm text-xs whitespace-nowrap">
+                            Manual review
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

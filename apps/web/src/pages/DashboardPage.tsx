@@ -227,7 +227,7 @@ export function DashboardPage() {
           <div className="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 shadow-sm">
             <div className="font-code-sm text-[11px] uppercase tracking-wider text-outline mb-1">Safe</div>
             <div className="font-headline-md text-2xl font-bold text-safe">{scan.packages.length}</div>
-            <div className="text-xs font-code-sm text-safe mt-1">Verified Clean</div>
+            <div className="text-xs font-code-sm text-safe mt-1">No Supported Risks Detected</div>
           </div>
         </div>
 
@@ -237,9 +237,9 @@ export function DashboardPage() {
             <ShieldCheck className="w-8 h-8" />
           </div>
           <div className="flex flex-col gap-2">
-            <h2 className="font-headline-md text-2xl font-bold text-on-surface tracking-tight">Audit Cleared • Zero Critical Risks</h2>
+            <h2 className="font-headline-md text-2xl font-bold text-on-surface tracking-tight">Audit Cleared • No Critical Risks Detected</h2>
             <p className="font-body-md text-sm text-on-surface-variant max-w-md mx-auto">
-              SupplyGuard evaluated {scan.packages.length} dependencies in <span className="text-on-surface font-semibold">{repoName}</span>. No vulnerable CVEs, typosquats, or supply-chain anomalies were detected.
+              SupplyGuard evaluated {scan.packages.length} dependencies in <span className="text-on-surface font-semibold">{repoName}</span>. No supported vulnerability or supply-chain indicators were detected by the current analysis.
             </p>
           </div>
           <div className="flex items-center gap-3 flex-wrap justify-center mt-2">
@@ -264,6 +264,14 @@ export function DashboardPage() {
   // ── FULL DASHBOARD & RISK CONSTELLATION ──
   return (
     <div className="flex flex-col gap-6 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 animate-fade-in">
+      {/* Analysis Limitations Banner if present */}
+      {scan.limitations && scan.limitations.length > 0 && (
+        <div className="p-3.5 bg-secondary/10 border border-secondary/30 rounded-xl flex items-center gap-3 text-secondary font-code-sm text-xs">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span><strong>Analysis Scope Notice:</strong> {scan.limitations.join(' • ')}</span>
+        </div>
+      )}
+
       {/* ── ROW 1: Risk Score, Repository, Branch, Last Scan + CTAs ── */}
       <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/30 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
@@ -323,12 +331,12 @@ export function DashboardPage() {
               <div className="flex items-center gap-3 font-code-sm text-xs text-on-surface-variant mt-1 flex-wrap">
                 <span className="flex items-center gap-1">
                   <GitBranch className="w-3.5 h-3.5 text-outline" />
-                  <span className="text-on-surface font-medium">main</span>
+                  <span className="text-on-surface font-medium">{scan.branch || 'HEAD'}</span>
                 </span>
                 <span className="text-outline">•</span>
                 <span className="flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5 text-outline" />
-                  <span>Updated just now</span>
+                  <span>{scan.completedAt ? new Date(scan.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Completed'}</span>
                 </span>
               </div>
             </div>
@@ -434,7 +442,7 @@ export function DashboardPage() {
               {safeCount}
             </span>
           </div>
-          <span className="font-code-sm text-xs text-safe font-medium">Verified Clean</span>
+          <span className="font-code-sm text-xs text-safe font-medium">No Risks Flagged</span>
         </div>
       </div>
 

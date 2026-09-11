@@ -115,10 +115,10 @@ export function LandingPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setRepoUrl('https://github.com/expressjs/express')}
+                  onClick={() => setRepoUrl('https://github.com/axios/axios')}
                   className="px-2 py-0.5 rounded bg-surface-container text-xs font-code-sm text-on-surface-variant hover:text-primary hover:border-primary/40 border border-outline-variant transition-colors"
                 >
-                  expressjs/express
+                  axios/axios
                 </button>
               </div>
 

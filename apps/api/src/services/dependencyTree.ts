@@ -216,3 +216,59 @@ export function parseLockfile(
 
   return { packages: nodes, edges };
 }
+
+/**
+ * Fallback parser when package-lock.json is not committed upstream.
+ * Parses direct dependencies from package.json and models them as depth-1 nodes.
+ */
+export function parsePackageJsonDirect(
+  packageJson: Record<string, unknown>
+): { packages: PackageNode[]; edges: GraphEdge[] } {
+  const deps = (packageJson.dependencies as Record<string, string>) || {};
+  const devDeps = (packageJson.devDependencies as Record<string, string>) || {};
+
+  const allDirect = { ...deps, ...devDeps };
+  const packages: PackageNode[] = [];
+  const edges: GraphEdge[] = [];
+
+  for (const [name, versionRange] of Object.entries(allDirect)) {
+    // Strip semver operators (^, ~, >=, etc.) to get target base version
+    const cleanVersion = String(versionRange).replace(/^[~^>=<v\s]+/, '').split(' ')[0] || '1.0.0';
+    const pkgPath = `node_modules/${name}`;
+    const id = createUniqueNodeId(name, cleanVersion, pkgPath);
+
+    packages.push({
+      id,
+      name,
+      version: cleanVersion,
+      isDirect: true,
+      path: [name],
+      depth: 1,
+      dependentCount: 0,
+      downstreamDependents: [],
+      riskScore: 0,
+      advisorySeverity: 'NONE',
+      riskTier: 'safe',
+      riskBreakdown: {
+        knownVulnerability: 0,
+        severityContribution: 0,
+        outdatedVersion: 0,
+        transitiveExposure: 0,
+        downstreamImpact: 0,
+        typosquatConfusion: 0,
+        totalScore: 0,
+      },
+      vulnerabilities: [],
+      reputation: {
+        lastPublished: '',
+        maintainerCount: 0,
+        weeklyDownloads: 0,
+        signals: [],
+      },
+      provenance: evaluateProvenance(),
+    });
+  }
+
+  return { packages, edges };
+}
+

@@ -115,9 +115,22 @@ export function scorePackage(
 }
 
 /**
- * Computes overall repo-level risk score.
+ * Computes overall repo-level risk score with explainable aggregation:
+ * - Base risk is bounded by the single most severe package risk.
+ * - Volume adjustment factors in systemic exposure when multiple critical or high packages exist.
+ * - Normalized to 0 - 100.
  */
 export function computeOverallScore(packages: PackageNode[]): number {
   if (packages.length === 0) return 0;
-  return Math.max(...packages.map((p) => p.riskScore));
+
+  const maxPackageRisk = Math.max(...packages.map((p) => p.riskScore));
+  if (maxPackageRisk === 0) return 0;
+
+  const criticalCount = packages.filter((p) => p.riskTier === 'critical').length;
+  const highCount = packages.filter((p) => p.riskScore >= 60 && p.riskScore < 70).length;
+
+  // Systemic volume adjustment: +4 per additional critical package, +2 per high package (capped at +15)
+  const volumeAdjustment = Math.min(15, Math.max(0, criticalCount - 1) * 4 + highCount * 2);
+
+  return Math.min(100, maxPackageRisk + volumeAdjustment);
 }

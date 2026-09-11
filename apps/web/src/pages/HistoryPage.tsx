@@ -272,11 +272,14 @@ export function HistoryPage() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-headline-sm text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors">
+                        <button
+                          onClick={() => navigate(`/app/scans/${scan.scanId}/dashboard`)}
+                          className="font-headline-sm text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors text-left hover:underline"
+                        >
                           {repo}
-                        </span>
+                        </button>
                         <span className="px-1.5 py-0.2 rounded bg-surface-container font-code-sm text-[11px] text-outline border border-outline-variant/30">
-                          main
+                          {scan.branch || 'HEAD'}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 font-code-sm text-xs text-outline mt-0.5">

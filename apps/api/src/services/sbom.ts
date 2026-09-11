@@ -1,6 +1,7 @@
 import type { ScanResult } from '../types/index.js';
 
 interface CycloneDXComponent {
+  'bom-ref': string;
   type: 'library' | 'application';
   name: string;
   version: string;
@@ -55,6 +56,7 @@ export function generateCycloneDxSbom(scan: ScanResult): CycloneDXDocument {
     const purl = `pkg:npm/${encodedName}@${pkg.version}`;
 
     return {
+      'bom-ref': pkg.id,
       type: 'library',
       name: pkg.name,
       version: pkg.version,

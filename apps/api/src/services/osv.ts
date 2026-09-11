@@ -172,12 +172,75 @@ function determineSeverity(
   return 'MEDIUM';
 }
 
-function extractCvss(vuln: OsvVulnDetail): number {
-  // 1. Direct CVSS score if number available
-  if (vuln.severity) {
+/**
+ * Parses a standard CVSS v3.1 / v3.0 vector string and calculates the exact base score (0.0 - 10.0).
+ * Conforms to the FIRST CVSS v3.1 specification.
+ */
+export function parseCvssVector(vector: string): number {
+  if (!vector || typeof vector !== 'string') return 5.0;
+
+  const parts: Record<string, string> = {};
+  vector.split('/').forEach((part) => {
+    const [k, v] = part.split(':');
+    if (k && v) parts[k.trim().toUpperCase()] = v.trim().toUpperCase();
+  });
+
+  const avMap: Record<string, number> = { N: 0.85, A: 0.62, L: 0.55, P: 0.2 };
+  const acMap: Record<string, number> = { L: 0.77, H: 0.44 };
+  const uiMap: Record<string, number> = { N: 0.85, R: 0.62 };
+  const cMap: Record<string, number> = { N: 0.0, L: 0.22, H: 0.56 };
+  const iMap: Record<string, number> = { N: 0.0, L: 0.22, H: 0.56 };
+  const aMap: Record<string, number> = { N: 0.0, L: 0.22, H: 0.56 };
+
+  const scopeChanged = parts.S === 'C';
+  const prMap: Record<string, number> = scopeChanged
+    ? { N: 0.85, L: 0.68, H: 0.5 }
+    : { N: 0.85, L: 0.62, H: 0.27 };
+
+  const av = avMap[parts.AV] ?? 0.85;
+  const ac = acMap[parts.AC] ?? 0.77;
+  const pr = prMap[parts.PR] ?? 0.85;
+  const ui = uiMap[parts.UI] ?? 0.85;
+  const c = cMap[parts.C] ?? 0.0;
+  const i = iMap[parts.I] ?? 0.0;
+  const a = aMap[parts.A] ?? 0.0;
+
+  const iss = 1 - (1 - c) * (1 - i) * (1 - a);
+  let impact = 0;
+  if (scopeChanged) {
+    impact = 7.52 * (iss - 0.029) - 3.25 * Math.pow(iss - 0.02, 15);
+  } else {
+    impact = 6.42 * iss;
+  }
+
+  const exploitability = 8.22 * av * ac * pr * ui;
+  if (impact <= 0) return 0.0;
+
+  let baseScore = 0;
+  if (scopeChanged) {
+    baseScore = Math.min(1.08 * (impact + exploitability), 10);
+  } else {
+    baseScore = Math.min(impact + exploitability, 10);
+  }
+
+  return Math.ceil(baseScore * 10) / 10;
+}
+
+export function extractCvss(vuln: OsvVulnDetail): number {
+  // 1. Check severity array from OSV
+  if (vuln.severity && vuln.severity.length > 0) {
     for (const sev of vuln.severity) {
-      const score = parseFloat(sev.score);
-      if (!isNaN(score) && score <= 10 && score > 0) return score;
+      if (!sev.score) continue;
+      // If already numeric
+      const numericScore = parseFloat(sev.score);
+      if (!isNaN(numericScore) && numericScore <= 10 && numericScore > 0) {
+        return numericScore;
+      }
+      // If CVSS:3.1 or CVSS:3.0 vector
+      if (typeof sev.score === 'string' && /^CVSS:3\.[01]\//i.test(sev.score)) {
+        const calculated = parseCvssVector(sev.score);
+        if (calculated > 0) return calculated;
+      }
     }
   }
 
