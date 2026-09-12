@@ -264,13 +264,6 @@ export function DashboardPage() {
   // ── FULL DASHBOARD & RISK CONSTELLATION ──
   return (
     <div className="flex flex-col gap-6 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 animate-fade-in">
-      {/* Analysis Limitations Banner if present */}
-      {scan.limitations && scan.limitations.length > 0 && (
-        <div className="p-3.5 bg-secondary/10 border border-secondary/30 rounded-xl flex items-center gap-3 text-secondary font-code-sm text-xs">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span><strong>Analysis Scope Notice:</strong> {scan.limitations.join(' • ')}</span>
-        </div>
-      )}
 
       {/* ── ROW 1: Risk Score, Repository, Branch, Last Scan + CTAs ── */}
       <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/30 shadow-sm">
