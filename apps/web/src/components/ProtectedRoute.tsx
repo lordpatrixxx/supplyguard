@@ -17,9 +17,7 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ childr
     );
   }
 
-  const isDevPreview = import.meta.env.DEV && (localStorage.getItem('sg_dev_preview') === 'true' || location.search.includes('preview=true'));
-
-  if (!user && !isDevPreview) {
+  if (!user) {
     return <Navigate to="/signin" state={{ returnTo: location.pathname }} replace />;
   }
 
