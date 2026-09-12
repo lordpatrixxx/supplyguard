@@ -49,10 +49,10 @@ export async function persistScanToSupabase(scan: ScanResult): Promise<void> {
     }
 
     const criticalCount = scan.packages.filter((p) => p.riskTier === 'critical').length;
-    const highCount = scan.packages.filter((p) => p.riskScore >= 60 && p.riskScore < 70).length;
-    const mediumCount = scan.packages.filter((p) => p.riskTier === 'medium' && p.riskScore < 60).length;
-    const lowCount = scan.packages.filter((p) => p.riskScore > 0 && p.riskScore < 40).length;
-    const safeCount = scan.packages.filter((p) => p.riskScore === 0).length;
+    const highCount = scan.packages.filter((p) => p.riskTier === 'high').length;
+    const mediumCount = scan.packages.filter((p) => p.riskTier === 'medium').length;
+    const lowCount = scan.packages.filter((p) => p.riskTier === 'low').length;
+    const safeCount = scan.packages.filter((p) => p.riskTier === 'safe').length;
 
     const payload = {
       scan_id: scan.scanId,

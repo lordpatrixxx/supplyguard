@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 
 // Health check
 app.get('/api/health', (_req, res) => {
@@ -16,6 +16,15 @@ app.get('/api/health', (_req, res) => {
 
 // Routes
 app.use('/api/scans', scansRouter);
+
+// Global Error Handler
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('[SupplyGuard API Error]:', err);
+  const status = typeof err.status === 'number' ? err.status : 500;
+  res.status(status).json({
+    error: err.message || 'Internal server error occurred while processing request.',
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`[SupplyGuard API] Running on http://localhost:${PORT}`);

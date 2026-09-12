@@ -82,7 +82,16 @@ export function simulateRemediation(packages: PackageNode[]): RemediationSimulat
     simulatedPackages.map((p) => ({
       ...p,
       riskScore: p.projectedRiskScore,
-      riskTier: p.projectedRiskScore >= 70 ? ('critical' as const) : p.projectedRiskScore >= 35 ? ('medium' as const) : ('safe' as const),
+      riskTier:
+        p.projectedRiskScore >= 70
+          ? ('critical' as const)
+          : p.projectedRiskScore >= 50
+          ? ('high' as const)
+          : p.projectedRiskScore >= 30
+          ? ('medium' as const)
+          : p.projectedRiskScore > 0
+          ? ('low' as const)
+          : ('safe' as const),
     }))
   );
   const scoreDelta = Math.max(0, currentOverallScore - projectedOverallScore);

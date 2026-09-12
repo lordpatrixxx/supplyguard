@@ -170,9 +170,16 @@ export async function processScan(
     // Completion
     scan.overallRiskScore = computeOverallScore(packages);
     scan.status = 'complete';
-    scan.statusMessage = scan.limitations && scan.limitations.length > 0
-      ? 'Scan completed with limitations (direct dependencies audited).'
-      : 'Scan completed successfully.';
+
+    if (packages.length === 0) {
+      if (!scan.limitations) scan.limitations = [];
+      scan.limitations.push('no_dependencies_found: No dependencies were declared in the audited manifest. If this repository is a monorepo or stores dependencies in subdirectories (e.g. frontend, backend), please run a scan specifying the target subpath.');
+      scan.statusMessage = 'No dependencies detected in manifest. If this is a monorepo, specify the subpath.';
+    } else if (scan.limitations && scan.limitations.length > 0) {
+      scan.statusMessage = 'Scan completed with scope limitations (direct dependencies audited).';
+    } else {
+      scan.statusMessage = 'Scan completed successfully.';
+    }
     scan.completedAt = new Date().toISOString();
 
     store.set(scan.scanId, { ...scan });

@@ -132,7 +132,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               {activeRepoName}
             </span>
             <span className="font-mono text-[11px] text-outline">
-              (main)
+              ({currentScan?.branch || 'main'})
             </span>
           </div>
         </div>

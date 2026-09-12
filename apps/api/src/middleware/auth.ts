@@ -16,9 +16,19 @@ declare global {
   }
 }
 
+interface CachedAuthUser {
+  user: AuthenticatedUser;
+  expiresAt: number;
+}
+
+const tokenCache = new Map<string, CachedAuthUser>();
+const TOKEN_CACHE_TTL_MS = 60 * 1000; // 60 seconds TTL for active session tokens
+
 /**
  * Validates the caller's Supabase session access token server-side.
  * Rejects unauthenticated or malformed requests with 401 Unauthorized.
+ * Employs a 60-second in-memory token cache to prevent flooding Supabase Auth
+ * during high-frequency frontend polling loops.
  */
 export async function requireAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   const authHeader = req.headers.authorization;
@@ -38,13 +48,21 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     return;
   }
 
-  // Handle local test tokens for automated test suite
+  // Handle local test tokens for automated test suite (strictly disabled in production)
   if (process.env.NODE_ENV === 'test' && token.startsWith('test-token-')) {
     const testUserId = token.replace('test-token-', '');
     req.user = {
       id: testUserId,
       email: `${testUserId}@supplyguard.internal`,
     };
+    next();
+    return;
+  }
+
+  // Check in-memory token cache first
+  const cached = tokenCache.get(token);
+  if (cached && cached.expiresAt > Date.now()) {
+    req.user = cached.user;
     next();
     return;
   }
@@ -58,6 +76,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     });
 
     if (!response.ok) {
+      tokenCache.delete(token);
       res.status(401).json({
         error: 'Unauthorized: The provided authentication session has expired or is invalid.',
       });
@@ -66,17 +85,25 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
 
     const userData = (await response.json()) as { id: string; email?: string };
     if (!userData || !userData.id) {
+      tokenCache.delete(token);
       res.status(401).json({
         error: 'Unauthorized: Could not resolve authenticated user identity.',
       });
       return;
     }
 
-    req.user = {
+    const authenticatedUser: AuthenticatedUser = {
       id: userData.id,
       email: userData.email,
     };
 
+    // Cache verified session
+    tokenCache.set(token, {
+      user: authenticatedUser,
+      expiresAt: Date.now() + TOKEN_CACHE_TTL_MS,
+    });
+
+    req.user = authenticatedUser;
     next();
   } catch (err) {
     console.error('[AuthMiddleware] Error validating token with Supabase:', err);

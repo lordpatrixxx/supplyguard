@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import type { ScanResult } from '../types'
 import { getScan } from '../lib/api'
 import {
-  Shield, Clock, AlertTriangle, FolderX, Key, GitMerge, Link2,
+  Shield, Clock, AlertTriangle, FolderX, Link2,
   CornerDownRight, ArrowLeft, FolderOpen, Terminal, Copy, Check,
   RefreshCw, Lock, GitFork, Sliders, Cpu, GitBranch, CheckSquare,
   Share2, Loader2, ShieldCheck, CheckCircle
@@ -14,7 +14,6 @@ export function ScanProgressPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'input' | 'pipeline'>('pipeline')
-  const [errorScenario, setErrorScenario] = useState<'A' | 'B' | 'C'>('A')
   const [copiedLog, setCopiedLog] = useState(false)
   const [subpathOpen, setSubpathOpen] = useState(false)
   const [subpathValue, setSubpathValue] = useState('/')
@@ -140,107 +139,38 @@ export function ScanProgressPage() {
                     <AlertTriangle className="w-4 h-4 text-critical" />
                     <span className="font-code-sm text-xs text-critical font-semibold uppercase tracking-wider">Scan Diagnostic • Resolution Halted</span>
                   </div>
-                  <span className="font-code-sm text-xs text-outline">Exit Code: 127_ENOENT</span>
+                  <span className="font-code-sm text-xs text-outline">Status: Halted</span>
                 </div>
 
                 <div>
                   <h1 className="font-headline-md text-xl font-bold text-on-surface">Unable to complete this scan</h1>
                   <p className="font-body-md text-sm text-on-surface-variant mt-1 max-w-2xl">
-                    {scan?.statusMessage || 'The target repository manifest could not be found or fetched. Ensure the repository contains a valid package.json and package-lock.json.'}
+                    {scan?.statusMessage || 'The target repository manifest could not be found or fetched. Ensure the repository contains a valid dependency manifest.'}
                   </p>
                 </div>
 
-                {/* Scenario Switcher Tabs */}
-                <div className="flex gap-2 bg-surface-container p-1 rounded-lg self-start">
-                  <button
-                    onClick={() => setErrorScenario('A')}
-                    className={`px-3 py-1.5 rounded-md font-code-sm text-xs transition-all cursor-pointer border-none ${
-                      errorScenario === 'A'
-                        ? 'bg-surface-container-high text-primary shadow-sm font-semibold'
-                        : 'text-on-surface-variant hover:text-on-surface bg-transparent'
-                    }`}
-                  >
-                    Manifest Missing
-                  </button>
-                  <button
-                    onClick={() => setErrorScenario('B')}
-                    className={`px-3 py-1.5 rounded-md font-code-sm text-xs transition-all cursor-pointer border-none ${
-                      errorScenario === 'B'
-                        ? 'bg-surface-container-high text-primary shadow-sm font-semibold'
-                        : 'text-on-surface-variant hover:text-on-surface bg-transparent'
-                    }`}
-                  >
-                    Auth &amp; Network
-                  </button>
-                  <button
-                    onClick={() => setErrorScenario('C')}
-                    className={`px-3 py-1.5 rounded-md font-code-sm text-xs transition-all cursor-pointer border-none ${
-                      errorScenario === 'C'
-                        ? 'bg-surface-container-high text-primary shadow-sm font-semibold'
-                        : 'text-on-surface-variant hover:text-on-surface bg-transparent'
-                    }`}
-                  >
-                    Lockfile Conflict
-                  </button>
+                {/* Real Diagnostic Details */}
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-start gap-3">
+                    <FolderX className="w-5 h-5 text-critical mt-0.5 shrink-0" />
+                    <div>
+                      <h2 className="font-headline-sm text-sm font-bold text-on-surface">Analysis Diagnosis</h2>
+                      <p className="font-body-md text-xs text-on-surface-variant mt-0.5">
+                        {scan?.statusMessage || 'The automated analysis engine encountered an error while resolving dependencies.'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="bg-surface-container-lowest rounded-lg p-3 text-on-surface font-code-sm text-xs flex flex-col gap-1 border border-outline-variant/30">
+                    <div className="flex items-center justify-between text-critical">
+                      <span>ERROR: Ingestion halted</span>
+                      <span className="font-code-sm text-[10px] uppercase bg-critical/10 px-2 py-0.5 rounded text-critical font-bold">Diagnostic Result</span>
+                    </div>
+                    <div className="text-on-surface-variant">REPOSITORY: <span className="text-on-surface">{scan?.repoUrl}</span> <span className="text-outline">(branch: {scan?.branch || 'HEAD'})</span></div>
+                    {scan?.subpath && <div className="text-on-surface-variant">SUBPATH: <span className="text-on-surface">{scan.subpath}</span></div>}
+                    <div className="text-on-surface-variant">REASON: {scan?.statusMessage || 'Manifest not found or inaccessible.'}</div>
+                    <div className="text-primary pt-1">HINT: Ensure the repository is publicly accessible and contains a package.json or requirements.txt (or specify the subpath if located in a subfolder).</div>
+                  </div>
                 </div>
-
-                {/* Tab Scenario A */}
-                {errorScenario === 'A' && (
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-start gap-3">
-                      <FolderX className="w-5 h-5 text-critical mt-0.5 shrink-0" />
-                      <div>
-                        <h2 className="font-headline-sm text-sm font-bold text-on-surface">package.json not found in root</h2>
-                        <p className="font-body-md text-xs text-on-surface-variant mt-0.5">SupplyGuard currently analyzes JavaScript and TypeScript projects through npm/yarn manifests. Verify that the repository tree contains a verifiable manifest descriptor.</p>
-                      </div>
-                    </div>
-                    <div className="bg-surface-container-lowest rounded-lg p-3 text-on-surface font-code-sm text-xs flex flex-col gap-1 border border-outline-variant/30">
-                      <div className="flex items-center justify-between text-critical">
-                        <span>ERROR: Repository manifest search failed</span>
-                        <span className="font-code-sm text-[10px] uppercase bg-critical/10 px-2 py-0.5 rounded text-critical font-bold">Diagnostic Result</span>
-                      </div>
-                      <div className="text-on-surface-variant">PATH: <span className="text-on-surface">{scan?.repoUrl}</span> <span className="text-outline">(branch: main)</span></div>
-                      <div className="text-on-surface-variant">STATUS: Clone verified (240ms) • Root scan: 0 manifest files located</div>
-                      <div className="text-primary pt-1">HINT: Ensure package.json is located in the repository root or specify the subpath manifest directory.</div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Tab Scenario B */}
-                {errorScenario === 'B' && (
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-start gap-3">
-                      <Key className="w-5 h-5 text-critical mt-0.5 shrink-0" />
-                      <div>
-                        <h2 className="font-headline-sm text-sm font-bold text-on-surface">Private Repo or Authentication Required</h2>
-                        <p className="font-body-md text-xs text-on-surface-variant mt-0.5">The upstream Git daemon denied public access or deploy keys were rejected during shallow clone handshake.</p>
-                      </div>
-                    </div>
-                    <div className="bg-surface-container-lowest rounded-lg p-3 text-on-surface font-code-sm text-xs flex flex-col gap-1 border border-outline-variant/30">
-                      <div className="text-critical">ERROR: Remote git authentication failed [401 Unauthorized]</div>
-                      <div className="text-on-surface-variant">REMOTE: {scan?.repoUrl}</div>
-                      <div className="text-primary pt-1">HINT: Ensure the repository is publicly accessible or has valid access permissions configured.</div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Tab Scenario C */}
-                {errorScenario === 'C' && (
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-start gap-3">
-                      <GitMerge className="w-5 h-5 text-critical mt-0.5 shrink-0" />
-                      <div>
-                        <h2 className="font-headline-sm text-sm font-bold text-on-surface">Lockfile Inconsistency Detected</h2>
-                        <p className="font-body-md text-xs text-on-surface-variant mt-0.5">The package-lock.json or yarn.lock file contains unresolved cyclic references or unresolvable peer dependencies.</p>
-                      </div>
-                    </div>
-                    <div className="bg-surface-container-lowest rounded-lg p-3 text-on-surface font-code-sm text-xs flex flex-col gap-1 border border-outline-variant/30">
-                      <div className="text-critical">ERROR: ERESOLVE could not resolve peer dependency tree</div>
-                      <div className="text-on-surface-variant">CONFLICT: Manifest contains unresolved peer dependency declarations</div>
-                      <div className="text-primary pt-1">HINT: Ensure a valid npm v7+ package-lock.json is committed in the repository.</div>
-                    </div>
-                  </div>
-                )}
 
                 {/* Action Buttons */}
                 <div className="pt-2 flex flex-wrap items-center gap-3">
@@ -330,22 +260,22 @@ export function ScanProgressPage() {
                 <div className="flex items-start gap-2 text-on-surface-variant">
                   <span className="text-outline select-none">01</span>
                   <span className="text-primary font-medium">INFO:</span>
-                  <span>Resolving git endpoint {scan?.repoUrl}</span>
+                  <span>Target repository: {scan?.repoUrl}</span>
                 </div>
                 <div className="flex items-start gap-2 text-on-surface-variant">
                   <span className="text-outline select-none">02</span>
-                  <span className="text-primary font-medium">SUCCESS:</span>
-                  <span>Git handshake OK (ref: refs/heads/main)</span>
+                  <span className="text-primary font-medium">INFO:</span>
+                  <span>Branch ref: refs/heads/{scan?.branch || 'HEAD'}{scan?.subpath ? ` (subpath: ${scan.subpath})` : ''}</span>
                 </div>
                 <div className="flex items-start gap-2 text-critical bg-critical/10 px-2 py-1 rounded">
                   <span className="text-critical select-none font-bold">03</span>
                   <span className="font-bold">ERROR:</span>
-                  <span>{scan?.statusMessage || 'package.json missing in root directory.'}</span>
+                  <span>{scan?.statusMessage || 'Analysis halted.'}</span>
                 </div>
                 <div className="flex items-start gap-2 text-critical bg-critical/15 px-2 py-1 rounded">
                   <span className="text-critical select-none font-bold">04</span>
                   <span className="font-bold">HALT:</span>
-                  <span>Ingestion terminated before dependency tree generation. (code: SG_ERR_NO_MANIFEST)</span>
+                  <span>Ingestion terminated. Check repository configuration or specify manifest subpath.</span>
                 </div>
               </div>
             </div>
@@ -362,34 +292,25 @@ export function ScanProgressPage() {
                 Common root causes that halt the automated analysis pipeline:
               </p>
               <div className="flex flex-col gap-2">
-                <div
-                  onClick={() => setErrorScenario('B')}
-                  className="p-3 bg-surface-container rounded-lg flex items-start gap-2.5 hover:bg-surface-container-high transition-colors cursor-pointer border border-outline-variant/20"
-                >
+                <div className="p-3 bg-surface-container rounded-lg flex items-start gap-2.5 border border-outline-variant/20">
                   <Lock className="w-4 h-4 text-tertiary mt-0.5 shrink-0" />
                   <div className="flex flex-col">
                     <span className="font-code-sm text-xs text-on-surface font-semibold">Private Auth Missing</span>
-                    <span className="font-body-md text-[11px] text-outline mt-0.5">SSH key rejected or invalid deployment token for private repos.</span>
+                    <span className="font-body-md text-[11px] text-outline mt-0.5">SSH key rejected or repository is private without access tokens configured.</span>
                   </div>
                 </div>
-                <div
-                  onClick={() => setErrorScenario('A')}
-                  className="p-3 bg-surface-container rounded-lg flex items-start gap-2.5 hover:bg-surface-container-high transition-colors cursor-pointer border border-outline-variant/20"
-                >
+                <div className="p-3 bg-surface-container rounded-lg flex items-start gap-2.5 border border-outline-variant/20">
                   <AlertTriangle className="w-4 h-4 text-critical mt-0.5 shrink-0" />
                   <div className="flex flex-col">
-                    <span className="font-code-sm text-xs text-on-surface font-semibold">Invalid URL Syntax</span>
-                    <span className="font-body-md text-[11px] text-outline mt-0.5">Protocol unsupported or target repository was relocated or archived.</span>
+                    <span className="font-code-sm text-xs text-on-surface font-semibold">Missing Manifest</span>
+                    <span className="font-body-md text-[11px] text-outline mt-0.5">No package.json or requirements.txt located at the repository root or specified subpath.</span>
                   </div>
                 </div>
-                <div
-                  onClick={() => setErrorScenario('C')}
-                  className="p-3 bg-surface-container rounded-lg flex items-start gap-2.5 hover:bg-surface-container-high transition-colors cursor-pointer border border-outline-variant/20"
-                >
+                <div className="p-3 bg-surface-container rounded-lg flex items-start gap-2.5 border border-outline-variant/20">
                   <GitFork className="w-4 h-4 text-tertiary mt-0.5 shrink-0" />
                   <div className="flex flex-col">
-                    <span className="font-code-sm text-xs text-on-surface font-semibold">Lockfile Resolution Failure</span>
-                    <span className="font-body-md text-[11px] text-outline mt-0.5">Strict peer-dependency conflicts prevented deterministic graph synthesis.</span>
+                    <span className="font-code-sm text-xs text-on-surface font-semibold">Lockfile Inconsistency</span>
+                    <span className="font-body-md text-[11px] text-outline mt-0.5">Unresolved cyclic references or unresolvable lockfile structures.</span>
                   </div>
                 </div>
               </div>

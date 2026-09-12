@@ -45,8 +45,12 @@ export function parseLockfile(
 ): { packages: PackageNode[]; edges: GraphEdge[] } {
   const packagesMap = (lockfile as LockfileV7).packages;
 
+  // If "packages" map is missing (npm lockfileVersion 1), fall back to v1 parser
   if (!packagesMap) {
-    throw new Error('Invalid lockfile format: missing "packages" field. Ensure this is an npm v7+ lockfile format.');
+    if (lockfile.dependencies && typeof lockfile.dependencies === 'object') {
+      return parseLockfileV1(lockfile, packageJson);
+    }
+    throw new Error('Invalid lockfile format: missing "packages" and "dependencies" fields. Ensure this is a valid npm package-lock.json.');
   }
 
   // Identify direct dependencies from root package.json or root package entry
@@ -219,6 +223,175 @@ export function parseLockfile(
 }
 
 /**
+ * Parses npm v5/v6 lockfile format (lockfileVersion: 1) where dependencies are
+ * organized in a nested "dependencies" tree.
+ */
+export function parseLockfileV1(
+  lockfile: Record<string, unknown>,
+  packageJson: Record<string, unknown> | null
+): { packages: PackageNode[]; edges: GraphEdge[] } {
+  const rootDeps = (lockfile.dependencies as Record<string, any>) || {};
+  const directDepNames = new Set<string>();
+
+  if (packageJson) {
+    const deps = packageJson.dependencies as Record<string, string> | undefined;
+    const devDeps = packageJson.devDependencies as Record<string, string> | undefined;
+    if (deps) Object.keys(deps).forEach((d) => directDepNames.add(d));
+    if (devDeps) Object.keys(devDeps).forEach((d) => directDepNames.add(d));
+  }
+
+  // If package.json is absent, top-level dependencies in lockfile v1 are direct
+  if (directDepNames.size === 0) {
+    Object.keys(rootDeps).forEach((d) => directDepNames.add(d));
+  }
+
+  const nodes: PackageNode[] = [];
+  const pathToNodeMap = new Map<string, PackageNode>();
+  const nameToNodesMap = new Map<string, PackageNode[]>();
+  const edges: GraphEdge[] = [];
+  const seenEdges = new Set<string>();
+
+  // Stores declared "requires" for edge resolution after all nodes are created
+  const nodeRequiresList: Array<{ sourceNode: PackageNode; pkgPath: string; requires: Record<string, string> }> = [];
+
+  function traverse(depMap: Record<string, any>, currentPathPrefix: string, parentNodeId?: string) {
+    for (const [name, depData] of Object.entries(depMap)) {
+      if (!name || typeof depData !== 'object' || depData === null) continue;
+
+      const version = depData.version || '0.0.0';
+      const pkgPath = `${currentPathPrefix}node_modules/${name}`;
+      const segments = pkgPath.split('node_modules/').filter(Boolean).map((s) => s.replace(/\/$/, ''));
+      const isDirect = directDepNames.has(name) && segments.length === 1;
+      const depth = segments.length;
+      const id = createUniqueNodeId(name, version, pkgPath);
+
+      const provenance = evaluateProvenance(
+        { resolved: depData.resolved, integrity: depData.integrity },
+        { hasRegistryMeta: true }
+      );
+
+      const node: PackageNode = {
+        id,
+        name,
+        version,
+        isDirect,
+        path: segments,
+        depth,
+        dependentCount: 0,
+        downstreamDependents: [],
+        riskScore: 0,
+        advisorySeverity: 'NONE',
+        riskTier: 'safe',
+        riskBreakdown: {
+          knownVulnerability: 0,
+          severityContribution: 0,
+          outdatedVersion: 0,
+          transitiveExposure: 0,
+          downstreamImpact: 0,
+          typosquatConfusion: 0,
+          behavioralSignal: 0,
+          totalScore: 0,
+        },
+        vulnerabilities: [],
+        reputation: {
+          lastPublished: '',
+          maintainerCount: 0,
+          weeklyDownloads: 0,
+          signals: [],
+        },
+        provenance,
+      };
+
+      nodes.push(node);
+      pathToNodeMap.set(pkgPath, node);
+
+      if (!nameToNodesMap.has(name)) {
+        nameToNodesMap.set(name, []);
+      }
+      nameToNodesMap.get(name)!.push(node);
+
+      if (isDirect) {
+        const edgeKey = `root→${node.id}`;
+        if (!seenEdges.has(edgeKey)) {
+          seenEdges.add(edgeKey);
+          edges.push({ from: 'root', to: node.id });
+        }
+      }
+
+      if (parentNodeId) {
+        const edgeKey = `${parentNodeId}→${node.id}`;
+        if (!seenEdges.has(edgeKey)) {
+          seenEdges.add(edgeKey);
+          edges.push({ from: parentNodeId, to: node.id });
+        }
+      }
+
+      if (depData.requires && typeof depData.requires === 'object') {
+        nodeRequiresList.push({ sourceNode: node, pkgPath, requires: depData.requires });
+      }
+
+      // Recursively traverse nested node_modules
+      if (depData.dependencies && typeof depData.dependencies === 'object') {
+        traverse(depData.dependencies, `${pkgPath}/`, node.id);
+      }
+    }
+  }
+
+  traverse(rootDeps, '');
+
+  // Resolve dependencies declared via "requires"
+  for (const { sourceNode, pkgPath, requires } of nodeRequiresList) {
+    for (const [depName] of Object.entries(requires)) {
+      // Look first in nested path
+      const nestedPath = `${pkgPath}/node_modules/${depName}`;
+      let targetNode = pathToNodeMap.get(nestedPath);
+
+      // Look in root node_modules or hoisted node
+      if (!targetNode) {
+        targetNode = pathToNodeMap.get(`node_modules/${depName}`);
+      }
+
+      // Fallback: candidate nodes with matching name
+      if (!targetNode) {
+        const candidates = nameToNodesMap.get(depName) || [];
+        targetNode = candidates[0];
+      }
+
+      if (targetNode && targetNode.id !== sourceNode.id) {
+        const edgeKey = `${sourceNode.id}→${targetNode.id}`;
+        if (!seenEdges.has(edgeKey)) {
+          seenEdges.add(edgeKey);
+          edges.push({ from: sourceNode.id, to: targetNode.id });
+        }
+      }
+    }
+  }
+
+  // Calculate downstream dependents from graph topology
+  const dependentMap = new Map<string, Set<string>>();
+  for (const edge of edges) {
+    if (edge.from === 'root') continue;
+    if (!dependentMap.has(edge.to)) {
+      dependentMap.set(edge.to, new Set());
+    }
+    dependentMap.get(edge.to)!.add(edge.from);
+  }
+
+  for (const node of nodes) {
+    const dependents = dependentMap.get(node.id);
+    if (dependents) {
+      node.dependentCount = dependents.size;
+      node.downstreamDependents = Array.from(dependents).map((id) => {
+        const target = nodes.find((n) => n.id === id);
+        return target ? `${target.name}@${target.version}` : id;
+      });
+    }
+  }
+
+  return { packages: nodes, edges };
+}
+
+/**
  * Fallback parser when package-lock.json is not committed upstream.
  * Parses direct dependencies from package.json and models them as depth-1 nodes.
  */
@@ -233,8 +406,13 @@ export function parsePackageJsonDirect(
   const edges: GraphEdge[] = [];
 
   for (const [name, versionRange] of Object.entries(allDirect)) {
-    // Strip semver operators (^, ~, >=, etc.) to get target base version
-    const cleanVersion = String(versionRange).replace(/^[~^>=<v\s]+/, '').split(' ')[0] || '1.0.0';
+    const rawVer = String(versionRange || '').trim();
+    // Handle URLs, git tags, or wildcards gracefully
+    let cleanVersion = '1.0.0';
+    if (rawVer && !rawVer.startsWith('http') && !rawVer.startsWith('git') && rawVer !== '*' && rawVer !== 'latest') {
+      cleanVersion = rawVer.replace(/^[~^>=<v\s]+/, '').split(' ')[0] || '1.0.0';
+    }
+
     const pkgPath = `node_modules/${name}`;
     const id = createUniqueNodeId(name, cleanVersion, pkgPath);
 
@@ -269,8 +447,12 @@ export function parsePackageJsonDirect(
       },
       provenance: evaluateProvenance(),
     });
+
+    // Connect direct dependencies to root in graph topology
+    edges.push({ from: 'root', to: id });
   }
 
   return { packages, edges };
 }
+
 

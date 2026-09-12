@@ -88,7 +88,8 @@ export interface PackageNode {
   downstreamDependents: string[];
   riskScore: number; // 0-100 SupplyGuard Risk Score
   advisorySeverity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE'; // Advisory severity (distinct from risk score)
-  riskTier: 'safe' | 'medium' | 'critical';
+  riskTier: 'critical' | 'high' | 'medium' | 'low' | 'safe';
+  ecosystem?: 'npm' | 'PyPI';
   riskBreakdown: RiskBreakdown;
   vulnerabilities: Vulnerability[];
   reputation: ReputationData;

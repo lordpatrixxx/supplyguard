@@ -31,6 +31,7 @@ export const DependencyConstellation: React.FC = () => {
   const [hoveredNode, setHoveredNode] = useState<ConstellationNode | null>(null);
   const [hoverPos, setHoverPos] = useState<{ x: number; y: number } | null>(null);
   const [nodeCountFilter, setNodeCountFilter] = useState<'all' | 'risks'>('all');
+  const [containerSize, setContainerSize] = useState({ width: 600, height: 480 });
 
   const nodesRef = useRef<ConstellationNode[]>([]);
   const edgesRef = useRef<ConstellationEdge[]>([]);
@@ -150,6 +151,7 @@ export const DependencyConstellation: React.FC = () => {
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
       ctx.scale(dpr, dpr);
+      setContainerSize({ width: rect.width, height: rect.height });
     };
 
     resize();
@@ -396,8 +398,8 @@ export const DependencyConstellation: React.FC = () => {
           <div
             className="absolute z-20 pointer-events-none p-3 rounded-lg bg-surface-container-high border border-outline-variant/60 shadow-xl backdrop-blur-md text-xs min-w-[200px] animate-fade-in"
             style={{
-              left: Math.min(Math.max(10, hoverPos.x + 12), (containerRef.current?.clientWidth || 400) - 220),
-              top: Math.min(Math.max(10, hoverPos.y - 45), (containerRef.current?.clientHeight || 400) - 120),
+              left: Math.min(Math.max(10, hoverPos.x + 12), containerSize.width - 220),
+              top: Math.min(Math.max(10, hoverPos.y - 45), containerSize.height - 120),
             }}
           >
             <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-outline-variant/30 font-code-sm">

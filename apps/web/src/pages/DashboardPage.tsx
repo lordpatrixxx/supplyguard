@@ -8,7 +8,7 @@ import { getScan, downloadSbom } from '../lib/api'
 import {
   ShieldCheck, Shield, Clock, GitBranch, Download,
   ArrowRight, AlertCircle, Loader2, MousePointer,
-  FolderOpen
+  FolderOpen, ChevronDown, ChevronUp, X, Info
 } from 'lucide-react'
 
 export function DashboardPage() {
@@ -18,6 +18,8 @@ export function DashboardPage() {
   const queryParam = searchParams.get('q') || ''
 
   const [selectedPkg, setSelectedPkg] = useState<PackageNode | null>(null)
+  const [showScopeDetails, setShowScopeDetails] = useState(false)
+  const [dismissScopeNotice, setDismissScopeNotice] = useState(false)
 
   const { data: scan, isLoading, error } = useQuery<ScanResult>({
     queryKey: ['scan', id],
@@ -89,9 +91,9 @@ export function DashboardPage() {
         else trans++
 
         if (p.riskTier === 'critical') crit++
-        else if (p.riskScore >= 60) high++
-        else if (p.riskTier === 'medium' || p.riskScore >= 40) med++
-        else if (p.riskScore > 15) low++
+        else if (p.riskTier === 'high') high++
+        else if (p.riskTier === 'medium') med++
+        else if (p.riskTier === 'low') low++
         else safe++
       }
 
@@ -146,18 +148,138 @@ export function DashboardPage() {
 
   const score = scan.overallRiskScore || 0
   const isHighRisk = score >= 50
-  const isZeroRisk = criticalCount === 0 && highCount === 0 && vulnCount === 0 && score < 30
+  const hasZeroPackages = scan.packages.length === 0
+  const isZeroRisk = !hasZeroPackages && criticalCount === 0 && highCount === 0 && vulnCount === 0 && score < 30
 
   // Circular gauge calculations (r=32 => 2*PI*32 = 201.06)
   const circumference = 201.06
   const dashOffset = circumference - (circumference * Math.min(100, Math.max(0, score))) / 100
 
+  const renderLimitationsNotice = () => {
+    if (!scan?.limitations || scan.limitations.length === 0 || dismissScopeNotice) return null
+
+    return (
+      <div className="bg-surface-container-low border border-outline-variant/30 rounded-xl p-4 shadow-sm text-xs font-body-md text-on-surface-variant flex flex-col gap-2 transition-all">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-outline">
+            <Info className="w-4 h-4 text-secondary shrink-0" />
+            <span className="font-semibold text-on-surface">Analysis Scope Notice</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="text-on-surface-variant text-[11px] sm:text-xs">
+              Direct dependencies analyzed. Missing lockfiles may limit transitive modeling.
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowScopeDetails(!showScopeDetails)}
+              className="px-2 py-1 bg-surface-container hover:bg-surface-container-high text-on-surface rounded text-[11px] font-medium flex items-center gap-1 cursor-pointer transition-colors border border-outline-variant/30"
+            >
+              <span>{showScopeDetails ? 'Hide Details' : 'Details'}</span>
+              {showScopeDetails ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            </button>
+            <button
+              onClick={() => setDismissScopeNotice(true)}
+              className="p-1 text-outline hover:text-on-surface rounded cursor-pointer transition-colors"
+              title="Dismiss notice"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+        {showScopeDetails && (
+          <div className="mt-2 pt-2 border-t border-outline-variant/20 max-h-40 overflow-y-auto space-y-1">
+            {scan.limitations.map((limit, idx) => (
+              <div key={idx} className="flex items-start gap-2 font-code-sm text-[11px] text-on-surface-variant">
+                <span className="text-outline shrink-0">•</span>
+                <span>{limit}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // ── ZERO PACKAGES DETECTED STATE ──
+  if (hasZeroPackages) {
+    return (
+      <div className="flex flex-col w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6 animate-fade-in">
+        {/* Context Header */}
+        <div className="bg-surface-container-low rounded-xl p-6 border border-outline-variant/30 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-surface-container-high border border-outline-variant/30 flex items-center justify-center text-outline shadow-sm shrink-0">
+                <FolderOpen className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 font-code-sm text-xs text-on-surface-variant">
+                  <span>Scan #{id?.slice(0, 8)}</span>
+                  <span>/</span>
+                  <span className="text-outline font-medium">Manifest Audit</span>
+                </div>
+                <div className="flex items-center gap-3 mt-1">
+                  <h1 className="font-headline-md text-xl font-bold text-on-surface tracking-tight">
+                    {repoName}
+                  </h1>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-code-sm text-xs font-semibold border border-outline-variant/30">
+                    0 Dependencies Located
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="px-3 py-1.5 bg-surface-container rounded-lg text-on-surface-variant font-code-sm text-xs flex items-center gap-2 border border-outline-variant/30">
+                <GitBranch className="w-3.5 h-3.5 text-outline" />
+                <span className="text-on-surface font-medium">{scan.branch || 'HEAD'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {renderLimitationsNotice()}
+
+        {/* Informative Guidance Card */}
+        <div className="p-8 max-w-2xl mx-auto w-full flex flex-col items-center text-center gap-4 py-12 bg-surface-container-low rounded-2xl border border-outline-variant/30 shadow-sm">
+          <div className="w-16 h-16 rounded-full bg-surface-container-high border-2 border-outline-variant/40 flex items-center justify-center text-primary shadow-lg">
+            <FolderOpen className="w-8 h-8" />
+          </div>
+          <div className="flex flex-col gap-2">
+            <h2 className="font-headline-md text-2xl font-bold text-on-surface tracking-tight">
+              No Dependencies Declared at Root
+            </h2>
+            <p className="font-body-md text-sm text-on-surface-variant max-w-md mx-auto">
+              SupplyGuard examined the root manifest for <span className="text-on-surface font-semibold">{repoName}</span>, but found no direct or indirect dependencies declared.
+            </p>
+            <p className="font-body-md text-xs text-outline max-w-md mx-auto">
+              If this repository is a monorepo or stores its packages in a subfolder (such as <code className="font-code-sm text-primary">apps/web</code>, <code className="font-code-sm text-primary">client</code>, or <code className="font-code-sm text-primary">frontend</code>), specify the subpath during intake to evaluate the target manifest.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 flex-wrap justify-center mt-3">
+            <Link
+              to="/app"
+              className="px-5 py-2.5 bg-primary hover:bg-primary-container text-on-primary font-headline-sm text-xs font-semibold rounded-lg shadow-sm transition-all no-underline"
+            >
+              Analyze Subpath or Another Repository
+            </Link>
+            <Link
+              to="/app/history"
+              className="px-5 py-2.5 bg-surface-container hover:bg-surface-container-high text-on-surface font-headline-sm text-xs font-semibold rounded-lg transition-colors no-underline border border-outline-variant/40"
+            >
+              View Scan History
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // ── CLEAN AUDIT STATE ──
   if (isZeroRisk) {
     return (
-      <div className="flex flex-col w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 animate-fade-in">
+      <div className="flex flex-col w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6 animate-fade-in">
         {/* ROW 1: Context Header */}
-        <div className="bg-surface-container-low rounded-xl p-6 border border-outline-variant/30 shadow-sm mb-6">
+        <div className="bg-surface-container-low rounded-xl p-6 border border-outline-variant/30 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-safe/10 border border-safe/30 flex items-center justify-center text-safe shadow-sm shrink-0">
@@ -184,7 +306,7 @@ export function DashboardPage() {
             <div className="flex items-center gap-3 flex-wrap">
               <div className="px-3 py-1.5 bg-surface-container rounded-lg text-on-surface-variant font-code-sm text-xs flex items-center gap-2 border border-outline-variant/30">
                 <GitBranch className="w-3.5 h-3.5 text-outline" />
-                <span className="text-on-surface font-medium">main</span>
+                <span className="text-on-surface font-medium">{scan.branch || 'HEAD'}</span>
               </div>
               <button
                 onClick={handleDownloadSbom}
@@ -197,8 +319,10 @@ export function DashboardPage() {
           </div>
         </div>
 
+        {renderLimitationsNotice()}
+
         {/* ROW 2: 6 KPI Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
           <div className="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 shadow-sm">
             <div className="font-code-sm text-[11px] uppercase tracking-wider text-outline mb-1">Risk Score</div>
             <div className="font-headline-md text-2xl font-bold text-safe">{score}<span className="text-xs text-outline font-normal">/100</span></div>
@@ -356,6 +480,8 @@ export function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {renderLimitationsNotice()}
 
       {/* ── ROW 2: 6 KPI Cards (Responsive 3+3 or 6 across) ── */}
       <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">

@@ -21,7 +21,7 @@ export function scorePackage(
 ): {
   score: number;
   advisorySeverity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE';
-  tier: 'safe' | 'medium' | 'critical';
+  tier: 'critical' | 'high' | 'medium' | 'low' | 'safe';
   breakdown: RiskBreakdown;
 } {
   let knownVulnerability = 0;
@@ -106,11 +106,15 @@ export function scorePackage(
   const score = Math.min(rawTotal, 100);
 
   // Determine risk tier
-  let tier: 'safe' | 'medium' | 'critical';
+  let tier: 'critical' | 'high' | 'medium' | 'low' | 'safe';
   if (score >= 70) {
     tier = 'critical';
-  } else if (score >= 40) {
+  } else if (score >= 50) {
+    tier = 'high';
+  } else if (score >= 30) {
     tier = 'medium';
+  } else if (score > 0) {
+    tier = 'low';
   } else {
     tier = 'safe';
   }
@@ -142,7 +146,7 @@ export function computeOverallScore(packages: PackageNode[]): number {
   if (maxPackageRisk === 0) return 0;
 
   const criticalCount = packages.filter((p) => p.riskTier === 'critical').length;
-  const highCount = packages.filter((p) => p.riskScore >= 60 && p.riskScore < 70).length;
+  const highCount = packages.filter((p) => p.riskTier === 'high').length;
 
   // Systemic volume adjustment: +4 per additional critical package, +2 per high package (capped at +15)
   const volumeAdjustment = Math.min(15, Math.max(0, criticalCount - 1) * 4 + highCount * 2);

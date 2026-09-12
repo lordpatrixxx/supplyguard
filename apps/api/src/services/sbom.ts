@@ -31,6 +31,7 @@ interface CycloneDXDocument {
     timestamp: string;
     tools: Array<{ vendor: string; name: string; version: string }>;
     component: {
+      'bom-ref'?: string;
       type: 'application';
       name: string;
       version: string;
@@ -53,7 +54,8 @@ export function generateCycloneDxSbom(scan: ScanResult): CycloneDXDocument {
     const encodedName = pkg.name.startsWith('@')
       ? `@${encodeURIComponent(pkg.name.slice(1))}`
       : encodeURIComponent(pkg.name);
-    const purl = `pkg:npm/${encodedName}@${pkg.version}`;
+    const eco = pkg.ecosystem === 'PyPI' ? 'pypi' : 'npm';
+    const purl = `pkg:${eco}/${encodedName}@${pkg.version}`;
 
     return {
       'bom-ref': pkg.id,
@@ -114,6 +116,7 @@ export function generateCycloneDxSbom(scan: ScanResult): CycloneDXDocument {
         },
       ],
       component: {
+        'bom-ref': 'root',
         type: 'application',
         name: repoName,
         version: scan.branch || 'HEAD',

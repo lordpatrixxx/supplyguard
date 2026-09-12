@@ -116,10 +116,17 @@ export const DependencyConstellation3D: React.FC = () => {
     const threadColor = isDark ? 'rgba(111, 238, 201, 0.12)' : 'rgba(13, 148, 136, 0.14)';
     const textColor = isDark ? '#dde2f6' : '#0f172a';
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const render = () => {
-      // Smooth rotation with slight continuous spin
-      rotY += (targetRotY - rotY) * 0.05 + 0.0015;
-      rotX += (targetRotX - rotX) * 0.05;
+      // Smooth rotation with continuous spin unless reduced motion requested
+      if (!prefersReducedMotion) {
+        rotY += (targetRotY - rotY) * 0.05 + 0.0015;
+        rotX += (targetRotX - rotX) * 0.05;
+      } else {
+        rotY = targetRotY;
+        rotX = targetRotX;
+      }
 
       ctx.clearRect(0, 0, width, height);
 
@@ -165,7 +172,7 @@ export const DependencyConstellation3D: React.FC = () => {
         ctx.stroke();
 
         // Traveling risk/signal pulse
-        if (edge.pulseProgress !== undefined) {
+        if (!prefersReducedMotion && edge.pulseProgress !== undefined) {
           edge.pulseProgress = (edge.pulseProgress + 0.008) % 1;
           const pulseX = p1.px + (p2.px - p1.px) * edge.pulseProgress;
           const pulseY = p1.py + (p2.py - p1.py) * edge.pulseProgress;

@@ -25,8 +25,19 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
   const [copiedPlan, setCopiedPlan] = useState(false)
 
   const topVuln = pkg.vulnerabilities[0]
-  const fixedVersion = topVuln?.fixedIn || `${pkg.name}@latest`
-  const fixCommand = pkg.remediation?.fix_command || `npm install ${pkg.name}@${fixedVersion} --save-exact`
+  const targetVer = topVuln?.fixedIn || 'latest'
+  const isPython = pkg.ecosystem === 'PyPI'
+
+  let fixCommand = pkg.remediation?.fix_command
+  if (!fixCommand) {
+    if (isPython) {
+      fixCommand = `pip install --upgrade ${pkg.name}==${targetVer}`
+    } else if (pkg.isDirect) {
+      fixCommand = `npm install ${pkg.name}@${targetVer} --save-exact`
+    } else {
+      fixCommand = `npm update ${pkg.name} --depth 999`
+    }
+  }
 
   const handleCopy = () => {
     navigator.clipboard.writeText(fixCommand)
@@ -41,8 +52,12 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
       `Advisory Severity: ${pkg.advisorySeverity || topVuln?.severity || 'MEDIUM'}`,
       topVuln ? `Vulnerability: ${topVuln.id} (CVSS ${topVuln.cvss}) - ${topVuln.summary}` : null,
       `Dependency Path: ${pkg.path.join(' -> ') || pkg.name}`,
-      `Action: ${pkg.remediation?.fix || `Upgrade ${pkg.name} to ${fixedVersion}`}`,
+      `Dependency Type: ${pkg.isDirect ? 'Direct' : 'Transitive'}`,
+      `Action: ${pkg.remediation?.fix || `Upgrade ${pkg.name} to ${targetVer}`}`,
       `Command: ${fixCommand}`,
+      !pkg.isDirect
+        ? `Transitive Guidance: If npm update does not elevate the package, declare an override in package.json:\n  "overrides": { "${pkg.name}": "${targetVer}" }`
+        : null,
       pkg.remediation?.why_risky ? `Analysis: ${pkg.remediation.why_risky}` : null,
     ].filter(Boolean).join('\n')
 
@@ -52,12 +67,18 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
   }
 
   const isCritical = pkg.riskTier === 'critical'
+  const isHigh = pkg.riskTier === 'high'
   const isMedium = pkg.riskTier === 'medium'
+  const isLow = pkg.riskTier === 'low'
 
   const tierBadgeBg = isCritical
     ? 'bg-critical/15 text-critical border border-critical/30'
+    : isHigh
+    ? 'bg-secondary/15 text-secondary border border-secondary/30'
     : isMedium
     ? 'bg-warning/15 text-warning border border-warning/30'
+    : isLow
+    ? 'bg-surface-dim text-on-surface-variant border border-outline-variant/30'
     : 'bg-safe/15 text-safe border border-safe/30'
 
   const rb = pkg.riskBreakdown
@@ -74,7 +95,7 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
               <h2 className="font-headline-md text-xl font-bold text-on-surface tracking-tight truncate">
                 {pkg.name}
               </h2>
-              <span className={`font-code-sm text-sm font-medium ${isCritical ? 'text-critical' : isMedium ? 'text-warning' : 'text-safe'}`}>
+              <span className={`font-code-sm text-sm font-medium ${isCritical ? 'text-critical' : isHigh ? 'text-secondary' : isMedium ? 'text-warning' : 'text-safe'}`}>
                 @{pkg.version}
               </span>
             </div>
@@ -82,14 +103,14 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
             {/* 3. Severity + 4. Risk Score */}
             <div className="flex items-center gap-2 flex-wrap">
               <span className={`px-2 py-0.5 rounded-md font-code-sm text-[11px] uppercase font-bold tracking-wider ${tierBadgeBg}`}>
-                {isCritical ? 'CRITICAL' : isMedium ? 'MEDIUM' : 'LOW'} · {pkg.riskScore}/100
+                {pkg.riskTier.toUpperCase()} · {pkg.riskScore}/100
               </span>
               {pkg.advisorySeverity && pkg.advisorySeverity !== 'NONE' && (
                 <span className="px-1.5 py-0.5 rounded bg-surface-dim font-code-sm text-[11px] text-secondary border border-outline-variant/40">
                   CVSS {pkg.advisorySeverity}
                 </span>
               )}
-              <span className="font-code-sm text-[11px] text-outline">npm</span>
+              <span className="font-code-sm text-[11px] text-outline">{pkg.ecosystem || 'npm'}</span>
             </div>
           </div>
           {onClose && (
@@ -210,7 +231,7 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
                 </div>
                 <div className="grid grid-cols-[100px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
                   <span className="text-outline">Fixed</span>
-                  <span className="text-primary font-medium">{fixedVersion}</span>
+                  <span className="text-primary font-medium">{targetVer}</span>
                 </div>
               </>
             )}
@@ -384,7 +405,7 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
               </span>
             </div>
             <p className="font-body-md text-sm text-on-surface font-medium">
-              {pkg.remediation?.fix || `Upgrade ${pkg.name} from ${pkg.version} to ${fixedVersion}`}
+              {pkg.remediation?.fix || `Upgrade ${pkg.name} from ${pkg.version} to ${targetVer}`}
             </p>
             <div className="bg-surface-dim rounded-lg p-3 flex items-center justify-between font-code-sm text-xs">
               <span className="text-on-surface font-mono break-all pr-2 select-all">
@@ -399,6 +420,11 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
                 <span>{copied ? 'Copied' : 'Copy'}</span>
               </button>
             </div>
+            {!pkg.isDirect && (
+              <p className="font-body-md text-[11px] text-outline">
+                Transitive note: If <code className="text-primary font-code-sm">npm update {pkg.name} --depth 999</code> does not bump this package, pin it via an <code className="text-primary font-code-sm">"overrides"</code> field in your <code className="text-primary font-code-sm">package.json</code>.
+              </p>
+            )}
 
             <button
               onClick={handleCopyPlan}

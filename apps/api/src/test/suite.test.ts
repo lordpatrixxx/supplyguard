@@ -660,5 +660,205 @@ describe('Behavioral Threat Signals Engine (Static Heuristics)', () => {
     assert.equal(flaggedPkg.score, 25);
     assert.equal(flaggedPkg.breakdown.behavioralSignal, 25);
   });
+
+  it('correctly maps standardized 5 risk tiers based on thresholds', () => {
+    const dummyReputation: ReputationData = {
+      lastPublished: new Date().toISOString(),
+      createdDate: new Date().toISOString(),
+      packageAgeYears: 3,
+      maintainerCount: 5,
+      weeklyDownloads: 1000000,
+      signals: [],
+    };
+    const dummyProvenance: ProvenanceSignals = {
+      sourceRepo: 'Available',
+      sourceRepoUrl: 'https://github.com/example/pkg',
+      registryMetadata: 'Available',
+      lockfileIntegrity: 'Present',
+      buildAttestation: 'Not available',
+    };
+
+    // Safe (score: 0)
+    const safePkg = scorePackage({
+      id: 'safe@1.0.0#node_modules/safe',
+      name: 'safe',
+      version: '1.0.0',
+      isDirect: true,
+      path: ['safe'],
+      depth: 1,
+      dependentCount: 0,
+      downstreamDependents: [],
+      riskScore: 0,
+      advisorySeverity: 'NONE',
+      riskTier: 'safe',
+      riskBreakdown: {
+        knownVulnerability: 0, severityContribution: 0, outdatedVersion: 0,
+        transitiveExposure: 0, downstreamImpact: 0, typosquatConfusion: 0,
+        behavioralSignal: 0, totalScore: 0,
+      },
+      vulnerabilities: [],
+      reputation: dummyReputation,
+      provenance: dummyProvenance,
+    });
+    assert.equal(safePkg.tier, 'safe');
+
+    // Low (score: 25)
+    const lowPkg = scorePackage({
+      id: 'low@1.0.0#node_modules/low',
+      name: 'low',
+      version: '1.0.0',
+      isDirect: true,
+      path: ['low'],
+      depth: 1,
+      dependentCount: 0,
+      downstreamDependents: [],
+      riskScore: 0,
+      advisorySeverity: 'NONE',
+      riskTier: 'safe',
+      riskBreakdown: {
+        knownVulnerability: 0, severityContribution: 0, outdatedVersion: 0,
+        transitiveExposure: 0, downstreamImpact: 0, typosquatConfusion: 0,
+        behavioralSignal: 0, totalScore: 0,
+      },
+      vulnerabilities: [],
+      reputation: dummyReputation,
+      provenance: dummyProvenance,
+      behavioralFlags: [
+        {
+          indicator: 'Suspicious script',
+          matchedSignals: ['Network activity'],
+          scriptStage: 'postinstall',
+          confidence: 'high',
+          indicators: ['network-activity'],
+          excerpt: 'curl x',
+          explanation: 'network',
+        },
+      ],
+    });
+    assert.equal(lowPkg.tier, 'low');
+  });
+});
+
+describe('npm Lockfile v1 Support', () => {
+  it('correctly parses npm v5/v6 lockfileVersion 1 with nested dependencies', () => {
+    const mockLockfileV1 = {
+      name: 'v1-project',
+      version: '1.0.0',
+      lockfileVersion: 1,
+      dependencies: {
+        'express': {
+          version: '4.17.1',
+          integrity: 'sha512-xxx',
+          requires: {
+            'accepts': '~1.3.7',
+          },
+          dependencies: {
+            'accepts': {
+              version: '1.3.7',
+              integrity: 'sha512-yyy',
+            },
+          },
+        },
+        'lodash': {
+          version: '4.17.21',
+          integrity: 'sha512-zzz',
+        },
+      },
+    };
+
+    const manifest = {
+      dependencies: {
+        'express': '^4.17.1',
+        'lodash': '^4.17.21',
+      },
+    };
+
+    const { packages, edges } = parseLockfile(mockLockfileV1, manifest);
+
+    assert.equal(packages.length, 3, 'Should extract express, lodash, and nested accepts');
+    const expressPkg = packages.find((p) => p.name === 'express');
+    const lodashPkg = packages.find((p) => p.name === 'lodash');
+    const acceptsPkg = packages.find((p) => p.name === 'accepts');
+
+    assert.ok(expressPkg && expressPkg.isDirect && expressPkg.depth === 1);
+    assert.ok(lodashPkg && lodashPkg.isDirect && lodashPkg.depth === 1);
+    assert.ok(acceptsPkg && !acceptsPkg.isDirect && acceptsPkg.depth === 2);
+
+    // Verify edges connect root -> express, root -> lodash, express -> accepts
+    assert.ok(edges.some((e) => e.from === 'root' && e.to === expressPkg?.id));
+    assert.ok(edges.some((e) => e.from === 'root' && e.to === lodashPkg?.id));
+    assert.ok(edges.some((e) => e.from === expressPkg?.id && e.to === acceptsPkg?.id));
+  });
+});
+
+describe('CycloneDX SBOM Validation', () => {
+  it('validates CycloneDX v1.5 schema requirements including metadata.component bom-ref', () => {
+    const mockScan: ScanResult = {
+      scanId: 'sbom-test-123',
+      repoUrl: 'https://github.com/test-org/test-repo',
+      owner: 'test-org',
+      repo: 'test-repo',
+      branch: 'main',
+      status: 'complete',
+      overallRiskScore: 0,
+      createdAt: new Date().toISOString(),
+      packages: [
+        {
+          id: 'lodash@4.17.21#node_modules/lodash',
+          name: 'lodash',
+          version: '4.17.21',
+          isDirect: true,
+          path: ['lodash'],
+          depth: 1,
+          dependentCount: 0,
+          downstreamDependents: [],
+          riskScore: 0,
+          advisorySeverity: 'NONE',
+          riskTier: 'safe',
+          riskBreakdown: {
+            knownVulnerability: 0,
+            severityContribution: 0,
+            outdatedVersion: 0,
+            transitiveExposure: 0,
+            downstreamImpact: 0,
+            typosquatConfusion: 0,
+            behavioralSignal: 0,
+            totalScore: 0,
+          },
+          vulnerabilities: [],
+          reputation: {
+            lastPublished: new Date().toISOString(),
+            createdDate: new Date().toISOString(),
+            packageAgeYears: 5,
+            maintainerCount: 3,
+            weeklyDownloads: 50000000,
+            signals: [],
+          },
+          provenance: {
+            sourceRepo: 'Available',
+            sourceRepoUrl: 'https://github.com/lodash/lodash',
+            registryMetadata: 'Available',
+            lockfileIntegrity: 'Present',
+            buildAttestation: 'Not available',
+          },
+        },
+      ],
+      edges: [
+        { from: 'root', to: 'lodash@4.17.21#node_modules/lodash' },
+      ],
+      limitations: [],
+      completedAt: new Date().toISOString(),
+    };
+
+    const sbom = generateCycloneDXSBOM(mockScan);
+    assert.equal(sbom.bomFormat, 'CycloneDX');
+    assert.equal(sbom.specVersion, '1.5');
+    assert.equal(sbom.metadata?.component?.['bom-ref'], 'root', 'Root metadata component must have bom-ref root');
+
+    // Dependencies section must reference root
+    const rootDep = sbom.dependencies?.find((d: any) => d.ref === 'root');
+    assert.ok(rootDep, 'Dependencies list must have ref: root');
+    assert.ok(rootDep.dependsOn?.includes('lodash@4.17.21#node_modules/lodash'));
+  });
 });
 

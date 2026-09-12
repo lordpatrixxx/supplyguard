@@ -27,10 +27,37 @@ interface GraphLink {
   target: string
 }
 
-const tierColors = {
+const tierColors: Record<string, string> = {
   critical: '#ff6b4a',
+  high: '#f97316',
   medium: '#f2b84b',
+  low: '#8ba0b5',
   safe: '#4fd1ae',
+}
+
+interface FilterButtonProps {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+  color?: string
+}
+
+function FilterButton({ active, onClick, children, color = 'primary' }: FilterButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md font-code-sm text-[11px] uppercase tracking-wider transition-all cursor-pointer border-none font-semibold ${
+        active
+          ? color === 'critical' ? 'bg-critical/15 text-critical ring-1 ring-critical/40' :
+            color === 'warning' ? 'bg-warning/15 text-warning ring-1 ring-warning/40' :
+            color === 'tertiary' ? 'bg-tertiary/15 text-tertiary ring-1 ring-tertiary/40' :
+            'bg-primary/15 text-primary ring-1 ring-primary/40'
+          : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+      }`}
+    >
+      {children}
+    </button>
+  )
 }
 
 export function GraphView({ packages, edges, onNodeClick, selectedPkg, initialSearchQuery = '' }: GraphViewProps) {
@@ -80,27 +107,70 @@ export function GraphView({ packages, edges, onNodeClick, selectedPkg, initialSe
         if (!matchesName && !matchesCve) return false
       }
       if (criticalOnly && p.riskTier !== 'critical') return false
-      if (highOnly && p.advisorySeverity !== 'HIGH') return false
+      if (highOnly && (p.riskTier !== 'high' && p.advisorySeverity !== 'HIGH')) return false
       if (mediumOnly && p.riskTier !== 'medium') return false
       if (highFanOutOnly && (p.dependentCount ?? 0) < 3) return false
       if (transitiveOnly && p.isDirect) return false
       return true
     })
 
-    for (const pkg of filteredPkgs) {
-      const nodeId = pkg.id || pkg.name
+    const isFiltered = Boolean(
+      searchQuery.trim() || criticalOnly || highOnly || mediumOnly || highFanOutOnly || transitiveOnly
+    )
+
+    const matchedPkgIds = new Set<string>()
+    for (const p of filteredPkgs) {
+      matchedPkgIds.add(p.id || p.name)
+    }
+
+    const includedIds = new Set<string>(matchedPkgIds)
+    includedIds.add('root')
+
+    // In filtered mode, preserve ancestor links back to root so nodes remain connected
+    if (isFiltered) {
+      const parentMap = new Map<string, string[]>()
+      for (const edge of edges) {
+        const parents = parentMap.get(edge.to) || []
+        parents.push(edge.from)
+        parentMap.set(edge.to, parents)
+      }
+
+      const queue = Array.from(matchedPkgIds)
+      const visited = new Set<string>(matchedPkgIds)
+
+      while (queue.length > 0) {
+        const current = queue.shift()!
+        const parents = parentMap.get(current) || []
+        for (const parent of parents) {
+          includedIds.add(parent)
+          if (!visited.has(parent)) {
+            visited.add(parent)
+            queue.push(parent)
+          }
+        }
+      }
+    }
+
+    const packageMap = new Map(packages.map((p) => [p.id || p.name, p]))
+
+    for (const id of includedIds) {
+      if (id === 'root') continue
+      const pkg = packageMap.get(id)
+      if (!pkg) continue
+
+      const isDirectMatch = matchedPkgIds.has(id)
+      const color = tierColors[pkg.riskTier] || '#8ba0b5'
       nodes.push({
-        id: nodeId,
+        id,
         name: pkg.name,
         pkg,
-        val: pkg.riskTier === 'critical' ? 10 : pkg.riskTier === 'medium' ? 7 : 4,
-        color: tierColors[pkg.riskTier],
+        val: pkg.riskTier === 'critical' ? 10 : pkg.riskTier === 'high' ? 8 : pkg.riskTier === 'medium' ? 6 : 4,
+        color: isDirectMatch || !isFiltered ? color : '#556575',
       })
     }
 
-    const nodeIds = new Set(nodes.map((n) => n.id))
     const links: GraphLink[] = edges
-      .filter((e) => nodeIds.has(e.from) && nodeIds.has(e.to))
+      .filter((e) => includedIds.has(e.from) && includedIds.has(e.to))
       .map((e) => ({ source: e.from, target: e.to }))
 
     return { nodes, links }
@@ -144,22 +214,6 @@ export function GraphView({ packages, edges, onNodeClick, selectedPkg, initialSe
     setTransitiveOnly(false)
     setTimeout(() => handleFit(), 100)
   }
-
-  const FilterButton = ({ active, onClick, children, color = 'primary' }: { active: boolean; onClick: () => void; children: React.ReactNode; color?: string }) => (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md font-code-sm text-[11px] uppercase tracking-wider transition-all cursor-pointer border-none font-semibold ${
-        active
-          ? color === 'critical' ? 'bg-critical/15 text-critical ring-1 ring-critical/40' :
-            color === 'warning' ? 'bg-warning/15 text-warning ring-1 ring-warning/40' :
-            color === 'tertiary' ? 'bg-tertiary/15 text-tertiary ring-1 ring-tertiary/40' :
-            'bg-primary/15 text-primary ring-1 ring-primary/40'
-          : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
-      }`}
-    >
-      {children}
-    </button>
-  )
 
   return (
     <div className="flex flex-col gap-3 w-full">

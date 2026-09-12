@@ -92,11 +92,14 @@ export function BehavioralThreatsPage() {
       }
     }
 
-    // Fallback computed from packages in scan
+    // Fallback computed directly from packages in scan
+    const packagesWithFlags = (scan?.packages || []).filter(
+      (p) => (p.behavioralFlags && p.behavioralFlags.length > 0) || p.behavioralFlag
+    )
     const allFlags = (scan?.packages || []).flatMap((p) => p.behavioralFlags || (p.behavioralFlag ? [p.behavioralFlag] : []))
     return {
       totalDependencies: totalDeps,
-      behavioralTargets: Math.min(totalDeps, Math.max(1, Math.round(totalDeps * 0.4))),
+      behavioralTargets: packagesWithFlags.length,
       lifecycleScriptsInspected: allFlags.length,
       highConfidenceSignals: allFlags.filter((f) => f.confidence === 'high').length,
       mediumConfidenceSignals: allFlags.filter((f) => f.confidence === 'medium').length,

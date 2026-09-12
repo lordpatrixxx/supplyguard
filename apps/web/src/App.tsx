@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { StartupAnimation } from './components/StartupAnimation'
@@ -20,6 +20,11 @@ import { ReportPage } from './pages/ReportPage'
 import { HistoryPage } from './pages/HistoryPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { BehavioralThreatsPage } from './pages/BehavioralThreatsPage'
+
+function ParamRedirect({ to }: { to: (params: Record<string, string | undefined>) => string }) {
+  const params = useParams()
+  return <Navigate to={to(params)} replace />
+}
 
 export default function App() {
   return (
@@ -120,10 +125,10 @@ export default function App() {
         />
 
         {/* Backwards Compatibility / Direct Shortcut Redirects */}
-        <Route path="/scans/:id" element={<Navigate to="/app/scans/:id" replace />} />
-        <Route path="/scans/:id/dashboard" element={<Navigate to="/app/scans/:id/dashboard" replace />} />
-        <Route path="/scans/:id/report" element={<Navigate to="/app/scans/:id/report" replace />} />
-        <Route path="/scans/:id/behavioral" element={<Navigate to="/app/scans/:id/behavioral" replace />} />
+        <Route path="/scans/:id" element={<ParamRedirect to={(p) => `/app/scans/${p.id}`} />} />
+        <Route path="/scans/:id/dashboard" element={<ParamRedirect to={(p) => `/app/scans/${p.id}/dashboard`} />} />
+        <Route path="/scans/:id/report" element={<ParamRedirect to={(p) => `/app/scans/${p.id}/report`} />} />
+        <Route path="/scans/:id/behavioral" element={<ParamRedirect to={(p) => `/app/scans/${p.id}/behavioral`} />} />
         <Route path="/behavioral" element={<Navigate to="/app/behavioral" replace />} />
         <Route path="/history" element={<Navigate to="/app/history" replace />} />
 

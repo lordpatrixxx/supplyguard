@@ -6,13 +6,16 @@ import { getScan, downloadSbom } from '../lib/api'
 import {
   Home, FileCode, Share2, Check, Code2, ShieldCheck, TrendingDown,
   CheckSquare, ShieldAlert, GitFork, Sparkles, GitBranch, Brain,
-  Copy, Network, Fingerprint, Loader2, Download
+  Copy, Network, Fingerprint, Loader2, Download,
+  Info, ChevronDown, ChevronUp, X
 } from 'lucide-react'
 
 export function ReportPage() {
   const { id } = useParams<{ id: string }>()
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
   const [copiedScript, setCopiedScript] = useState(false)
+  const [showScopeDetails, setShowScopeDetails] = useState(false)
+  const [dismissScopeNotice, setDismissScopeNotice] = useState(false)
 
   const { data: scan, isLoading, error } = useQuery<ScanResult>({
     queryKey: ['scan', id],
@@ -54,31 +57,107 @@ export function ReportPage() {
   }
 
   const handleCopyAllFixes = () => {
-    const commands = flaggedPackages
-      .map((p) => {
-        const topVuln = p.vulnerabilities[0]
-        const fixedVersion = topVuln?.fixedIn || `${p.name}@latest`
-        return p.remediation?.fix_command || `npm install ${p.name}@${fixedVersion}`
-      })
-      .filter(Boolean)
+    const directFixes: string[] = []
+    const transitiveFixes: string[] = []
+    const overrides: Record<string, string> = {}
 
-    if (commands.length === 0) return
+    for (const p of flaggedPackages) {
+      const topVuln = p.vulnerabilities[0]
+      const targetVer = topVuln?.fixedIn || 'latest'
+      const isPython = p.ecosystem === 'PyPI'
 
-    const script = [
+      if (p.remediation?.fix_command) {
+        if (p.isDirect) directFixes.push(p.remediation.fix_command)
+        else transitiveFixes.push(p.remediation.fix_command)
+      } else if (isPython) {
+        directFixes.push(`pip install --upgrade ${p.name}==${targetVer}`)
+      } else if (p.isDirect) {
+        directFixes.push(`npm install ${p.name}@${targetVer} --save-exact`)
+      } else {
+        transitiveFixes.push(`npm update ${p.name} --depth 999`)
+        overrides[p.name] = targetVer
+      }
+    }
+
+    if (directFixes.length === 0 && transitiveFixes.length === 0) return
+
+    const scriptLines = [
       '#!/bin/bash',
       `# SupplyGuard Remediation Script for ${repoName}`,
       `# Scan ID: ${id}`,
       `# Generated: ${new Date().toISOString()}`,
       '',
-      ...commands,
-      '',
-      'echo "SupplyGuard remediation commands executed. Running npm audit..."',
-      'npm audit',
-    ].join('\n')
+    ]
 
-    navigator.clipboard.writeText(script)
+    if (directFixes.length > 0) {
+      scriptLines.push('# 1. Direct dependency upgrades:')
+      scriptLines.push(...directFixes)
+      scriptLines.push('')
+    }
+
+    if (transitiveFixes.length > 0) {
+      scriptLines.push('# 2. Transitive dependency lockfile upgrades:')
+      scriptLines.push(...transitiveFixes)
+      scriptLines.push('')
+    }
+
+    if (Object.keys(overrides).length > 0) {
+      scriptLines.push('# 3. If transitive vulnerabilities persist, pin via "overrides" in package.json:')
+      scriptLines.push('# ' + JSON.stringify({ overrides }, null, 2).replace(/\n/g, '\n# '))
+      scriptLines.push('')
+    }
+
+    scriptLines.push('echo "SupplyGuard remediation commands executed. Running audit..."')
+    scriptLines.push('npm audit')
+
+    navigator.clipboard.writeText(scriptLines.join('\n'))
     setCopiedScript(true)
     setTimeout(() => setCopiedScript(false), 3000)
+  }
+
+  const renderLimitationsNotice = () => {
+    if (!scan?.limitations || scan.limitations.length === 0 || dismissScopeNotice) return null
+
+    return (
+      <div className="bg-surface-container-low border border-outline-variant/30 rounded-xl p-4 shadow-sm text-xs font-body-md text-on-surface-variant flex flex-col gap-2 transition-all">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-outline">
+            <Info className="w-4 h-4 text-secondary shrink-0" />
+            <span className="font-semibold text-on-surface">Analysis Scope Notice</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="text-on-surface-variant text-[11px] sm:text-xs">
+              Direct dependencies analyzed. Missing lockfiles may limit transitive modeling.
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowScopeDetails(!showScopeDetails)}
+              className="px-2 py-1 bg-surface-container hover:bg-surface-container-high text-on-surface rounded text-[11px] font-medium flex items-center gap-1 cursor-pointer transition-colors border border-outline-variant/30"
+            >
+              <span>{showScopeDetails ? 'Hide Details' : 'Details'}</span>
+              {showScopeDetails ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            </button>
+            <button
+              onClick={() => setDismissScopeNotice(true)}
+              className="p-1 text-outline hover:text-on-surface rounded cursor-pointer transition-colors"
+              title="Dismiss notice"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+        {showScopeDetails && (
+          <div className="mt-2 pt-2 border-t border-outline-variant/20 max-h-40 overflow-y-auto space-y-1">
+            {scan.limitations.map((limit, idx) => (
+              <div key={idx} className="flex items-start gap-2 font-code-sm text-[11px] text-on-surface-variant">
+                <span className="text-outline shrink-0">•</span>
+                <span>{limit}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    )
   }
 
   if (isLoading) {
@@ -251,6 +330,8 @@ export function ReportPage() {
           </div>
         </div>
       </div>
+
+      {renderLimitationsNotice()}
 
       {/* ── Main Body Content: Ranked Worklist & Context Panel ── */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">

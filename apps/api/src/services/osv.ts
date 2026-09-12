@@ -67,7 +67,7 @@ export function parsePackageKey(key: string): { name: string; version: string } 
  * Returns a Map from "name@version" to Vulnerability[].
  */
 export async function queryVulnerabilities(
-  packages: { name: string; version: string }[]
+  packages: { name: string; version: string; ecosystem?: 'npm' | 'PyPI' }[]
 ): Promise<Map<string, Vulnerability[]>> {
   const result = new Map<string, Vulnerability[]>();
 
@@ -82,7 +82,7 @@ export async function queryVulnerabilities(
 
     const queries: { queries: OsvQuery[] } = {
       queries: batch.map((pkg) => ({
-        package: { name: pkg.name, ecosystem: 'npm' },
+        package: { name: pkg.name, ecosystem: pkg.ecosystem || 'npm' },
         version: pkg.version,
       })),
     };
@@ -260,7 +260,7 @@ function extractFixedVersion(vuln: OsvVulnDetail, pkgName?: string): string | un
 
   for (const aff of vuln.affected) {
     // Prefer matching package if available
-    if (pkgName && aff.package?.name && aff.package.name !== pkgName) {
+    if (pkgName && aff.package?.name && aff.package.name.toLowerCase() !== pkgName.toLowerCase()) {
       continue;
     }
 
@@ -275,9 +275,9 @@ function extractFixedVersion(vuln: OsvVulnDetail, pkgName?: string): string | un
     }
   }
 
-  // Fallback check across all affected entries
+  // Fallback: only inspect entries where package name is unspecified
   for (const aff of vuln.affected) {
-    if (aff.ranges) {
+    if (!aff.package?.name && aff.ranges) {
       for (const range of aff.ranges) {
         if (range.events) {
           for (const event of range.events) {
