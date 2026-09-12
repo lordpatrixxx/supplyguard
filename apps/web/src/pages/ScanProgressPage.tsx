@@ -190,8 +190,8 @@ export function ScanProgressPage() {
                     <div className="flex items-start gap-3">
                       <FolderX className="w-5 h-5 text-critical mt-0.5 shrink-0" />
                       <div>
-                        <h2 className="font-headline-sm text-sm font-bold text-on-surface">No Supported Manifests Found</h2>
-                        <p className="font-body-md text-xs text-on-surface-variant mt-0.5">SupplyGuard recursively searches for npm (package.json, package-lock.json) and Python (requirements.txt, pyproject.toml, Pipfile, poetry.lock) manifests across all repository directories.</p>
+                        <h2 className="font-headline-sm text-sm font-bold text-on-surface">package.json not found in root</h2>
+                        <p className="font-body-md text-xs text-on-surface-variant mt-0.5">SupplyGuard currently analyzes JavaScript and TypeScript projects through npm/yarn manifests. Verify that the repository tree contains a verifiable manifest descriptor.</p>
                       </div>
                     </div>
                     <div className="bg-surface-container-lowest rounded-lg p-3 text-on-surface font-code-sm text-xs flex flex-col gap-1 border border-outline-variant/30">
@@ -200,8 +200,8 @@ export function ScanProgressPage() {
                         <span className="font-code-sm text-[10px] uppercase bg-critical/10 px-2 py-0.5 rounded text-critical font-bold">Diagnostic Result</span>
                       </div>
                       <div className="text-on-surface-variant">PATH: <span className="text-on-surface">{scan?.repoUrl}</span> <span className="text-outline">(branch: main)</span></div>
-                      <div className="text-on-surface-variant">STATUS: Recursive tree scan completed • 0 supported manifest files located</div>
-                      <div className="text-primary pt-1">HINT: Ensure at least one supported manifest (package.json, requirements.txt, pyproject.toml, Pipfile, poetry.lock) is present in the repository tree.</div>
+                      <div className="text-on-surface-variant">STATUS: Clone verified (240ms) • Root scan: 0 manifest files located</div>
+                      <div className="text-primary pt-1">HINT: Ensure package.json is located in the repository root or specify the subpath manifest directory.</div>
                     </div>
                   </div>
                 )}
@@ -538,44 +538,6 @@ export function ScanProgressPage() {
                 </div>
               </div>
 
-              {/* Requirement 11: Detected Dependency Manifests Checklist */}
-              {scan?.detectedFiles && scan.detectedFiles.length > 0 && (
-                <div className="flex flex-col gap-2 pt-2 border-t border-outline-variant/20">
-                  <div className="flex items-center justify-between">
-                    <label className="font-code-sm text-[10px] uppercase tracking-wider text-outline">
-                      Detected Dependency Manifests ({scan.detectedFiles.length})
-                    </label>
-                    <span className="font-code-sm text-[10px] text-safe font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-safe"></span>
-                      Discovered
-                    </span>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    {scan.detectedFiles.map((file) => {
-                      const isLock = file.includes('lock') || file.includes('shrinkwrap')
-                      const isPython = file.endsWith('.txt') || file.endsWith('.toml') || file.includes('Pipfile') || file.includes('poetry')
-                      return (
-                        <div key={file} className="flex items-center justify-between p-2 rounded-lg bg-surface-container text-xs font-code-sm text-on-surface border border-outline-variant/20">
-                          <div className="flex items-center gap-2 truncate">
-                            <Check className="w-3.5 h-3.5 text-safe shrink-0" />
-                            <span className="truncate font-mono">{file}</span>
-                          </div>
-                          <span className={`px-1.5 py-0.5 rounded text-[10px] uppercase font-bold shrink-0 ${
-                            isPython
-                              ? 'bg-tertiary/10 text-tertiary border border-tertiary/20'
-                              : isLock
-                              ? 'bg-primary/10 text-primary border border-primary/20'
-                              : 'bg-surface-container-high text-on-surface-variant'
-                          }`}>
-                            {isPython ? 'Python' : isLock ? 'Lockfile' : 'npm'}
-                          </span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              )}
-
               {/* Ingestion Action Trigger */}
               <div className="pt-2">
                 {scan?.status === 'complete' ? (
@@ -604,9 +566,7 @@ export function ScanProgressPage() {
               <ShieldCheck className="w-4 h-4 text-safe" />
               <span className="text-on-surface font-medium">Deterministic Ingestion</span>
             </div>
-            <span className="text-outline">
-              {scan?.treeCompleteness === 'truncated' ? 'Tree Truncated (>1,000 files)' : 'Full Tree Resolved'}
-            </span>
+            <span className="text-outline">SHA256 Lockfile Verified</span>
           </div>
         </div>
 
@@ -662,71 +622,6 @@ export function ScanProgressPage() {
                 <span>Est. Completion: ~{Math.max(1, 4 - elapsedSeconds)}s</span>
               </div>
             </div>
-
-            {/* Requirement 12: Project Dependency Breakdown */}
-            {scan?.projectSummaries && scan.projectSummaries.length > 0 && (
-              <div className="flex flex-col gap-2 p-4 bg-surface-container rounded-lg border border-outline-variant/30">
-                <div className="flex items-center justify-between">
-                  <span className="font-code-sm text-[10px] uppercase tracking-wider text-outline flex items-center gap-1.5">
-                    <GitFork className="w-3.5 h-3.5 text-primary" />
-                    <span>Project Dependency Breakdown ({scan.projectSummaries.length} {scan.projectSummaries.length === 1 ? 'project' : 'projects'})</span>
-                  </span>
-                  {scan.treeCompleteness === 'truncated' && (
-                    <span className="font-code-sm text-[10px] text-secondary font-semibold">Tree Partial</span>
-                  )}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  {scan.projectSummaries.map((proj) => (
-                    <div key={`${proj.projectName}-${proj.directory}`} className="p-3 bg-surface-container-low rounded-lg border border-outline-variant/30 flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <FolderOpen className="w-4 h-4 text-primary shrink-0" />
-                          <span className="font-headline-sm text-xs font-bold text-on-surface capitalize">
-                            {proj.projectName}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className={`px-1.5 py-0.5 rounded font-code-sm text-[10px] uppercase font-bold ${
-                            proj.ecosystem === 'pypi'
-                              ? 'bg-tertiary/10 text-tertiary border border-tertiary/20'
-                              : 'bg-primary/10 text-primary border border-primary/20'
-                          }`}>
-                            {proj.ecosystem === 'pypi' ? 'Python' : 'npm'}
-                          </span>
-                          <span className={`px-1.5 py-0.5 rounded font-code-sm text-[10px] font-semibold ${
-                            proj.resolutionStatus === 'locked'
-                              ? 'bg-safe/10 text-safe'
-                              : 'bg-secondary/10 text-secondary'
-                          }`}>
-                            {proj.resolutionStatus === 'locked' ? 'Locked' : 'Direct Only'}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-2 text-center bg-surface-container py-1.5 px-2 rounded font-code-sm">
-                        <div className="flex flex-col">
-                          <span className="text-[10px] text-outline uppercase">Direct</span>
-                          <span className="text-xs font-bold text-on-surface">{proj.directDependencies}</span>
-                        </div>
-                        <div className="flex flex-col border-x border-outline-variant/30">
-                          <span className="text-[10px] text-outline uppercase">Transitive</span>
-                          <span className="text-xs font-bold text-on-surface">{proj.transitiveDependencies}</span>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-[10px] text-outline uppercase">Total</span>
-                          <span className="text-xs font-bold text-primary">{proj.totalDependencies}</span>
-                        </div>
-                      </div>
-
-                      <div className="text-[11px] font-code-sm text-outline truncate flex items-center justify-between">
-                        <span>Directory: <code className="text-on-surface-variant font-mono">{proj.directory || './'}</code></span>
-                        <span className="text-[10px]">{proj.manifestFiles.length} manifest{proj.manifestFiles.length === 1 ? '' : 's'}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Pipeline Execution Graph */}
             <div className="flex flex-col gap-2">

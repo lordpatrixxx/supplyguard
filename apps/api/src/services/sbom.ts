@@ -49,16 +49,11 @@ export function generateCycloneDxSbom(scan: ScanResult): CycloneDXDocument {
   const repoName = scan.repo || scan.repoUrl.split('/').pop()?.replace(/\.git$/, '') || 'repository';
 
   const components: CycloneDXComponent[] = scan.packages.map((pkg) => {
-    let purl = '';
-    if (pkg.ecosystem === 'PyPI') {
-      purl = `pkg:pypi/${encodeURIComponent(pkg.name.toLowerCase())}@${pkg.version}`;
-    } else {
-      // Encode scoped package names properly for purl
-      const encodedName = pkg.name.startsWith('@')
-        ? `@${encodeURIComponent(pkg.name.slice(1))}`
-        : encodeURIComponent(pkg.name);
-      purl = `pkg:npm/${encodedName}@${pkg.version}`;
-    }
+    // Encode scoped package names properly for purl
+    const encodedName = pkg.name.startsWith('@')
+      ? `@${encodeURIComponent(pkg.name.slice(1))}`
+      : encodeURIComponent(pkg.name);
+    const purl = `pkg:npm/${encodedName}@${pkg.version}`;
 
     return {
       'bom-ref': pkg.id,

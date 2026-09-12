@@ -190,115 +190,49 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
           </div>
         )}
 
-        {/* 6. Evidence & Vulnerability Details */}
+        {/* 6. Evidence */}
         <div>
-          <SectionHeader icon={<CheckCircle className="w-4 h-4 text-primary" />} title="Vulnerability Evidence &amp; Advisories" />
-          <div className="bg-surface-container p-4 rounded-lg flex flex-col gap-3 font-code-sm text-xs">
-            <div className="grid grid-cols-[110px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
-              <span className="text-outline">Package Name</span>
-              <span className="text-on-surface font-medium">{pkg.name}</span>
+          <SectionHeader icon={<CheckCircle className="w-4 h-4 text-primary" />} title="Evidence" />
+          <div className="bg-surface-container p-4 rounded-lg flex flex-col gap-2 font-code-sm text-xs">
+            <div className="grid grid-cols-[100px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
+              <span className="text-outline">Source</span>
+              <span className="text-on-surface font-medium">OSV.dev + NVD Feeds</span>
             </div>
-            <div className="grid grid-cols-[110px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
-              <span className="text-outline">Installed Version</span>
-              <span className="text-on-surface font-mono font-medium">{pkg.version}</span>
-            </div>
-            <div className="grid grid-cols-[110px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
-              <span className="text-outline">Ecosystem</span>
-              <span className="text-primary font-semibold">{pkg.ecosystem || 'npm'}</span>
-            </div>
-            <div className="grid grid-cols-[110px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
-              <span className="text-outline">Dependency Type</span>
-              <span className={pkg.isDirect ? 'text-safe font-semibold' : 'text-tertiary font-semibold'}>
-                {pkg.isDirect ? 'Direct Dependency' : 'Transitive Dependency'}
-              </span>
-            </div>
-            {pkg.project && (
-              <div className="grid grid-cols-[110px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
-                <span className="text-outline">Origin Scope</span>
-                <span className="text-on-surface font-mono capitalize">{pkg.project}</span>
-              </div>
-            )}
-            {pkg.vulnerabilities.length > 0 ? (
-              <div className="flex flex-col gap-3 pt-1">
-                <span className="text-[10px] uppercase font-bold text-outline tracking-wider">
-                  OSV Security Advisories ({pkg.vulnerabilities.length})
-                </span>
-                {pkg.vulnerabilities.map((vuln, vIdx) => (
-                  <div key={vuln.id || vIdx} className="p-3 rounded-lg bg-surface-container-low border border-outline-variant/30 flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <span className="font-bold text-on-surface font-mono">{vuln.id}</span>
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                        vuln.severity === 'CRITICAL' ? 'bg-critical/20 text-critical' :
-                        vuln.severity === 'HIGH' ? 'bg-secondary/20 text-secondary' :
-                        vuln.severity === 'MEDIUM' ? 'bg-tertiary/20 text-tertiary' :
-                        'bg-surface-dim text-outline'
-                      }`}>
-                        {vuln.severity} · CVSS {vuln.cvss}
-                      </span>
-                    </div>
-                    {vuln.cve && (
-                      <div className="text-[11px] text-on-surface-variant flex items-center gap-1.5">
-                        <span className="text-outline">CVE:</span>
-                        <span className="font-mono text-on-surface font-medium">{vuln.cve}</span>
-                      </div>
-                    )}
-                    {vuln.ghsa && vuln.ghsa !== vuln.id && (
-                      <div className="text-[11px] text-on-surface-variant flex items-center gap-1.5">
-                        <span className="text-outline">GHSA:</span>
-                        <span className="font-mono text-on-surface font-medium">{vuln.ghsa}</span>
-                      </div>
-                    )}
-                    <div className="text-[11px] text-on-surface-variant flex items-center gap-1.5">
-                      <span className="text-outline">Affected Range:</span>
-                      <span className="font-mono text-critical font-medium">{vuln.affectedRange || `<= ${pkg.version}`}</span>
-                    </div>
-                    <div className="text-[11px] text-on-surface-variant flex items-center gap-1.5">
-                      <span className="text-outline">Fixed Version:</span>
-                      <span className="font-mono text-primary font-medium">{vuln.fixedIn || 'No patch available'}</span>
-                    </div>
-                    <p className="text-[11px] text-on-surface leading-relaxed pt-1 border-t border-outline-variant/10">
-                      {vuln.summary}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-[110px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
-                <span className="text-outline">Advisories</span>
-                <span className="text-safe font-medium">Zero known vulnerabilities in OSV</span>
-              </div>
+            {topVuln && (
+              <>
+                <div className="grid grid-cols-[100px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
+                  <span className="text-outline">Advisory ID</span>
+                  <span className="text-on-surface font-medium">{topVuln.id}</span>
+                </div>
+                <div className="grid grid-cols-[100px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
+                  <span className="text-outline">Affected</span>
+                  <span className="text-critical font-medium">&lt;= {pkg.version}</span>
+                </div>
+                <div className="grid grid-cols-[100px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
+                  <span className="text-outline">Fixed</span>
+                  <span className="text-primary font-medium">{fixedVersion}</span>
+                </div>
+              </>
             )}
             {pkg.reputation && (
-              <div className="grid grid-cols-[110px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
+              <div className="grid grid-cols-[100px_1fr] gap-2 pb-2 border-b border-outline-variant/20">
                 <span className="text-outline">Downloads</span>
                 <span className="text-on-surface-variant">
-                  {pkg.reputation.weeklyDownloads ? `${(pkg.reputation.weeklyDownloads / 1000000).toFixed(1)}M / week` : 'Standard volume'}
+                  {pkg.reputation.weeklyDownloads ? `${(pkg.reputation.weeklyDownloads / 1000000).toFixed(1)}M / week` : 'Normal volume'}
                 </span>
               </div>
             )}
-            <div className="grid grid-cols-[110px_1fr] gap-2">
+            <div className="grid grid-cols-[100px_1fr] gap-2">
               <span className="text-outline">Registry</span>
-              {pkg.ecosystem === 'PyPI' ? (
-                <a
-                  className="text-primary hover:underline flex items-center gap-1 no-underline"
-                  href={`https://pypi.org/project/${pkg.name}/`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <span>pypi.org/project/{pkg.name}</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              ) : (
-                <a
-                  className="text-primary hover:underline flex items-center gap-1 no-underline"
-                  href={`https://www.npmjs.com/package/${pkg.name}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <span>npmjs.com/{pkg.name}</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
+              <a
+                className="text-primary hover:underline flex items-center gap-1 no-underline"
+                href={`https://www.npmjs.com/package/${pkg.name}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span>npmjs.com/{pkg.name}</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
             </div>
           </div>
         </div>
@@ -307,7 +241,7 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
         <div>
           <SectionHeader icon={<GitFork className="w-4 h-4 text-tertiary" />} title="Dependency Path" />
           <div className="flex items-center gap-1.5 font-code-sm text-xs bg-surface-container px-4 py-3 rounded-lg text-on-surface-variant flex-wrap">
-            {pkg.path && pkg.path.length > 0 ? (
+            {pkg.path.length > 0 ? (
               pkg.path.map((node, i) => (
                 <span key={i} className="flex items-center gap-1">
                   {i > 0 && <span className="text-outline">→</span>}

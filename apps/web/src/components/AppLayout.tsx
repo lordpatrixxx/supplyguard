@@ -226,10 +226,11 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <Link
                   key={item.label}
                   to={item.path}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all no-underline font-body-sm text-xs sm:text-sm ${item.active
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all no-underline font-body-sm text-xs sm:text-sm ${
+                    item.active
                       ? 'bg-primary/10 text-primary border-l-2 border-primary font-semibold shadow-xs'
                       : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface hover:translate-x-0.5'
-                    }`}
+                  }`}
                 >
                   {item.icon}
                   <span>{item.label}</span>
@@ -255,10 +256,11 @@ export function AppLayout({ children }: AppLayoutProps) {
             <nav className="flex flex-col gap-1">
               <Link
                 to="/app/profile"
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all no-underline font-body-sm text-xs sm:text-sm ${location.pathname === '/app/profile'
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all no-underline font-body-sm text-xs sm:text-sm ${
+                  location.pathname === '/app/profile'
                     ? 'bg-primary/10 text-primary border-l-2 border-primary font-semibold shadow-xs'
                     : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface hover:translate-x-0.5'
-                  }`}
+                }`}
               >
                 <Settings className="w-4 h-4" />
                 <span>Profile &amp; Identity</span>
@@ -335,10 +337,11 @@ export function AppLayout({ children }: AppLayoutProps) {
                       key={item.label}
                       to={item.path}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all no-underline font-body-sm text-sm ${item.active
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all no-underline font-body-sm text-sm ${
+                        item.active
                           ? 'bg-primary/10 text-primary border-l-2 border-primary font-semibold shadow-xs'
                           : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-                        }`}
+                      }`}
                     >
                       {item.icon}
                       <span>{item.label}</span>
@@ -366,10 +369,11 @@ export function AppLayout({ children }: AppLayoutProps) {
                   <Link
                     to="/app/profile"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all no-underline font-body-sm text-sm ${location.pathname === '/app/profile'
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all no-underline font-body-sm text-sm ${
+                      location.pathname === '/app/profile'
                         ? 'bg-primary/10 text-primary border-l-2 border-primary font-semibold shadow-xs'
                         : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-                      }`}
+                    }`}
                   >
                     <Settings className="w-4 h-4" />
                     <span>Profile &amp; Identity</span>

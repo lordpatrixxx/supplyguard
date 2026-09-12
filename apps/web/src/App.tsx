@@ -27,110 +27,110 @@ export default function App() {
       <AuthProvider>
         <StartupAnimation />
         <Routes>
-          {/* Public Marketing & Auth Routes */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/signin" element={<SignInPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/auth/callback" element={<AuthCallbackPage />} />
+        {/* Public Marketing & Auth Routes */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/signin" element={<SignInPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
-          {/* Protected Workspace Routes (wrapped in AppLayout) */}
-          <Route
-            path="/app"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <LandingPage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/app/scans/:id"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <ScanProgressPage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/app/scans/:id/dashboard"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <DashboardPage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/app/scans/:id/report"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <ReportPage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/app/history"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <HistoryPage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
+        {/* Protected Workspace Routes (wrapped in AppLayout) */}
+        <Route
+          path="/app"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <LandingPage />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/app/scans/:id"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <ScanProgressPage />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/app/scans/:id/dashboard"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <DashboardPage />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/app/scans/:id/report"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <ReportPage />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/app/history"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <HistoryPage />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/app/scans/:id/behavioral"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <BehavioralThreatsPage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/app/scans/:id/behavioral"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <BehavioralThreatsPage />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/app/behavioral"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <BehavioralThreatsPage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/app/behavioral"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <BehavioralThreatsPage />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/app/profile"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <ProfilePage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/app/profile"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <ProfilePage />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
 
-          {/* Backwards Compatibility / Direct Shortcut Redirects */}
-          <Route path="/scans/:id" element={<Navigate to="/app/scans/:id" replace />} />
-          <Route path="/scans/:id/dashboard" element={<Navigate to="/app/scans/:id/dashboard" replace />} />
-          <Route path="/scans/:id/report" element={<Navigate to="/app/scans/:id/report" replace />} />
-          <Route path="/scans/:id/behavioral" element={<Navigate to="/app/scans/:id/behavioral" replace />} />
-          <Route path="/behavioral" element={<Navigate to="/app/behavioral" replace />} />
-          <Route path="/history" element={<Navigate to="/app/history" replace />} />
+        {/* Backwards Compatibility / Direct Shortcut Redirects */}
+        <Route path="/scans/:id" element={<Navigate to="/app/scans/:id" replace />} />
+        <Route path="/scans/:id/dashboard" element={<Navigate to="/app/scans/:id/dashboard" replace />} />
+        <Route path="/scans/:id/report" element={<Navigate to="/app/scans/:id/report" replace />} />
+        <Route path="/scans/:id/behavioral" element={<Navigate to="/app/scans/:id/behavioral" replace />} />
+        <Route path="/behavioral" element={<Navigate to="/app/behavioral" replace />} />
+        <Route path="/history" element={<Navigate to="/app/history" replace />} />
 
-          {/* Catch-all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AuthProvider>
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AuthProvider>
     </ThemeProvider>
   )
 }

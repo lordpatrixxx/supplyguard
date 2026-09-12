@@ -6,7 +6,7 @@ import { getScan, downloadSbom } from '../lib/api'
 import {
   Home, FileCode, Share2, Check, Code2, ShieldCheck, TrendingDown,
   CheckSquare, ShieldAlert, GitFork, Sparkles, GitBranch, Brain,
-  Copy, Network, Fingerprint, Loader2, Download, FolderOpen
+  Copy, Network, Fingerprint, Loader2, Download
 } from 'lucide-react'
 
 export function ReportPage() {
@@ -251,57 +251,6 @@ export function ReportPage() {
           </div>
         </div>
       </div>
-
-      {/* Multi-Project Scope & Manifest Inventory (Requirement 12) */}
-      {scan.projectSummaries && scan.projectSummaries.length > 0 && (
-        <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/30 shadow-sm flex flex-col gap-3">
-          <div className="flex items-center justify-between border-b border-outline-variant/20 pb-2">
-            <div className="flex items-center gap-2">
-              <GitFork className="w-4 h-4 text-primary" />
-              <h2 className="font-headline-sm text-sm font-bold text-on-surface">
-                Multi-Project Scope &amp; Manifest Inventory
-              </h2>
-            </div>
-            <span className="font-code-sm text-xs text-outline">
-              {scan.projectSummaries.length} {scan.projectSummaries.length === 1 ? 'project scope' : 'project scopes'} evaluated
-            </span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {scan.projectSummaries.map((proj) => (
-              <div key={`${proj.projectName}-${proj.directory}`} className="p-3 bg-surface-container rounded-lg border border-outline-variant/20 flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-headline-sm text-xs font-bold text-on-surface capitalize flex items-center gap-1.5">
-                    <FolderOpen className="w-3.5 h-3.5 text-primary" />
-                    {proj.projectName}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <span className={`px-1.5 py-0.5 rounded font-code-sm text-[10px] uppercase font-bold ${
-                      proj.ecosystem === 'pypi'
-                        ? 'bg-tertiary/10 text-tertiary border border-tertiary/20'
-                        : 'bg-primary/10 text-primary border border-primary/20'
-                    }`}>
-                      {proj.ecosystem === 'pypi' ? 'Python' : 'npm'}
-                    </span>
-                    <span className={`px-1.5 py-0.5 rounded font-code-sm text-[10px] font-semibold ${
-                      proj.resolutionStatus === 'locked' ? 'bg-safe/10 text-safe' : 'bg-secondary/10 text-secondary'
-                    }`}>
-                      {proj.resolutionStatus === 'locked' ? 'Locked' : 'Direct Only'}
-                    </span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-1 bg-surface-container-high p-1.5 rounded text-center font-code-sm text-xs">
-                  <div><span className="text-[10px] text-outline block">Direct</span><span className="font-bold">{proj.directDependencies}</span></div>
-                  <div className="border-x border-outline-variant/20"><span className="text-[10px] text-outline block">Transitive</span><span className="font-bold">{proj.transitiveDependencies}</span></div>
-                  <div><span className="text-[10px] text-outline block">Total</span><span className="font-bold text-primary">{proj.totalDependencies}</span></div>
-                </div>
-                <div className="text-[10px] font-code-sm text-outline truncate">
-                  Manifests: <span className="text-on-surface-variant font-mono">{proj.manifestFiles.join(', ')}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* ── Main Body Content: Ranked Worklist & Context Panel ── */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">

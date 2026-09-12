@@ -5,14 +5,6 @@ export interface Vulnerability {
   cvss: number;
   severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
   fixedIn?: string;
-  cve?: string;
-  ghsa?: string;
-  affectedRange?: string;
-  ecosystem?: string;
-  packageName?: string;
-  installedVersion?: string;
-  dependencyPath?: string[];
-  isDirect?: boolean;
 }
 
 export interface ReputationData {
@@ -85,42 +77,10 @@ export interface Remediation {
   fix_command: string;
 }
 
-export interface PackageOccurrence {
-  project: string; // e.g. "frontend", "backend", "root"
-  manifestFile: string; // e.g. "frontend/package.json", "backend/requirements.txt"
-  isDirect: boolean;
-  declaredVersionRange?: string;
-  resolvedVersion: string;
-  dependencyPath: string[];
-  depth: number;
-}
-
-export interface ProjectDependencySummary {
-  projectName: string; // e.g. "frontend", "backend"
-  directory: string;
-  ecosystem: 'npm' | 'PyPI' | 'pypi';
-  manifestFiles: string[];
-  lockfilePresent: boolean;
-  resolutionStatus: 'locked' | 'declared_direct_only';
-  directDependencies: number;
-  transitiveDependencies: number;
-  totalDependencies: number;
-  // Aliases for backwards compatibility:
-  project?: string;
-  directCount?: number;
-  transitiveCount?: number;
-  totalCount?: number;
-}
-
 export interface PackageNode {
   id: string; // Unique dependency identifier, e.g. "lodash@4.17.20#node_modules/lodash"
   name: string; // Clean package name (e.g. "lodash" or "@scope/package")
   version: string; // Resolved version
-  ecosystem?: 'npm' | 'PyPI'; // Ecosystem: npm or PyPI
-  project?: string; // Origin project directory, e.g. "frontend", "backend"
-  manifestFile?: string; // Origin manifest file, e.g. "frontend/package-lock.json"
-  occurrences?: PackageOccurrence[]; // All physical occurrences of this package
-  projects?: string[]; // All projects where this package appears
   isDirect: boolean;
   path: string[];
   depth: number; // Dependency depth from root (1 for direct, 2+ for transitive)
@@ -162,10 +122,6 @@ export interface ScanResult {
   overallRiskScore: number;
   projectedOverallRiskScore?: number;
   limitations?: string[];
-  detectedFiles?: string[];
-  projectSummaries?: ProjectDependencySummary[];
-  treeCompleteness?: 'complete' | 'truncated' | 'fallback';
-  parsingErrors?: Array<{ file: string; error: string }>;
   packages: PackageNode[];
   edges: GraphEdge[];
   behavioralMetrics?: BehavioralMetrics;

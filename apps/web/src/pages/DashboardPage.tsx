@@ -8,7 +8,7 @@ import { getScan, downloadSbom } from '../lib/api'
 import {
   ShieldCheck, Shield, Clock, GitBranch, Download,
   ArrowRight, AlertCircle, Loader2, MousePointer,
-  FolderOpen, GitFork
+  FolderOpen
 } from 'lucide-react'
 
 export function DashboardPage() {
@@ -231,82 +231,6 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* Project Dependency Breakdown (Requirement 12) */}
-        {scan.projectSummaries && scan.projectSummaries.length > 0 && (
-          <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/30 shadow-sm flex flex-col gap-3 mb-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/20 pb-3">
-              <div className="flex items-center gap-2">
-                <GitFork className="w-4 h-4 text-primary" />
-                <h2 className="font-headline-sm text-sm font-bold text-on-surface">
-                  Project &amp; Ecosystem Breakdown
-                </h2>
-                <span className="font-code-sm text-xs text-outline">
-                  ({scan.projectSummaries.length} {scan.projectSummaries.length === 1 ? 'project' : 'projects'} detected)
-                </span>
-              </div>
-              {scan.treeCompleteness === 'truncated' && (
-                <span className="font-code-sm text-[11px] text-secondary bg-secondary/10 px-2 py-0.5 rounded border border-secondary/20">
-                  Notice: Git tree truncated at GitHub single-query limit
-                </span>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {scan.projectSummaries.map((proj) => (
-                <div
-                  key={`${proj.projectName}-${proj.directory}`}
-                  className="bg-surface-container rounded-xl p-4 border border-outline-variant/20 flex flex-col justify-between gap-3 hover:border-outline-variant/40 transition-all"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 truncate">
-                      <FolderOpen className="w-4 h-4 text-primary shrink-0" />
-                      <span className="font-headline-sm text-sm font-bold text-on-surface capitalize truncate">
-                        {proj.projectName}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <span className={`px-2 py-0.5 rounded font-code-sm text-[10px] uppercase font-bold ${
-                        proj.ecosystem === 'pypi'
-                          ? 'bg-tertiary/10 text-tertiary border border-tertiary/20'
-                          : 'bg-primary/10 text-primary border border-primary/20'
-                      }`}>
-                        {proj.ecosystem === 'pypi' ? 'Python' : 'npm'}
-                      </span>
-                      <span className={`px-2 py-0.5 rounded font-code-sm text-[10px] font-semibold ${
-                        proj.resolutionStatus === 'locked'
-                          ? 'bg-safe/10 text-safe'
-                          : 'bg-secondary/10 text-secondary'
-                      }`}>
-                        {proj.resolutionStatus === 'locked' ? 'Locked' : 'Direct Only'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2 text-center bg-surface-container-high py-2 px-2.5 rounded-lg font-code-sm">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] text-outline uppercase font-medium">Direct</span>
-                      <span className="text-sm font-bold text-on-surface">{proj.directDependencies}</span>
-                    </div>
-                    <div className="flex flex-col border-x border-outline-variant/30">
-                      <span className="text-[10px] text-outline uppercase font-medium">Transitive</span>
-                      <span className="text-sm font-bold text-on-surface">{proj.transitiveDependencies}</span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] text-outline uppercase font-medium">Total</span>
-                      <span className="text-sm font-bold text-primary">{proj.totalDependencies}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs font-code-sm text-outline pt-1 border-t border-outline-variant/20">
-                    <span className="truncate">Directory: <code className="text-on-surface-variant font-mono">{proj.directory || './'}</code></span>
-                    <span className="text-[10px] shrink-0">{proj.manifestFiles.join(', ')}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Clean Center Hero Card */}
         <div className="p-8 max-w-2xl mx-auto w-full flex flex-col items-center text-center gap-4 py-12 bg-surface-container-low rounded-2xl border border-outline-variant/30 shadow-sm">
           <div className="w-16 h-16 rounded-full bg-safe/10 border-2 border-safe/40 flex items-center justify-center text-safe shadow-lg">
@@ -521,82 +445,6 @@ export function DashboardPage() {
           <span className="font-code-sm text-xs text-safe font-medium">No Risks Flagged</span>
         </div>
       </div>
-
-      {/* Project Dependency Breakdown (Requirement 12) */}
-      {scan.projectSummaries && scan.projectSummaries.length > 0 && (
-        <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/30 shadow-sm flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/20 pb-3">
-            <div className="flex items-center gap-2">
-              <GitFork className="w-4 h-4 text-primary" />
-              <h2 className="font-headline-sm text-sm font-bold text-on-surface">
-                Project &amp; Ecosystem Breakdown
-              </h2>
-              <span className="font-code-sm text-xs text-outline">
-                ({scan.projectSummaries.length} {scan.projectSummaries.length === 1 ? 'project' : 'projects'} detected)
-              </span>
-            </div>
-            {scan.treeCompleteness === 'truncated' && (
-              <span className="font-code-sm text-[11px] text-secondary bg-secondary/10 px-2 py-0.5 rounded border border-secondary/20">
-                Notice: Git tree truncated at GitHub single-query limit
-              </span>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {scan.projectSummaries.map((proj) => (
-              <div
-                key={`${proj.projectName}-${proj.directory}`}
-                className="bg-surface-container rounded-xl p-4 border border-outline-variant/20 flex flex-col justify-between gap-3 hover:border-outline-variant/40 transition-all"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2 truncate">
-                    <FolderOpen className="w-4 h-4 text-primary shrink-0" />
-                    <span className="font-headline-sm text-sm font-bold text-on-surface capitalize truncate">
-                      {proj.projectName}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className={`px-2 py-0.5 rounded font-code-sm text-[10px] uppercase font-bold ${
-                      proj.ecosystem === 'pypi'
-                        ? 'bg-tertiary/10 text-tertiary border border-tertiary/20'
-                        : 'bg-primary/10 text-primary border border-primary/20'
-                    }`}>
-                      {proj.ecosystem === 'pypi' ? 'Python' : 'npm'}
-                    </span>
-                    <span className={`px-2 py-0.5 rounded font-code-sm text-[10px] font-semibold ${
-                      proj.resolutionStatus === 'locked'
-                        ? 'bg-safe/10 text-safe'
-                        : 'bg-secondary/10 text-secondary'
-                    }`}>
-                      {proj.resolutionStatus === 'locked' ? 'Locked' : 'Direct Only'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 text-center bg-surface-container-high py-2 px-2.5 rounded-lg font-code-sm">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-outline uppercase font-medium">Direct</span>
-                    <span className="text-sm font-bold text-on-surface">{proj.directDependencies}</span>
-                  </div>
-                  <div className="flex flex-col border-x border-outline-variant/30">
-                    <span className="text-[10px] text-outline uppercase font-medium">Transitive</span>
-                    <span className="text-sm font-bold text-on-surface">{proj.transitiveDependencies}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-outline uppercase font-medium">Total</span>
-                    <span className="text-sm font-bold text-primary">{proj.totalDependencies}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-xs font-code-sm text-outline pt-1 border-t border-outline-variant/20">
-                  <span className="truncate">Directory: <code className="text-on-surface-variant font-mono">{proj.directory || './'}</code></span>
-                  <span className="text-[10px] shrink-0">{proj.manifestFiles.join(', ')}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* ── Main Stage: 65% Graph Canvas + 35% Side Panel ── */}
       <div className="flex flex-col lg:flex-row gap-6 items-start relative min-h-[720px]">
