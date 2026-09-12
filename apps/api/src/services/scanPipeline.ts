@@ -71,17 +71,36 @@ export async function processScan(
     }
 
     // Set semantic limitations for unpinned/unlocked manifests or truncated tree
+    // Generate concise, grouped summaries instead of per-project verbose strings
     const limitations: string[] = [];
     if (manifests.treeCompleteness === 'truncated') {
-      limitations.push('Repository tree was truncated by GitHub (>100k files); conventions scanned.');
+      limitations.push('Repository tree was truncated by GitHub (>100k files); convention-based scanning applied.');
     }
-    for (const pSummary of projectSummaries) {
-      if (pSummary.resolutionStatus === 'declared_direct_only') {
+
+    const unlockedProjects = projectSummaries.filter(
+      (p) => p.resolutionStatus === 'declared_direct_only'
+    );
+    if (unlockedProjects.length > 0) {
+      const totalProjects = projectSummaries.length;
+      const lockedCount = totalProjects - unlockedProjects.length;
+      // Single concise summary instead of one line per project
+      if (unlockedProjects.length === totalProjects) {
         limitations.push(
-          `${pSummary.projectName}: Audited direct dependencies from ${pSummary.manifestFiles.join(', ')} (lockfile not committed upstream; transitive dependencies not modeled).`
+          `All ${totalProjects} project scope${totalProjects === 1 ? '' : 's'} audited as direct-only (no lockfiles committed upstream). Transitive dependencies are not modeled.`
+        );
+      } else {
+        limitations.push(
+          `${unlockedProjects.length} of ${totalProjects} project scope${totalProjects === 1 ? '' : 's'} audited as direct-only (no lockfile). ${lockedCount} scope${lockedCount === 1 ? '' : 's'} fully resolved via lockfile.`
         );
       }
+      // Add a short list of affected project names (max 5, then truncate)
+      const MAX_LISTED = 5;
+      const names = unlockedProjects.map((p) => p.projectName);
+      const listed = names.slice(0, MAX_LISTED).join(', ');
+      const overflow = names.length > MAX_LISTED ? ` and ${names.length - MAX_LISTED} more` : '';
+      limitations.push(`Affected: ${listed}${overflow}.`);
     }
+
     if (limitations.length > 0) {
       scan.limitations = limitations;
     }

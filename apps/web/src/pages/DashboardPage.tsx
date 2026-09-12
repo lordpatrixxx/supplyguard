@@ -340,13 +340,34 @@ export function DashboardPage() {
   // ── FULL DASHBOARD & RISK CONSTELLATION ──
   return (
     <div className="flex flex-col gap-6 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 animate-fade-in">
-      {/* Analysis Limitations Banner if present */}
-      {scan.limitations && scan.limitations.length > 0 && (
-        <div className="p-3.5 bg-secondary/10 border border-secondary/30 rounded-xl flex items-center gap-3 text-secondary font-code-sm text-xs">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span><strong>Analysis Scope Notice:</strong> {scan.limitations.join(' • ')}</span>
-        </div>
-      )}
+      {/* Analysis Scope Notice — collapsible */}
+      {scan.limitations && scan.limitations.length > 0 && (() => {
+        const summary = scan.limitations[0];
+        const details = scan.limitations.slice(1);
+        return (
+          <details className="group p-3.5 bg-secondary/10 border border-secondary/30 rounded-xl text-secondary font-code-sm text-xs">
+            <summary className="flex items-center gap-3 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span className="flex-1">
+                <strong>Scope Notice:</strong> {summary}
+              </span>
+              {details.length > 0 && (
+                <span className="shrink-0 text-[10px] font-semibold bg-secondary/20 px-2 py-0.5 rounded transition-colors group-open:bg-secondary/30">
+                  <span className="group-open:hidden">Show details ▸</span>
+                  <span className="hidden group-open:inline">Hide ▴</span>
+                </span>
+              )}
+            </summary>
+            {details.length > 0 && (
+              <ul className="mt-2 ml-7 space-y-1 text-secondary/80">
+                {details.map((d, i) => (
+                  <li key={i} className="list-disc">{d}</li>
+                ))}
+              </ul>
+            )}
+          </details>
+        );
+      })()}
 
       {/* ── ROW 1: Risk Score, Repository, Branch, Last Scan + CTAs ── */}
       <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/30 shadow-sm">
