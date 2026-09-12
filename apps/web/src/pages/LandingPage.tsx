@@ -4,8 +4,6 @@ import { useMutation } from '@tanstack/react-query';
 import { createScan } from '../lib/api';
 import { AuditHero } from '../components/intake/AuditHero';
 import { RepositoryInput } from '../components/intake/RepositoryInput';
-import { DependencyConstellation } from '../components/intake/DependencyConstellation';
-import { AnalysisPipeline } from '../components/intake/AnalysisPipeline';
 import { Shield, CheckCircle2 } from 'lucide-react';
 
 export function LandingPage() {
@@ -57,37 +55,24 @@ export function LandingPage() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-10 animate-fade-in">
+    <div className="flex flex-col w-full max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 animate-fade-in">
       {/* ── Top Header / Audit Hero Section ── */}
       <AuditHero />
 
-      {/* ── Primary Workspace: Repository Input Console + Live Topology Constellation ── */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
-        {/* Left / Top: Interactive Target Repository Intake */}
-        <div className="w-full xl:col-span-7">
-          <RepositoryInput
-            repoUrl={repoUrl}
-            setRepoUrl={setRepoUrl}
-            branch={branch}
-            setBranch={setBranch}
-            subpath={subpath}
-            setSubpath={setSubpath}
-            onSubmit={handleSubmit}
-            isPending={scanMutation.isPending}
-            errorMessage={errorMessage}
-            setErrorMessage={setErrorMessage}
-          />
-        </div>
-
-        {/* Right / Bottom: Signature Interactive Dependency Topology Constellation */}
-        <div className="w-full xl:col-span-5">
-          <DependencyConstellation />
-        </div>
-      </div>
-
-      {/* ── Security Analysis Pipeline & Multi-Vector Intelligence Visualization ── */}
-      <div className="w-full pt-2">
-        <AnalysisPipeline />
+      {/* ── Target Repository Intake Console ── */}
+      <div className="w-full">
+        <RepositoryInput
+          repoUrl={repoUrl}
+          setRepoUrl={setRepoUrl}
+          branch={branch}
+          setBranch={setBranch}
+          subpath={subpath}
+          setSubpath={setSubpath}
+          onSubmit={handleSubmit}
+          isPending={scanMutation.isPending}
+          errorMessage={errorMessage}
+          setErrorMessage={setErrorMessage}
+        />
       </div>
 
       {/* ── Security & Compliance Footer Assurance ── */}
@@ -97,7 +82,7 @@ export function LandingPage() {
             <Shield className="w-3.5 h-3.5" />
           </div>
           <span>
-            SupplyGuard evaluates AST manifests via read-only Git API queries. Private tokens or runtime sandboxes are never required.
+            SupplyGuard evaluates AST manifests via read-only Git API queries. Zero code execution required.
           </span>
         </div>
 

@@ -34,10 +34,10 @@ export const RepositoryInput: React.FC<RepositoryInputProps> = ({
   const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 
   const sampleTargets = [
-    { label: 'tastejs/todomvc', url: 'https://github.com/tastejs/todomvc', desc: 'Classic Benchmark' },
-    { label: 'axios/axios', url: 'https://github.com/axios/axios', desc: 'HTTP Client' },
-    { label: 'expressjs/express', url: 'https://github.com/expressjs/express', desc: 'Core Web API' },
-    { label: 'chalk/chalk', url: 'https://github.com/chalk/chalk', desc: 'Terminal Utility' },
+    { label: 'tastejs/todomvc', url: 'https://github.com/tastejs/todomvc', desc: 'Classic Benchmark (npm)' },
+    { label: 'expressjs/express', url: 'https://github.com/expressjs/express', desc: 'Core Web API (npm)' },
+    { label: 'psf/requests', url: 'https://github.com/psf/requests', desc: 'Python Library (pip)' },
+    { label: 'Swastik1024/SIH_KisanMitra01', url: 'https://github.com/Swastik1024/SIH_KisanMitra01', desc: 'Fullstack Monorepo (npm + pip)' },
   ];
 
   // Keyboard shortcut listener: Cmd/Ctrl + Enter to trigger submit
@@ -54,8 +54,8 @@ export const RepositoryInput: React.FC<RepositoryInputProps> = ({
   };
 
   return (
-    <div className="flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-surface-container-low border border-outline-variant/40 shadow-sm transition-all duration-200">
-      <form onSubmit={onSubmit} className="flex flex-col gap-6">
+    <div className="flex flex-col justify-between p-6 sm:p-8 rounded-2xl bg-surface-container-low border border-outline-variant/40 shadow-sm transition-all duration-200">
+      <form onSubmit={onSubmit} className="flex flex-col gap-6 sm:gap-7">
         {/* Section Header */}
         <div className="flex items-center justify-between">
           <div className="space-y-1">
@@ -68,7 +68,7 @@ export const RepositoryInput: React.FC<RepositoryInputProps> = ({
           </div>
           <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container border border-outline-variant/30 text-[11px] font-mono text-outline">
             <Sparkles className="w-3 h-3 text-primary" />
-            <span>npm / package.json</span>
+            <span>npm • PyPI • poetry • pnpm</span>
           </span>
         </div>
 
@@ -232,7 +232,7 @@ export const RepositoryInput: React.FC<RepositoryInputProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-outline-variant/30">
           <div className="flex items-center gap-2 text-xs font-body-sm text-on-surface-variant">
             <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
-            <span>Audits package.json &amp; lockfiles directly from Git</span>
+            <span>Audits multi-ecosystem manifests &amp; lockfiles directly from Git</span>
           </div>
 
           <button
