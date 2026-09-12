@@ -7,6 +7,7 @@ interface OsvQuery {
 
 interface OsvVulnDetail {
   id: string;
+  aliases?: string[];
   summary?: string;
   details?: string;
   database_specific?: {
@@ -14,11 +15,12 @@ interface OsvVulnDetail {
   };
   severity?: Array<{ type: string; score: string }>;
   affected?: Array<{
-    package?: { name: string };
+    package?: { name: string; ecosystem?: string };
     ranges?: Array<{
       type?: string;
       events?: Array<{ introduced?: string; fixed?: string; last_affected?: string }>;
     }>;
+    versions?: string[];
   }>;
 }
 
@@ -62,12 +64,40 @@ export function parsePackageKey(key: string): { name: string; version: string } 
 }
 
 /**
+ * Extracts affected version range string from OSV affected ranges
+ */
+export function extractAffectedRange(vuln: OsvVulnDetail, pkgName?: string): string | undefined {
+  if (!vuln.affected) return undefined;
+
+  for (const aff of vuln.affected) {
+    if (pkgName && aff.package?.name && aff.package.name.toLowerCase() !== pkgName.toLowerCase()) {
+      continue;
+    }
+    if (aff.ranges) {
+      for (const range of aff.ranges) {
+        if (range.events) {
+          const parts: string[] = [];
+          for (const ev of range.events) {
+            if (ev.introduced && ev.introduced !== '0') parts.push(`>= ${ev.introduced}`);
+            if (ev.fixed) parts.push(`< ${ev.fixed}`);
+            if (ev.last_affected) parts.push(`<= ${ev.last_affected}`);
+          }
+          if (parts.length > 0) return parts.join(', ');
+        }
+      }
+    }
+  }
+  return undefined;
+}
+
+/**
  * Batch-query OSV.dev for known vulnerabilities across all packages,
- * then enriches flagged vulnerabilities with summary, CVSS, severity, and fixed version.
- * Returns a Map from "name@version" to Vulnerability[].
+ * dynamically supporting both npm and PyPI ecosystems.
+ * Enriches flagged vulnerabilities with summary, CVSS, severity, CVE/GHSA, affected range, and fixed version.
+ * Returns a Map from package key to Vulnerability[].
  */
 export async function queryVulnerabilities(
-  packages: { name: string; version: string }[]
+  packages: { name: string; version: string; ecosystem?: string }[]
 ): Promise<Map<string, Vulnerability[]>> {
   const result = new Map<string, Vulnerability[]>();
 
@@ -75,16 +105,22 @@ export async function queryVulnerabilities(
 
   const batchSize = 1000;
   const packageVulnIds = new Map<string, string[]>();
+  const packageEcosystems = new Map<string, string>();
   const allVulnIds = new Set<string>();
 
   for (let i = 0; i < packages.length; i += batchSize) {
     const batch = packages.slice(i, i + batchSize);
 
     const queries: { queries: OsvQuery[] } = {
-      queries: batch.map((pkg) => ({
-        package: { name: pkg.name, ecosystem: 'npm' },
-        version: pkg.version,
-      })),
+      queries: batch.map((pkg) => {
+        const ecosystem = pkg.ecosystem || 'npm';
+        const key = `${pkg.name}@${pkg.version}`;
+        packageEcosystems.set(key, ecosystem);
+        return {
+          package: { name: pkg.name, ecosystem },
+          version: pkg.version === '*' ? '' : pkg.version,
+        };
+      }),
     };
 
     try {
@@ -104,11 +140,13 @@ export async function queryVulnerabilities(
       for (let j = 0; j < batch.length; j++) {
         const pkg = batch[j];
         const key = `${pkg.name}@${pkg.version}`;
+        const ecoKey = `${pkg.ecosystem || 'npm'}:${key}`;
         const vulns = data.results[j]?.vulns || [];
 
         if (vulns.length > 0) {
           const ids = vulns.map((v) => v.id);
           packageVulnIds.set(key, ids);
+          packageVulnIds.set(ecoKey, ids);
           ids.forEach((id) => allVulnIds.add(id));
         }
       }
@@ -127,7 +165,9 @@ export async function queryVulnerabilities(
 
   // Map enriched details back to each package
   for (const [key, ids] of packageVulnIds) {
-    const { name: pkgName } = parsePackageKey(key);
+    const cleanKey = key.includes(':') ? key.split(':')[1] : key;
+    const { name: pkgName, version: pkgVersion } = parsePackageKey(cleanKey);
+    const ecosystem = packageEcosystems.get(cleanKey) || 'npm';
     const enrichedList: Vulnerability[] = [];
 
     for (const id of ids) {
@@ -135,13 +175,27 @@ export async function queryVulnerabilities(
       if (detail) {
         const cvss = extractCvss(detail);
         const severity = determineSeverity(cvss, detail);
+        const cve =
+          detail.aliases?.find((a) => a.toUpperCase().startsWith('CVE-')) ||
+          (id.toUpperCase().startsWith('CVE-') ? id : undefined);
+        const ghsa =
+          id.toUpperCase().startsWith('GHSA-')
+            ? id
+            : detail.aliases?.find((a) => a.toUpperCase().startsWith('GHSA-'));
+
         enrichedList.push({
           id,
-          source: id.startsWith('GHSA') ? 'GHSA' : 'OSV',
+          source: id.startsWith('GHSA') ? 'GHSA' : id.startsWith('CVE') ? 'NVD' : 'OSV',
           summary: detail.summary || detail.details?.slice(0, 180) || 'Known security vulnerability',
           cvss,
           severity,
           fixedIn: extractFixedVersion(detail, pkgName),
+          cve,
+          ghsa,
+          affectedRange: extractAffectedRange(detail, pkgName),
+          ecosystem,
+          packageName: pkgName,
+          installedVersion: pkgVersion,
         });
       } else {
         enrichedList.push({
@@ -150,6 +204,9 @@ export async function queryVulnerabilities(
           summary: 'Known security vulnerability',
           cvss: 5.0,
           severity: 'MEDIUM',
+          ecosystem,
+          packageName: pkgName,
+          installedVersion: pkgVersion,
         });
       }
     }

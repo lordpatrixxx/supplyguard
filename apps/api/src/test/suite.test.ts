@@ -1,6 +1,16 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { extractPackageNameFromPath, createUniqueNodeId, parseLockfile, parsePackageJsonDirect } from '../services/dependencyTree.js';
+import {
+  extractPackageNameFromPath,
+  createUniqueNodeId,
+  parseLockfile,
+  parsePackageJsonDirect,
+  parseRequirementsTxt,
+  parsePoetryLock,
+  parsePipfileLock,
+  parsePyprojectToml,
+  aggregateProjectManifests,
+} from '../services/dependencyTree.js';
 import { checkTyposquat } from '../services/typosquat.js';
 import { checkDependencyConfusion } from '../services/dependencyConfusion.js';
 import { scorePackage } from '../services/scoring.js';
@@ -659,6 +669,284 @@ describe('Behavioral Threat Signals Engine (Static Heuristics)', () => {
     });
     assert.equal(flaggedPkg.score, 25);
     assert.equal(flaggedPkg.breakdown.behavioralSignal, 25);
+  });
+});
+
+describe('Multi-Ecosystem Recursive Manifest Parsing & Aggregation', () => {
+  it('parses Python requirements.txt with direct and transitive via markers', () => {
+    const content = `
+# Core web framework
+Flask==2.2.5
+requests>=2.28.0
+# Transitive pinned dependency via pip-compile
+certifi==2023.7.22 # via requests
+urllib3==1.26.16   # via requests
+Scikit_Learn==1.3.0
+-i https://pypi.org/simple
+# Comment line
+    `;
+
+    const { packages, edges } = parseRequirementsTxt(content, 'backend/requirements.txt');
+    assert.equal(packages.length, 5, 'Should parse 5 valid package requirements');
+
+    const flask = packages.find(p => p.name === 'flask');
+    assert.ok(flask, 'Flask should be found and PEP 503 normalized');
+    assert.equal(flask.version, '2.2.5');
+    assert.equal(flask.isDirect, true);
+    assert.equal(flask.ecosystem?.toLowerCase(), 'pypi');
+
+    const certifi = packages.find(p => p.name === 'certifi');
+    assert.ok(certifi, 'certifi should be found');
+    assert.equal(certifi.isDirect, false, 'certifi with # via marker should be marked transitive');
+    assert.equal(certifi.depth, 2);
+
+    const scikit = packages.find(p => p.name === 'scikit-learn');
+    assert.ok(scikit, 'Scikit_Learn should be normalized to scikit-learn');
+    assert.equal(scikit.version, '1.3.0');
+  });
+
+  it('parses Poetry lockfiles correctly', () => {
+    const poetryLockContent = `
+[[package]]
+name = "fastapi"
+version = "0.95.1"
+description = "FastAPI framework"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+starlette = "0.26.1"
+pydantic = ">=1.6.2"
+
+[[package]]
+name = "starlette"
+version = "0.26.1"
+description = "The little ASGI library that could."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+    `;
+
+    const pyprojectContent = `
+[tool.poetry.dependencies]
+fastapi = "^0.95.1"
+    `;
+
+    const { packages } = parsePoetryLock(poetryLockContent, pyprojectContent, 'backend', 'backend/poetry.lock');
+    assert.equal(packages.length, 2);
+    assert.ok(packages.some(p => p.name === 'fastapi' && p.version === '0.95.1' && p.isDirect === true));
+    assert.ok(packages.some(p => p.name === 'starlette' && p.version === '0.26.1' && p.isDirect === false));
+  });
+
+  it('aggregates multi-project monorepo manifests with lockfile precedence and occurrence separation', () => {
+    const manifests = [
+      {
+        path: 'frontend/package.json',
+        fileName: 'package.json',
+        directory: 'frontend',
+        project: 'frontend',
+        ecosystem: 'npm' as const,
+        isLockfile: false,
+        rawContent: JSON.stringify({
+          name: 'frontend-app',
+          dependencies: {
+            'react': '^18.2.0',
+            'axios': '^1.4.0',
+          },
+        }),
+      },
+      {
+        path: 'frontend/package-lock.json',
+        fileName: 'package-lock.json',
+        directory: 'frontend',
+        project: 'frontend',
+        ecosystem: 'npm' as const,
+        isLockfile: true,
+        rawContent: JSON.stringify({
+          name: 'frontend-app',
+          lockfileVersion: 3,
+          packages: {
+            '': {
+              dependencies: {
+                'react': '^18.2.0',
+                'axios': '^1.4.0',
+              },
+            },
+            'node_modules/react': {
+              version: '18.2.0',
+            },
+            'node_modules/axios': {
+              version: '1.4.0',
+              dependencies: {
+                'follow-redirects': '^1.15.0',
+              },
+            },
+            'node_modules/follow-redirects': {
+              version: '1.15.2',
+            },
+          },
+        }),
+      },
+      {
+        path: 'backend/requirements.txt',
+        fileName: 'requirements.txt',
+        directory: 'backend',
+        project: 'backend',
+        ecosystem: 'PyPI' as const,
+        isLockfile: false,
+        rawContent: `
+flask==2.3.2
+gunicorn==20.1.0
+        `,
+      },
+    ];
+
+    const { packages, edges, projectSummaries, detectedFiles } = aggregateProjectManifests(manifests);
+
+    // Detected files
+    assert.equal(detectedFiles.length, 3);
+    assert.ok(detectedFiles.includes('frontend/package.json'));
+    assert.ok(detectedFiles.includes('frontend/package-lock.json'));
+    assert.ok(detectedFiles.includes('backend/requirements.txt'));
+
+    // Project Summaries
+    assert.equal(projectSummaries.length, 2, 'Should have frontend and backend projects');
+
+    const frontendSummary = projectSummaries.find(p => p.projectName === 'frontend');
+    assert.ok(frontendSummary);
+    assert.equal(frontendSummary.ecosystem, 'npm');
+    assert.equal(frontendSummary.lockfilePresent, true);
+    assert.equal(frontendSummary.resolutionStatus, 'locked');
+    assert.equal(frontendSummary.directDependencies, 2);
+    assert.equal(frontendSummary.transitiveDependencies, 1);
+    assert.equal(frontendSummary.totalDependencies, 3);
+
+    const backendSummary = projectSummaries.find(p => p.projectName === 'backend');
+    assert.ok(backendSummary);
+    assert.equal(backendSummary.ecosystem, 'pypi');
+    assert.equal(backendSummary.lockfilePresent, false);
+    assert.equal(backendSummary.resolutionStatus, 'declared_direct_only');
+    assert.equal(backendSummary.directDependencies, 2);
+    assert.equal(backendSummary.transitiveDependencies, 0);
+    assert.equal(backendSummary.totalDependencies, 2);
+
+    // Total unique packages aggregated: 3 npm + 2 python packages = 5
+    assert.equal(packages.length, 5, 'Total 3 npm + 2 python packages');
+
+    // Verify occurrences preservation
+    for (const pkg of packages) {
+      assert.ok(pkg.occurrences && pkg.occurrences.length > 0, `Package ${pkg.name} must preserve occurrences`);
+      assert.ok(pkg.project, `Package ${pkg.name} must specify primary project`);
+      assert.ok(pkg.ecosystem, `Package ${pkg.name} must specify ecosystem`);
+    }
+
+    const reactPkg = packages.find(p => p.name === 'react');
+    assert.ok(reactPkg);
+    assert.equal(reactPkg.ecosystem, 'npm');
+    assert.equal(reactPkg.project, 'frontend');
+
+    const flaskPkg = packages.find(p => p.name === 'flask');
+    assert.ok(flaskPkg);
+    assert.equal(flaskPkg.ecosystem?.toLowerCase(), 'pypi');
+    assert.equal(flaskPkg.project, 'backend');
+  });
+
+  it('generates multi-ecosystem CycloneDX SBOM with appropriate purls', () => {
+    const dummyReputation: ReputationData = {
+      packageAgeYears: 2,
+      maintainerCount: 3,
+      weeklyDownloads: 50000,
+      lastPublished: '2023-01-01',
+      signals: [],
+    };
+    const dummyProvenance: ProvenanceSignals = {
+      sourceRepo: 'Available',
+      registryMetadata: 'Available',
+      lockfileIntegrity: 'Present',
+      buildAttestation: 'Not available',
+    };
+
+    const dummyScan: ScanResult = {
+      scanId: 'test-multi-sbom',
+      repoUrl: 'https://github.com/example/monorepo',
+      branch: 'main',
+      status: 'complete',
+      overallRiskScore: 20,
+      createdAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+      packages: [
+        {
+          id: 'react@18.2.0#node_modules/react',
+          name: 'react',
+          version: '18.2.0',
+          ecosystem: 'npm',
+          isDirect: true,
+          path: ['react'],
+          depth: 1,
+          dependentCount: 0,
+          downstreamDependents: [],
+          riskScore: 10,
+          advisorySeverity: 'NONE',
+          riskTier: 'safe',
+          riskBreakdown: {
+            knownVulnerability: 0,
+            severityContribution: 0,
+            outdatedVersion: 0,
+            transitiveExposure: 0,
+            downstreamImpact: 0,
+            typosquatConfusion: 0,
+            behavioralSignal: 0,
+            totalScore: 10,
+          },
+          vulnerabilities: [],
+          reputation: dummyReputation,
+          provenance: dummyProvenance,
+        },
+        {
+          id: 'flask@2.3.2#backend/flask',
+          name: 'flask',
+          version: '2.3.2',
+          ecosystem: 'PyPI',
+          isDirect: true,
+          path: ['flask'],
+          depth: 1,
+          dependentCount: 0,
+          downstreamDependents: [],
+          riskScore: 15,
+          advisorySeverity: 'NONE',
+          riskTier: 'safe',
+          riskBreakdown: {
+            knownVulnerability: 0,
+            severityContribution: 0,
+            outdatedVersion: 0,
+            transitiveExposure: 0,
+            downstreamImpact: 0,
+            typosquatConfusion: 0,
+            behavioralSignal: 0,
+            totalScore: 15,
+          },
+          vulnerabilities: [],
+          reputation: dummyReputation,
+          provenance: dummyProvenance,
+        },
+      ],
+      edges: [],
+    };
+
+    const sbom = generateCycloneDXSBOM(dummyScan);
+
+    assert.equal(sbom.bomFormat, 'CycloneDX');
+    assert.equal(sbom.specVersion, '1.5');
+    assert.equal(sbom.components.length, 2);
+
+    const reactComp = sbom.components.find((c: { name: string }) => c.name === 'react');
+    assert.ok(reactComp);
+    assert.equal(reactComp.purl, 'pkg:npm/react@18.2.0');
+
+    const flaskComp = sbom.components.find((c: { name: string }) => c.name === 'flask');
+    assert.ok(flaskComp);
+    assert.equal(flaskComp.purl, 'pkg:pypi/flask@2.3.2');
   });
 });
 

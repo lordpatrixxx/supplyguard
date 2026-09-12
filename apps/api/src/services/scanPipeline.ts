@@ -1,6 +1,6 @@
 import type { ScanResult } from '../types/index.js';
 import { fetchManifests } from './github.js';
-import { parseLockfile, parsePackageJsonDirect } from './dependencyTree.js';
+import { aggregateProjectManifests } from './dependencyTree.js';
 import { queryVulnerabilities } from './osv.js';
 import { detectTyposquats } from './typosquat.js';
 import { checkDependencyConfusion } from './dependencyConfusion.js';
@@ -29,56 +29,80 @@ export async function processScan(
   };
 
   try {
-    // Stage 1: Fetch manifests from GitHub
+    // Stage 1: Fetch manifests from GitHub recursively
     scan.status = 'running';
     updateProgress(
       scan.subpath
-        ? `Fetching manifests from GitHub (${scan.subpath})...`
-        : 'Fetching manifests from GitHub...'
+        ? `Recursively scanning manifests from GitHub (${scan.subpath})...`
+        : 'Recursively scanning manifests across all repository directories...'
     );
 
     const manifests = await fetchManifests(scan.repoUrl, scan.branch, scan.subpath);
     scan.owner = manifests.owner;
     scan.repo = manifests.repo;
     scan.branch = manifests.branch;
+    scan.detectedFiles = manifests.detectedFiles;
+    scan.treeCompleteness = manifests.treeCompleteness;
 
-    if (!manifests.lockfile) {
-      if (manifests.packageJson) {
-        // Fallback: package.json direct dependency auditing when lockfile is absent upstream
-        scan.limitations = [
-          'transitive_analysis_incomplete: Audited direct dependencies from package.json (transitive lockfile not committed upstream)'
-        ];
-        updateProgress('package-lock.json absent; resolving direct dependencies from package.json...');
-        const { packages, edges } = parsePackageJsonDirect(manifests.packageJson);
-        scan.packages = packages;
-        scan.edges = edges;
-      } else {
-        scan.status = 'failed';
-        scan.statusMessage = `No package.json or package-lock.json found at target path (${scan.subpath || 'root'}). Verify repository path and branch.`;
-        store.set(scan.scanId, { ...scan });
-        await persistScanToSupabase(scan).catch(() => {});
-        return;
-      }
-    } else {
-      // Stage 2: Parse dependency tree into unique nodes and edges
-      updateProgress('Parsing dependency tree and calculating graph topology...');
-      const { packages, edges } = parseLockfile(manifests.lockfile, manifests.packageJson);
-      scan.packages = packages;
-      scan.edges = edges;
+    updateProgress(
+      `Discovered ${manifests.detectedFiles.length} dependency manifest(s). Resolving dependency trees...`
+    );
+
+    // Stage 2: Aggregate all project manifests, apply lockfile precedence, and separate occurrences
+    const { packages, edges, projectSummaries, parsingErrors } = aggregateProjectManifests(manifests.manifests);
+    scan.packages = packages;
+    scan.edges = edges;
+    scan.projectSummaries = projectSummaries;
+
+    if (parsingErrors.length > 0) {
+      scan.parsingErrors = parsingErrors;
     }
 
-    const packages = scan.packages;
+    if (packages.length === 0) {
+      scan.status = 'failed';
+      if (parsingErrors.length > 0) {
+        scan.statusMessage = `Failed to parse manifests:\n${parsingErrors.map((e) => `• ${e.file}: ${e.error}`).join('\n')}`;
+      } else {
+        scan.statusMessage = `No packages detected in discovered manifests: ${manifests.detectedFiles.join(', ')}`;
+      }
+      store.set(scan.scanId, { ...scan });
+      await persistScanToSupabase(scan).catch(() => {});
+      return;
+    }
 
-    // Stage 3: Vulnerability lookup via OSV.dev batch API
+    // Set semantic limitations for unpinned/unlocked manifests or truncated tree
+    const limitations: string[] = [];
+    if (manifests.treeCompleteness === 'truncated') {
+      limitations.push('Repository tree was truncated by GitHub (>100k files); conventions scanned.');
+    }
+    for (const pSummary of projectSummaries) {
+      if (pSummary.resolutionStatus === 'declared_direct_only') {
+        limitations.push(
+          `${pSummary.projectName}: Audited direct dependencies from ${pSummary.manifestFiles.join(', ')} (lockfile not committed upstream; transitive dependencies not modeled).`
+        );
+      }
+    }
+    if (limitations.length > 0) {
+      scan.limitations = limitations;
+    }
+
+    // Stage 3: Vulnerability lookup via OSV.dev batch API across all ecosystems
     updateProgress(`Querying OSV.dev for vulnerabilities across ${packages.length} packages...`);
 
     const vulnMap = await queryVulnerabilities(
-      packages.map((p) => ({ name: p.name, version: p.version }))
+      packages.map((p) => ({ name: p.name, version: p.version, ecosystem: p.ecosystem }))
     );
 
     for (const pkg of packages) {
       const key = `${pkg.name}@${pkg.version}`;
-      pkg.vulnerabilities = vulnMap.get(key) || [];
+      const ecoKey = `${pkg.ecosystem || 'npm'}:${key}`;
+      const rawVulns = vulnMap.get(ecoKey) || vulnMap.get(key) || [];
+      pkg.vulnerabilities = rawVulns.map((v) => ({
+        ...v,
+        dependencyPath: pkg.path,
+        isDirect: pkg.isDirect,
+        ecosystem: pkg.ecosystem || 'npm',
+      }));
     }
 
     // Stage 4: Typosquatting and Dependency Confusion detection
@@ -97,15 +121,16 @@ export async function processScan(
       }
     }
 
-    // Stage 4.5: Behavioral Threat Signals (static install script analysis)
+    // Stage 4.5: Behavioral Threat Signals (static install script analysis for npm packages)
     updateProgress('Analyzing install scripts for behavioral risk signals...');
-    const { metrics: behavioralMetrics } = await analyzeBehavioralThreats(packages);
+    const npmPackages = packages.filter((p) => (p.ecosystem || 'npm') === 'npm');
+    const { metrics: behavioralMetrics } = await analyzeBehavioralThreats(npmPackages);
     scan.behavioralMetrics = behavioralMetrics;
 
-    // Stage 5: Package reputation signals
+    // Stage 5: Package reputation signals (for npm packages)
     updateProgress('Auditing package reputation and release recency...');
 
-    const flaggedOrDirect = packages.filter(
+    const flaggedOrDirect = npmPackages.filter(
       (p) => p.isDirect || p.vulnerabilities.length > 0 || p.typosquatFlag || p.confusionFlag || p.behavioralFlag
     );
     const uniqueRepNames = Array.from(new Set(flaggedOrDirect.map((p) => p.name)));
