@@ -1,6 +1,14 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { extractPackageNameFromPath, createUniqueNodeId, parseLockfile, parsePackageJsonDirect } from '../services/dependencyTree.js';
+import {
+  extractPackageNameFromPath,
+  createUniqueNodeId,
+  parseLockfile,
+  parsePackageJsonDirect,
+  parseRequirementsTxt,
+  aggregateProjectManifests,
+} from '../services/dependencyTree.js';
+import { classifyManifestFile, isIgnoredPath } from '../services/github.js';
 import { checkTyposquat } from '../services/typosquat.js';
 import { checkDependencyConfusion } from '../services/dependencyConfusion.js';
 import { scorePackage } from '../services/scoring.js';
@@ -861,4 +869,110 @@ describe('CycloneDX SBOM Validation', () => {
     assert.ok(rootDep.dependsOn?.includes('lodash@4.17.21#node_modules/lodash'));
   });
 });
+
+describe('Multi-Manifest & Multi-Project Aggregation', () => {
+  it('correctly discovers and classifies manifest types while ignoring non-project paths', () => {
+    assert.ok(classifyManifestFile('package.json').isManifest);
+    assert.equal(classifyManifestFile('package.json').ecosystem, 'npm');
+    assert.ok(classifyManifestFile('requirements.txt').isManifest);
+    assert.equal(classifyManifestFile('requirements.txt').ecosystem, 'PyPI');
+    assert.ok(classifyManifestFile('Pipfile.lock').isManifest);
+    assert.equal(classifyManifestFile('Pipfile.lock').ecosystem, 'PyPI');
+    assert.ok(classifyManifestFile('poetry.lock').isManifest);
+    assert.equal(classifyManifestFile('poetry.lock').ecosystem, 'PyPI');
+
+    assert.ok(isIgnoredPath('node_modules/lodash/package.json'));
+    assert.ok(isIgnoredPath('.venv/lib/python3.10/site-packages/requirements.txt'));
+    assert.ok(isIgnoredPath('bower_components/webcomponentsjs/package.json'));
+    assert.ok(isIgnoredPath('.git/HEAD'));
+    assert.ok(!isIgnoredPath('frontend/package.json'));
+    assert.ok(!isIgnoredPath('backend/requirements.txt'));
+  });
+
+  it('parses Python requirements.txt distinguishing exact versions from ranges', () => {
+    const content = `
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+requests>=2.30.0
+flask~=3.0.0
+# via pip-compile comment
+click==8.1.7 # via flask
+`;
+    const result = parseRequirementsTxt(content, 'backend', 'backend/requirements.txt');
+    assert.equal(result.packages.length, 5);
+
+    const fastapi = result.packages.find((p) => p.name === 'fastapi');
+    assert.ok(fastapi);
+    assert.equal(fastapi.version, '0.115.6');
+    assert.equal(fastapi.isDirect, true);
+    assert.equal(fastapi.ecosystem, 'PyPI');
+
+    const requests = result.packages.find((p) => p.name === 'requests');
+    assert.ok(requests);
+    assert.equal(requests.version, '>=2.30.0', 'Must not invent resolved version for range');
+
+    const click = result.packages.find((p) => p.name === 'click');
+    assert.ok(click);
+    assert.equal(click.isDirect, false, 'Dependency with # via comment must be marked transitive');
+    assert.equal(result.resolutionStatus, 'locked');
+  });
+
+  it('aggregates multi-project manifests into separate project summaries and distinct occurrences', () => {
+    const mockManifests = [
+      {
+        path: 'frontend/package.json',
+        fileName: 'package.json',
+        directory: 'frontend',
+        project: 'frontend',
+        ecosystem: 'npm' as const,
+        rawContent: JSON.stringify({
+          name: 'frontend',
+          dependencies: { 'lodash': '^4.17.21', 'axios': '^1.6.0' },
+        }),
+      },
+      {
+        path: 'backend/requirements.txt',
+        fileName: 'requirements.txt',
+        directory: 'backend',
+        project: 'backend',
+        ecosystem: 'PyPI' as const,
+        rawContent: 'fastapi==0.115.6\nsqlalchemy==2.0.36\n',
+      },
+      {
+        path: 'package.json',
+        fileName: 'package.json',
+        directory: 'root',
+        project: 'root',
+        ecosystem: 'npm' as const,
+        rawContent: JSON.stringify({
+          name: 'root-scripts',
+          scripts: { 'dev': 'echo running' },
+        }),
+      },
+    ];
+
+    const aggregated = aggregateProjectManifests(mockManifests);
+
+    assert.equal(aggregated.projectSummaries.length, 2, 'Should summarize frontend and backend (skipping empty root)');
+    assert.equal(aggregated.packages.length, 4, 'Should contain 2 frontend packages + 2 backend packages');
+
+    const frontendSummary = aggregated.projectSummaries.find((p) => p.projectName === 'frontend');
+    assert.ok(frontendSummary);
+    assert.equal(frontendSummary.ecosystem, 'npm');
+    assert.equal(frontendSummary.directDependencies, 2);
+
+    const backendSummary = aggregated.projectSummaries.find((p) => p.projectName === 'backend');
+    assert.ok(backendSummary);
+    assert.equal(backendSummary.ecosystem, 'pypi');
+    assert.equal(backendSummary.directDependencies, 2);
+    assert.equal(backendSummary.transitiveDependencies, 'unavailable');
+
+    // Requirement 9: Distinct project provenance
+    const feLodash = aggregated.packages.find((p) => p.name === 'lodash');
+    assert.ok(feLodash);
+    assert.equal(feLodash.project, 'frontend');
+    assert.ok(feLodash.id.startsWith('frontend:'));
+  });
+});
+
 

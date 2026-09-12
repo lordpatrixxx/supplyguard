@@ -8,7 +8,7 @@ import { getScan, downloadSbom } from '../lib/api'
 import {
   ShieldCheck, Shield, Clock, GitBranch, Download,
   ArrowRight, AlertCircle, Loader2, MousePointer,
-  FolderOpen, ChevronDown, ChevronUp, X, Info
+  FolderOpen, ChevronDown, ChevronUp, X, Info, GitFork
 } from 'lucide-react'
 
 export function DashboardPage() {
@@ -246,21 +246,23 @@ export function DashboardPage() {
           </div>
           <div className="flex flex-col gap-2">
             <h2 className="font-headline-md text-2xl font-bold text-on-surface tracking-tight">
-              No Dependencies Declared at Root
+              No Supported Dependencies Found in Repository
             </h2>
             <p className="font-body-md text-sm text-on-surface-variant max-w-md mx-auto">
-              SupplyGuard examined the root manifest for <span className="text-on-surface font-semibold">{repoName}</span>, but found no direct or indirect dependencies declared.
+              SupplyGuard searched the repository for <span className="text-on-surface font-semibold">{repoName}</span>, but found no supported direct or transitive dependencies declared in any discovered manifest file.
             </p>
-            <p className="font-body-md text-xs text-outline max-w-md mx-auto">
-              If this repository is a monorepo or stores its packages in a subfolder (such as <code className="font-code-sm text-primary">apps/web</code>, <code className="font-code-sm text-primary">client</code>, or <code className="font-code-sm text-primary">frontend</code>), specify the subpath during intake to evaluate the target manifest.
-            </p>
+            {scan.detectedFiles && scan.detectedFiles.length > 0 && (
+              <p className="font-code-sm text-xs text-outline max-w-md mx-auto">
+                Audited manifests: {scan.detectedFiles.join(', ')}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-3 flex-wrap justify-center mt-3">
             <Link
               to="/app"
               className="px-5 py-2.5 bg-primary hover:bg-primary-container text-on-primary font-headline-sm text-xs font-semibold rounded-lg shadow-sm transition-all no-underline"
             >
-              Analyze Subpath or Another Repository
+              Analyze Another Repository
             </Link>
             <Link
               to="/app/history"
@@ -564,6 +566,81 @@ export function DashboardPage() {
           <span className="font-code-sm text-xs text-safe font-medium">No Risks Flagged</span>
         </div>
       </div>
+
+      {/* ── Project & Ecosystem Breakdown (Multi-Manifest Support) ── */}
+      {scan.projectSummaries && scan.projectSummaries.length > 0 && (
+        <div className="bg-surface-container-low rounded-xl p-5 border border-outline-variant/30 shadow-sm flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/20 pb-3">
+            <div className="flex items-center gap-2">
+              <GitFork className="w-4 h-4 text-primary" />
+              <h2 className="font-headline-sm text-sm font-bold text-on-surface">
+                Project &amp; Ecosystem Breakdown
+              </h2>
+              <span className="font-code-sm text-xs text-outline">
+                ({scan.projectSummaries.length} {scan.projectSummaries.length === 1 ? 'project' : 'projects'} detected)
+              </span>
+            </div>
+            {scan.treeCompleteness === 'truncated' && (
+              <span className="font-code-sm text-[11px] text-secondary bg-secondary/10 px-2 py-0.5 rounded border border-secondary/20">
+                Notice: Git tree truncated at GitHub single-query limit
+              </span>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {scan.projectSummaries.map((proj) => (
+              <div
+                key={`${proj.projectName}-${proj.directory}`}
+                className="bg-surface-container rounded-xl p-4 border border-outline-variant/20 flex flex-col justify-between gap-3 hover:border-outline-variant/40 transition-all"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2 truncate">
+                    <FolderOpen className="w-4 h-4 text-primary shrink-0" />
+                    <span className="font-headline-sm text-sm font-bold text-on-surface capitalize truncate">
+                      {proj.projectName}
+                    </span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded text-[11px] font-code-sm font-semibold uppercase tracking-wider bg-surface-container-high text-on-surface border border-outline-variant/30">
+                    {proj.ecosystem}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 py-2 border-y border-outline-variant/15 text-center font-code-sm text-xs">
+                  <div>
+                    <span className="text-outline text-[10px] uppercase block">Direct</span>
+                    <span className="font-bold text-on-surface tabular-nums">{proj.directDependencies}</span>
+                  </div>
+                  <div>
+                    <span className="text-outline text-[10px] uppercase block">Transitive</span>
+                    <span className="font-bold text-on-surface tabular-nums">
+                      {proj.transitiveDependencies === 'unavailable' ? 'Direct-Only' : proj.transitiveDependencies}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-outline text-[10px] uppercase block">Total</span>
+                    <span className="font-bold text-primary tabular-nums">{proj.totalDependencies}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] font-code-sm text-on-surface-variant">
+                  <span className="truncate max-w-[140px] text-outline" title={proj.directory}>
+                    {proj.directory}
+                  </span>
+                  <span
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                      proj.lockfilePresent
+                        ? 'bg-safe/10 text-safe border border-safe/20'
+                        : 'bg-warning/10 text-warning border border-warning/20'
+                    }`}
+                  >
+                    {proj.lockfilePresent ? 'Lockfile Verified' : 'Direct Manifest'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ── Main Stage: 65% Graph Canvas + 35% Side Panel ── */}
       <div className="flex flex-col lg:flex-row gap-6 items-start relative min-h-[720px]">

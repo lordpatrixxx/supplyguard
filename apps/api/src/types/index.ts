@@ -77,6 +77,36 @@ export interface Remediation {
   fix_command: string;
 }
 
+export interface PackageOccurrence {
+  project: string; // e.g. "frontend", "backend", "root"
+  manifestFile: string; // e.g. "frontend/package.json", "backend/requirements.txt"
+  ecosystem: 'npm' | 'PyPI';
+  packageName: string;
+  version: string;
+  isDirect: boolean;
+  declaredVersionRange?: string;
+  resolvedVersion: string;
+  dependencyPath: string[];
+  depth: number;
+}
+
+export interface ProjectDependencySummary {
+  projectName: string; // e.g. "frontend", "backend"
+  directory: string;
+  ecosystem: 'npm' | 'PyPI' | 'pypi';
+  manifestFiles: string[];
+  lockfilePresent: boolean;
+  resolutionStatus: 'locked' | 'declared_direct_only';
+  directDependencies: number;
+  transitiveDependencies: number | 'unavailable';
+  totalDependencies: number | string;
+  // Compatibility aliases
+  project?: string;
+  directCount?: number;
+  transitiveCount?: number | 'unavailable';
+  totalCount?: number | string;
+}
+
 export interface PackageNode {
   id: string; // Unique dependency identifier, e.g. "lodash@4.17.20#node_modules/lodash"
   name: string; // Clean package name (e.g. "lodash" or "@scope/package")
@@ -90,6 +120,10 @@ export interface PackageNode {
   advisorySeverity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE'; // Advisory severity (distinct from risk score)
   riskTier: 'critical' | 'high' | 'medium' | 'low' | 'safe';
   ecosystem?: 'npm' | 'PyPI';
+  project?: string; // Origin project directory, e.g. "frontend", "backend"
+  manifestFile?: string; // Origin manifest file, e.g. "frontend/package-lock.json"
+  occurrences?: PackageOccurrence[]; // All physical occurrences of this package
+  projects?: string[]; // All projects where this package appears
   riskBreakdown: RiskBreakdown;
   vulnerabilities: Vulnerability[];
   reputation: ReputationData;
@@ -122,6 +156,10 @@ export interface ScanResult {
   statusMessage?: string;
   overallRiskScore: number;
   projectedOverallRiskScore?: number;
+  detectedFiles?: string[];
+  treeCompleteness?: 'complete' | 'truncated' | 'fallback';
+  projectSummaries?: ProjectDependencySummary[];
+  parsingErrors?: Array<{ file: string; error: string }>;
   limitations?: string[];
   packages: PackageNode[];
   edges: GraphEdge[];

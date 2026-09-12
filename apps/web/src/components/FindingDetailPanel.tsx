@@ -110,6 +110,11 @@ export function FindingDetailPanel({ pkg, onClose }: FindingDetailPanelProps) {
                   CVSS {pkg.advisorySeverity}
                 </span>
               )}
+              {pkg.project && (
+                <span className="px-1.5 py-0.5 rounded bg-surface-dim font-code-sm text-[11px] text-primary border border-primary/30 capitalize">
+                  {pkg.project}
+                </span>
+              )}
               <span className="font-code-sm text-[11px] text-outline">{pkg.ecosystem || 'npm'}</span>
             </div>
           </div>
