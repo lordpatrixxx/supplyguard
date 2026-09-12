@@ -13,7 +13,7 @@ import { ForgotPasswordPage } from './pages/ForgotPasswordPage'
 import { AuthCallbackPage } from './pages/AuthCallbackPage'
 
 // Workspace Pages
-import { LandingPage } from './pages/LandingPage'
+import { OverviewPage } from './pages/OverviewPage'
 import { ScanProgressPage } from './pages/ScanProgressPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { ReportPage } from './pages/ReportPage'
@@ -40,7 +40,7 @@ export default function App() {
           element={
             <ProtectedRoute>
               <AppLayout>
-                <LandingPage />
+                <OverviewPage />
               </AppLayout>
             </ProtectedRoute>
           }

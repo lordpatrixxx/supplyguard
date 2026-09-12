@@ -193,9 +193,11 @@
   --radius-full: 9999px;
 
   /* ── Typography Stacks ── */
-  --font-headline-md: 'Space Grotesk', system-ui, sans-serif;
-  --font-headline-sm: 'Space Grotesk', system-ui, sans-serif;
-  --font-display-lg: 'Space Grotesk', system-ui, sans-serif;
+  --font-headline-xl: 'Plus Jakarta Sans', 'Space Grotesk', system-ui, sans-serif;
+  --font-headline-lg: 'Plus Jakarta Sans', 'Space Grotesk', system-ui, sans-serif;
+  --font-headline-md: 'Plus Jakarta Sans', 'Space Grotesk', system-ui, sans-serif;
+  --font-headline-sm: 'Plus Jakarta Sans', 'Space Grotesk', system-ui, sans-serif;
+  --font-display-lg: 'Plus Jakarta Sans', 'Space Grotesk', system-ui, sans-serif;
   --font-body-lg: 'Inter', system-ui, sans-serif;
   --font-body-md: 'Inter', system-ui, sans-serif;
   --font-body-sm: 'Inter', system-ui, sans-serif;
